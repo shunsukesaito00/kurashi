@@ -42,7 +42,7 @@ Google AdSense は副次的な収益源として位置づけています。
 | `tools/taishoku.html` | `a`, `y` | 退職金額(円)、勤続年数 | `?a=10000000&y=20` |
 | `tools/moji.html` | `t` | カウント対象テキスト(最大300文字) | `?t=%E3%81%8F%E3%82%89%E3%81%97%E3%81%AE%E8%A8%88%E7%AE%97%E5%AE%A4` |
 
-代表例を変えるときは、この表と `index.html` のデモリンク、`scripts/verify-share-urls.mjs` の各ケース `path` を同時に更新すること。更新後は `cd scripts && npm test` で3ファイルの一致と共有URLの往復動作をまとめて検証できる（`test:share-urls` 用に別ターミナルで HTTP サーバーを起動したまま）。
+代表例を変えるときは、この表と `index.html` のデモリンク、`scripts/verify-share-urls.mjs` の各ケース `path` を同時に更新すること。更新後は `cd scripts && npm test` で3ファイルの一致と共有URLの往復テストをまとめて検証できる（`test:share-urls` 用に別ターミナルで HTTP サーバーを起動したまま）。
 
 フレームワーク・ビルド不要の静的HTML/CSS/JSのみ。サーバーサイド処理はありません。
 静的アセットは `css/`(共通スタイル)、`js/`(共有URL用の `share.js` など)、`tools/`(各計算ページ)、`scripts/`(共有URL検証用の `check-demo-sync.mjs`・`verify-share-urls.mjs` と `npm test`)に分かれています。
