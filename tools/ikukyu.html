@@ -7,6 +7,7 @@
 <meta name="description" content="育休前の月収を入力するだけで、育児休業給付金の月額(67%・50%)と総額を自動計算。出生後休業支援給付金の13%上乗せにも対応した無料ツールです。">
 <link rel="canonical" href="https://shunsukesaito00.github.io/kurashi/tools/ikukyu.html">
 <link rel="stylesheet" href="../css/style.css">
+<script src="../js/share.js"></script>
 </head>
 <body>
 <header class="site-header">
@@ -44,6 +45,10 @@
         <tr id="support-row" style="display:none;"><td>出生後休業支援給付金(13%・最大28日)</td><td id="support-amount"></td></tr>
         <tr><td>月収に対する割合(67%期間・実質)</td><td id="ratio"></td></tr>
       </table>
+      <div class="cmp-actions" id="share-actions" style="display:none;">
+        <button class="btn btn-outline" id="share-copy-btn" onclick="copyShareLink('share-copy-btn')">共有リンクをコピー</button>
+      </div>
+      <p class="note" id="share-hint" style="display:none;margin:0.5rem 0 0;background:transparent;padding:0;">URLに入力値が含まれます。共有先で同じ計算結果が自動表示されます。</p>
     </div>
   </div>
 
@@ -116,7 +121,23 @@ function calc() {
   if (support) document.getElementById('support-amount').textContent = yen(supportAmount);
   document.getElementById('ratio').textContent = (monthly67 / salary * 100).toFixed(1) + ' %(手取りでは約8割相当)';
   document.getElementById('result').classList.add('show');
+  showShareActions('share-actions', 'share-hint');
+  updateShareUrl([
+    ['s', salary],
+    ['m', months],
+    ['support', support ? '1' : '']
+  ]);
 }
+
+(function initFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const salary = Number(params.get('s'));
+  const months = Number(params.get('m'));
+  if (salary > 0) document.getElementById('salary').value = salary;
+  if (months > 0) document.getElementById('months').value = months;
+  if (params.get('support') === '1') document.getElementById('support').checked = true;
+  if (salary > 0 && months > 0) calc();
+})();
 </script>
 </body>
 </html>

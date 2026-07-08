@@ -7,6 +7,7 @@
 <meta name="description" content="退職金と勤続年数を入力するだけで、退職所得控除・所得税・住民税を差し引いた手取り額を自動計算。退職所得の受給に関する申告書提出時の目安です。">
 <link rel="canonical" href="https://shunsukesaito00.github.io/kurashi/tools/taishoku.html">
 <link rel="stylesheet" href="../css/style.css">
+<script src="../js/share.js"></script>
 </head>
 <body>
 <header class="site-header">
@@ -42,6 +43,10 @@
         <tr><th>税金合計</th><th id="total-tax"></th></tr>
         <tr><td>実効税率</td><td id="rate"></td></tr>
       </table>
+      <div class="cmp-actions" id="share-actions" style="display:none;">
+        <button class="btn btn-outline" id="share-copy-btn" onclick="copyShareLink('share-copy-btn')">共有リンクをコピー</button>
+      </div>
+      <p class="note" id="share-hint" style="display:none;margin:0.5rem 0 0;background:transparent;padding:0;">URLに入力値が含まれます。共有先で同じ計算結果が自動表示されます。</p>
     </div>
   </div>
 
@@ -129,7 +134,18 @@ function calc() {
   document.getElementById('total-tax').textContent = yen(totalTax);
   document.getElementById('rate').textContent = (totalTax / amount * 100).toFixed(1) + ' %';
   document.getElementById('result').classList.add('show');
+  showShareActions('share-actions', 'share-hint');
+  updateShareUrl([['a', amount], ['y', years]]);
 }
+
+(function initFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const amount = Number(params.get('a'));
+  const years = Number(params.get('y'));
+  if (amount > 0) document.getElementById('amount').value = amount;
+  if (years > 0) document.getElementById('years').value = years;
+  if (amount > 0 && years > 0) calc();
+})();
 </script>
 </body>
 </html>
