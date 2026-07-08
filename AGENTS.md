@@ -425,6 +425,8 @@ easy to change if you want something else."
 - When changing share-URL representative demo examples, update `README.md`
   (query key table), `index.html` (demo links), and
   `scripts/verify-share-urls.mjs` (case `path` values) together.
+- After updating those demo examples, run `cd scripts && node check-demo-sync.mjs`
+  to confirm all three files still list the same query paths.
 - Around each August rate-revision window, re-check constants in
   `tools/ikukyu.html` (childcare-leave benefit caps) and
   `tools/tedori.html` (social-insurance contribution rates) against
