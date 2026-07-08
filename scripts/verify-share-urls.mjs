@@ -118,7 +118,7 @@ async function waitReady(page, testCase) {
   await page.locator(testCase.ready).waitFor({ state: 'visible', timeout: 10000 });
   if (testCase.readyCheck) {
     const ok = await testCase.readyCheck(page);
-    if (!ok) throw new Error('readyCheck failed');
+    if (!ok) throw new Error('共有URLの往復テスト: readyCheck failed');
   }
 }
 
@@ -132,12 +132,12 @@ function assertShareUrl(url, urlKeys, name) {
   const u = new URL(url);
   for (const key of urlKeys) {
     if (!u.searchParams.has(key)) {
-      throw new Error(`${name}: missing query key "${key}" in ${url}`);
+      throw new Error(`${name}: 共有URLの往復テストでクエリキー "${key}" が見つからない: ${url}`);
     }
   }
 }
 
-async function verifyRoundTrip(page, testCase) {
+async function verifyShareUrlRoundTrip(page, testCase) {
   const startUrl = `${BASE}${testCase.path}`;
   await page.goto(startUrl, { waitUntil: 'load' });
   await waitReady(page, testCase);
@@ -152,7 +152,7 @@ async function verifyRoundTrip(page, testCase) {
 
   if (before !== after) {
     throw new Error(
-      `${testCase.name}: result changed after reload\n--- before ---\n${before}\n--- after ---\n${after}`
+      `${testCase.name}: 共有URLの往復テストで再読み込み後に結果が変わった\n--- before ---\n${before}\n--- after ---\n${after}`
     );
   }
 }
@@ -172,7 +172,7 @@ async function main() {
 
   for (const testCase of cases) {
     try {
-      await verifyRoundTrip(page, testCase);
+      await verifyShareUrlRoundTrip(page, testCase);
       console.log('PASS', testCase.name);
     } catch (e) {
       console.log('FAIL', testCase.name, '-', e.message);
@@ -183,10 +183,10 @@ async function main() {
   await browser.close();
 
   if (failures.length) {
-    console.error(`\n${failures.length} tool(s) failed: ${failures.join(', ')}`);
+    console.error(`\n共有URLの往復テスト: ${failures.length} 件が失敗 (${failures.join(', ')})`);
     process.exit(1);
   }
-  console.log(`\nALL_PASS (${cases.length} cases)`);
+  console.log(`\nALL_PASS: 共有URLの往復テスト (${cases.length} cases)`);
 }
 
 main().catch((e) => {
