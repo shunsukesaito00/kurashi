@@ -422,6 +422,9 @@ easy to change if you want something else."
 - Share-URL behavior lives only in `js/share.js`; do not duplicate
   `updateShareUrl`, `copyShareLink`, or related helpers inside individual
   tool pages.
+- When changing share-URL representative demo examples, update `README.md`
+  (query key table), `index.html` (demo links), and
+  `scripts/verify-share-urls.mjs` (case `path` values) together.
 - Around each August rate-revision window, re-check constants in
   `tools/ikukyu.html` (childcare-leave benefit caps) and
   `tools/tedori.html` (social-insurance contribution rates) against
