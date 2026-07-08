@@ -419,3 +419,7 @@ easy to change if you want something else."
 - The site is served by GitHub Pages from the `gh-pages` branch at
   https://shunsukesaito00.github.io/kurashi/ . After pushing to `main`, also
   run `git push origin main:gh-pages` so the live site stays in sync.
+- Around each August rate-revision window, re-check constants in
+  `tools/ikukyu.html` (childcare-leave benefit caps) and
+  `tools/tedori.html` (social-insurance contribution rates) against
+  primary sources before shipping related changes.
