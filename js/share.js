@@ -17,6 +17,7 @@ function updateShareUrl(entries) {
 function copyShareLink(btnId) {
   const url = window.location.href;
   const done = () => showCopyDone(btnId);
+  // clipboard 不可時は textarea フォールバック
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(url).then(done).catch(() => fallbackCopy(url, done));
   } else {
