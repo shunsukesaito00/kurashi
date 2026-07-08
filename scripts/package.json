@@ -2,7 +2,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "check:demo-sync": "node check-demo-sync.mjs"
+    "check:demo-sync": "node check-demo-sync.mjs",
+    "test:share-urls": "node verify-share-urls.mjs"
   },
   "dependencies": {
     "playwright": "1.61.1"

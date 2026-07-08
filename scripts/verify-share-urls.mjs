@@ -3,7 +3,7 @@
  * 共有URLの往復テスト: クエリ付きで開く → 結果表示 → URL正規化 → 再読み込み → 同じ結果
  *
  * 前提: ローカルHTTPサーバーが起動していること (README の python3 -m http.server 8000)
- * 実行: cd scripts && npm install && npx playwright install chromium && node verify-share-urls.mjs
+ * 実行: cd scripts && npm install && npx playwright install chromium && npm run test:share-urls
  * 各ケースの path は README「共有URLのクエリキー」表の代表例と一致させること。
  */
 import { chromium } from 'playwright';
