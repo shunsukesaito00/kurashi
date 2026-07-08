@@ -14,6 +14,7 @@
 <meta property="og:url" content="https://shunsukesaito00.github.io/kurashi/tools/tsumitate.html">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"積立シミュレーション|複利計算で将来いくらになるか自動計算","description":"毎月の積立額・利回り・期間を入力するだけで、複利運用した場合の将来の資産額をシミュレーション。元本と運用益の内訳も表示します。","url":"https://shunsukesaito00.github.io/kurashi/tools/tsumitate.html"}</script>
 <link rel="stylesheet" href="../css/style.css">
+<script src="../js/share.js"></script>
 </head>
 <body>
 <header class="site-header">
@@ -56,6 +57,10 @@
         <tr><td>運用益</td><td id="profit"></td></tr>
         <tr><td>元本に対する増加率</td><td id="ratio"></td></tr>
       </table>
+      <div class="cmp-actions" id="share-actions" style="display:none;">
+        <button class="btn btn-outline" id="share-copy-btn" onclick="copyShareLink('share-copy-btn')">共有リンクをコピー</button>
+      </div>
+      <p class="note" id="share-hint" style="display:none;margin:0.5rem 0 0;background:transparent;padding:0;">URLに入力値が含まれます。共有先で同じ計算結果が自動表示されます。</p>
     </div>
   </div>
 
@@ -126,7 +131,20 @@ function calc() {
   document.getElementById('profit').textContent = yen(total - principal);
   document.getElementById('ratio').textContent = '+' + ((total / principal - 1) * 100).toFixed(1) + ' %';
   document.getElementById('result').classList.add('show');
+  showShareActions('share-actions', 'share-hint');
+  updateShareUrl([['m', monthly], ['r', rate], ['y', years]]);
 }
+
+(function initFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const m = Number(params.get('m'));
+  const r = params.get('r');
+  const y = Number(params.get('y'));
+  if (m > 0) document.getElementById('monthly').value = m;
+  if (r !== null && r !== '' && Number(r) >= 0) document.getElementById('rate').value = r;
+  if (y > 0) document.getElementById('years').value = y;
+  if (m > 0 && y > 0) calc();
+})();
 </script>
 </body>
 </html>

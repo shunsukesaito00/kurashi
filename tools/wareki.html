@@ -14,6 +14,7 @@
 <meta property="og:url" content="https://shunsukesaito00.github.io/kurashi/tools/wareki.html">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"西暦・和暦変換ツール|令和・平成・昭和を早見表付きで変換","description":"西暦と和暦(令和・平成・昭和・大正・明治)を相互変換する無料ツール。履歴書や書類作成に便利な早見表付き。","url":"https://shunsukesaito00.github.io/kurashi/tools/wareki.html"}</script>
 <link rel="stylesheet" href="../css/style.css">
+<script src="../js/share.js"></script>
 </head>
 <body>
 <header class="site-header">
@@ -55,6 +56,10 @@
     <div class="result" id="result">
       <div class="big" id="answer"></div>
       <div id="extra"></div>
+      <div class="cmp-actions" id="share-actions" style="display:none;">
+        <button class="btn btn-outline" id="share-copy-btn" onclick="copyShareLink('share-copy-btn')">共有リンクをコピー</button>
+      </div>
+      <p class="note" id="share-hint" style="display:none;margin:0.5rem 0 0;background:transparent;padding:0;">URLに入力値が含まれます。共有先で同じ計算結果が自動表示されます。</p>
     </div>
   </div>
 
@@ -96,6 +101,7 @@ function show(main, extra) {
   document.getElementById('answer').textContent = main;
   document.getElementById('extra').textContent = extra || '';
   document.getElementById('result').classList.add('show');
+  showShareActions('share-actions', 'share-hint');
 }
 
 function eraYearLabel(n) { return n === 1 ? '元年' : n + '年'; }
@@ -107,6 +113,7 @@ function fromSeireki() {
   const label = matches.map(e => e.name + eraYearLabel(y - e.start + 1)).join(' / ');
   const extra = matches.length > 1 ? '改元の年のため、月によって元号が異なります。' : '';
   show(y + '年 = ' + label, extra);
+  updateShareUrl([['y', y]]);
 }
 
 function fromWareki() {
@@ -118,7 +125,23 @@ function fromWareki() {
   const maxYear = era.end === null ? 2100 : era.end;
   if (y > maxYear) { alert(era.name + eraYearLabel(n) + ' は存在しません'); return; }
   show(era.name + eraYearLabel(n) + ' = 西暦' + y + '年');
+  updateShareUrl([['g', key], ['n', n]]);
 }
+
+(function initFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const y = Number(params.get('y'));
+  const g = params.get('g');
+  const n = Number(params.get('n'));
+  if (y >= 1868 && y <= 2100) {
+    document.getElementById('seireki').value = y;
+    fromSeireki();
+  } else if (g && n > 0 && ERAS.some(e => e.key === g)) {
+    document.getElementById('gengo').value = g;
+    document.getElementById('nen').value = n;
+    fromWareki();
+  }
+})();
 </script>
 </body>
 </html>

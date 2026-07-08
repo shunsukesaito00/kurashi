@@ -14,6 +14,7 @@
 <meta property="og:url" content="https://shunsukesaito00.github.io/kurashi/tools/waribiki.html">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"割引計算ツール|〇%オフの値段を瞬時に計算","description":"定価と割引率を入力するだけで、割引後の価格と割引額を自動計算。セールやクーポンの「30%オフはいくら?」が一瞬でわかります。","url":"https://shunsukesaito00.github.io/kurashi/tools/waribiki.html"}</script>
 <link rel="stylesheet" href="../css/style.css">
+<script src="../js/share.js"></script>
 </head>
 <body>
 <header class="site-header">
@@ -51,6 +52,10 @@
         <tr><td>割引額</td><td id="off"></td></tr>
         <tr><td>支払う割合</td><td id="pay-ratio"></td></tr>
       </table>
+      <div class="cmp-actions" id="share-actions" style="display:none;">
+        <button class="btn btn-outline" id="share-copy-btn" onclick="copyShareLink('share-copy-btn')">共有リンクをコピー</button>
+      </div>
+      <p class="note" id="share-hint" style="display:none;margin:0.5rem 0 0;background:transparent;padding:0;">URLに入力値が含まれます。共有先で同じ計算結果が自動表示されます。</p>
     </div>
   </div>
 
@@ -95,7 +100,18 @@ function calc() {
   document.getElementById('off').textContent = (price - after).toLocaleString('ja-JP') + ' 円おトク';
   document.getElementById('pay-ratio').textContent = (100 - discount) + ' %';
   document.getElementById('result').classList.add('show');
+  showShareActions('share-actions', 'share-hint');
+  updateShareUrl([['p', price], ['d', discount]]);
 }
+
+(function initFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const p = Number(params.get('p'));
+  const d = params.get('d');
+  if (p > 0) document.getElementById('price').value = p;
+  if (d !== null && d !== '' && Number(d) >= 0 && Number(d) <= 100) document.getElementById('discount').value = d;
+  if (p > 0 && d !== null && d !== '') calc();
+})();
 </script>
 </body>
 </html>

@@ -14,6 +14,7 @@
 <meta property="og:url" content="https://shunsukesaito00.github.io/kurashi/tools/jikyu.html">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"時給計算ツール|月収・年収から時給換算","description":"月収と労働時間から実質時給を自動計算。残業時間を含めた「本当の時給」がわかります。アルバイトの月収シミュレーションにも対応。","url":"https://shunsukesaito00.github.io/kurashi/tools/jikyu.html"}</script>
 <link rel="stylesheet" href="../css/style.css">
+<script src="../js/share.js"></script>
 </head>
 <body>
 <header class="site-header">
@@ -57,6 +58,10 @@
         <tr><td>月の総労働時間</td><td id="total-hours"></td></tr>
         <tr><td>年収換算(月収×12)</td><td id="annual"></td></tr>
       </table>
+      <div class="cmp-actions" id="share-actions" style="display:none;">
+        <button class="btn btn-outline" id="share-copy-btn" onclick="copyShareLink('share-copy-btn')">共有リンクをコピー</button>
+      </div>
+      <p class="note" id="share-hint" style="display:none;margin:0.5rem 0 0;background:transparent;padding:0;">URLに入力値が含まれます。共有先で同じ計算結果が自動表示されます。</p>
     </div>
   </div>
 
@@ -122,7 +127,27 @@ function calc() {
   document.getElementById('total-hours').textContent = totalHours.toLocaleString('ja-JP') + ' 時間';
   document.getElementById('annual').textContent = (salary * 12).toLocaleString('ja-JP') + ' 円';
   document.getElementById('result').classList.add('show');
+  showShareActions('share-actions', 'share-hint');
+  updateShareUrl([
+    ['s', salary],
+    ['h', hours],
+    ['d', days],
+    ['o', overtime || '']
+  ]);
 }
+
+(function initFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const s = Number(params.get('s'));
+  const h = Number(params.get('h'));
+  const d = Number(params.get('d'));
+  const o = params.get('o');
+  if (s > 0) document.getElementById('salary').value = s;
+  if (h > 0) document.getElementById('hours').value = h;
+  if (d > 0) document.getElementById('days').value = d;
+  if (o !== null && o !== '') document.getElementById('overtime').value = o;
+  if (s > 0 && h > 0 && d > 0) calc();
+})();
 </script>
 </body>
 </html>

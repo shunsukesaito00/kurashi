@@ -14,6 +14,7 @@
 <meta property="og:url" content="https://shunsukesaito00.github.io/kurashi/tools/zeikomi.html">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"消費税計算ツール|税込・税抜を瞬時に変換(10%・8%対応)","description":"金額を入力するだけで税込価格・税抜価格・消費税額を自動計算。標準税率10%と軽減税率8%の両方に対応した無料ツールです。","url":"https://shunsukesaito00.github.io/kurashi/tools/zeikomi.html"}</script>
 <link rel="stylesheet" href="../css/style.css">
+<script src="../js/share.js"></script>
 </head>
 <body>
 <header class="site-header">
@@ -58,6 +59,10 @@
         <tr><td>消費税額</td><td id="tax"></td></tr>
         <tr><th>税込価格</th><th id="incl"></th></tr>
       </table>
+      <div class="cmp-actions" id="share-actions" style="display:none;">
+        <button class="btn btn-outline" id="share-copy-btn" onclick="copyShareLink('share-copy-btn')">共有リンクをコピー</button>
+      </div>
+      <p class="note" id="share-hint" style="display:none;margin:0.5rem 0 0;background:transparent;padding:0;">URLに入力値が含まれます。共有先で同じ計算結果が自動表示されます。</p>
     </div>
   </div>
 
@@ -105,7 +110,24 @@ function calc() {
   document.getElementById('tax').textContent = yen(incl - excl);
   document.getElementById('incl').textContent = yen(incl);
   document.getElementById('result').classList.add('show');
+  showShareActions('share-actions', 'share-hint');
+  updateShareUrl([
+    ['a', amount],
+    ['r', rate],
+    ['d', direction]
+  ]);
 }
+
+(function initFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const a = Number(params.get('a'));
+  const r = params.get('r');
+  const d = params.get('d');
+  if (a > 0) document.getElementById('amount').value = a;
+  if (r === '0.08' || r === '0.1' || r === '0.10') document.getElementById('rate').value = r === '0.1' ? '0.10' : r;
+  if (d === 'excl' || d === 'incl') document.getElementById('direction').value = d;
+  if (a > 0) calc();
+})();
 </script>
 </body>
 </html>

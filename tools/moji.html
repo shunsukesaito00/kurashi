@@ -14,6 +14,7 @@
 <meta property="og:url" content="https://shunsukesaito00.github.io/kurashi/tools/moji.html">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"文字数カウントツール|リアルタイムで文字数・行数を計測","description":"テキストを貼り付けるだけで文字数・空白を除いた文字数・行数・原稿用紙換算をリアルタイム表示。レポートやSNS投稿の文字数確認に。","url":"https://shunsukesaito00.github.io/kurashi/tools/moji.html"}</script>
 <link rel="stylesheet" href="../css/style.css">
+<script src="../js/share.js"></script>
 </head>
 <body>
 <header class="site-header">
@@ -42,6 +43,10 @@
         <tr><td>行数</td><td id="count-lines">0 行</td></tr>
         <tr><td>原稿用紙(400字)換算</td><td id="count-pages">0 枚</td></tr>
       </table>
+      <div class="cmp-actions" id="share-actions" style="display:none;">
+        <button class="btn btn-outline" id="share-copy-btn" onclick="copyShareLink('share-copy-btn')">共有リンクをコピー</button>
+      </div>
+      <p class="note" id="share-hint" style="display:none;margin:0.5rem 0 0;background:transparent;padding:0;">短いテキスト(300文字まで)はURLで共有できます。長い文章はブラウザ内でのみ処理されURLには入りません。</p>
     </div>
   </div>
 
@@ -71,6 +76,7 @@
 </footer>
 <script>
 const textarea = document.getElementById('text');
+const SHARE_LIMIT = 300;
 
 function update() {
   const text = textarea.value;
@@ -83,9 +89,31 @@ function update() {
   document.getElementById('count-no-space').textContent = noSpace.toLocaleString('ja-JP') + ' 文字';
   document.getElementById('count-lines').textContent = lines.toLocaleString('ja-JP') + ' 行';
   document.getElementById('count-pages').textContent = pages + ' 枚';
+
+  if (text.length > 0 && text.length <= SHARE_LIMIT) {
+    showShareActions('share-actions', 'share-hint');
+    updateShareUrl([['t', text]]);
+  } else if (text.length === 0) {
+    document.getElementById('share-actions').style.display = 'none';
+    document.getElementById('share-hint').style.display = 'none';
+    updateShareUrl([]);
+  } else {
+    document.getElementById('share-actions').style.display = 'none';
+    document.getElementById('share-hint').style.display = 'block';
+    updateShareUrl([]);
+  }
 }
 
 textarea.addEventListener('input', update);
+
+(function initFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const t = params.get('t');
+  if (t !== null && t !== '') {
+    textarea.value = t.slice(0, SHARE_LIMIT);
+    update();
+  }
+})();
 </script>
 </body>
 </html>

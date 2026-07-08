@@ -14,6 +14,7 @@
 <meta property="og:url" content="https://shunsukesaito00.github.io/kurashi/tools/bmi.html">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"BMI計算ツール|適正体重・肥満度を自動判定","description":"身長と体重を入力するだけでBMIと適正体重を自動計算。日本肥満学会の基準による肥満度判定つきの無料ツールです。","url":"https://shunsukesaito00.github.io/kurashi/tools/bmi.html"}</script>
 <link rel="stylesheet" href="../css/style.css">
+<script src="../js/share.js"></script>
 </head>
 <body>
 <header class="site-header">
@@ -52,6 +53,10 @@
         <tr><td>適正体重(BMI 22)</td><td id="ideal"></td></tr>
         <tr><td>適正体重との差</td><td id="diff"></td></tr>
       </table>
+      <div class="cmp-actions" id="share-actions" style="display:none;">
+        <button class="btn btn-outline" id="share-copy-btn" onclick="copyShareLink('share-copy-btn')">共有リンクをコピー</button>
+      </div>
+      <p class="note" id="share-hint" style="display:none;margin:0.5rem 0 0;background:transparent;padding:0;">URLに入力値が含まれます。共有先で同じ計算結果が自動表示されます。</p>
     </div>
   </div>
 
@@ -105,7 +110,18 @@ function calc() {
   document.getElementById('ideal').textContent = ideal.toFixed(1) + ' kg';
   document.getElementById('diff').textContent = (diff >= 0 ? '+' : '') + diff.toFixed(1) + ' kg';
   document.getElementById('result').classList.add('show');
+  showShareActions('share-actions', 'share-hint');
+  updateShareUrl([['h', h], ['w', w]]);
 }
+
+(function initFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const h = Number(params.get('h'));
+  const w = Number(params.get('w'));
+  if (h > 0) document.getElementById('height').value = h;
+  if (w > 0) document.getElementById('weight').value = w;
+  if (h > 0 && w > 0) calc();
+})();
 </script>
 </body>
 </html>

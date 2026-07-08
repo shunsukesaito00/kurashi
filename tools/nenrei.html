@@ -14,6 +14,7 @@
 <meta property="og:url" content="https://shunsukesaito00.github.io/kurashi/tools/nenrei.html">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"年齢計算ツール|生年月日から今日の満年齢を自動計算","description":"生年月日を入力するだけで今日時点の満年齢を自動計算。干支・生まれてからの日数も表示する無料ツールです。","url":"https://shunsukesaito00.github.io/kurashi/tools/nenrei.html"}</script>
 <link rel="stylesheet" href="../css/style.css">
+<script src="../js/share.js"></script>
 </head>
 <body>
 <header class="site-header">
@@ -44,6 +45,10 @@
         <tr><td>生まれてからの日数</td><td id="days"></td></tr>
         <tr><td>干支(えと)</td><td id="eto"></td></tr>
       </table>
+      <div class="cmp-actions" id="share-actions" style="display:none;">
+        <button class="btn btn-outline" id="share-copy-btn" onclick="copyShareLink('share-copy-btn')">共有リンクをコピー</button>
+      </div>
+      <p class="note" id="share-hint" style="display:none;margin:0.5rem 0 0;background:transparent;padding:0;">URLに入力値が含まれます。共有先で同じ計算結果が自動表示されます。</p>
     </div>
   </div>
 
@@ -94,7 +99,18 @@ function calc() {
   document.getElementById('days').textContent = daysAlive.toLocaleString('ja-JP') + ' 日';
   document.getElementById('eto').textContent = eto;
   document.getElementById('result').classList.add('show');
+  showShareActions('share-actions', 'share-hint');
+  updateShareUrl([['b', value]]);
 }
+
+(function initFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const b = params.get('b');
+  if (b && /^\d{4}-\d{2}-\d{2}$/.test(b)) {
+    document.getElementById('birthday').value = b;
+    calc();
+  }
+})();
 </script>
 </body>
 </html>
