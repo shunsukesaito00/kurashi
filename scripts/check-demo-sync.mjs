@@ -27,6 +27,7 @@ function parseReadmeExamples(markdown) {
     }
     if (!inTable) continue;
     if (!line.startsWith('|')) break;
+    // サイト構成表の scripts/README.md 行など tools/ 以外は対象外
     if (!line.startsWith('| `tools/')) continue;
 
     const cols = line.split('|').map((s) => s.trim()).filter(Boolean);
