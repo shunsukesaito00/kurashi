@@ -429,6 +429,8 @@ easy to change if you want something else."
   `check:demo-sync`, no HTTP server; then `test:share-urls`, which needs
   `python3 -m http.server 8000` in another terminal) to confirm all three
   files list the same query paths and share URLs still round-trip.
+  README/scripts terminology: `check:demo-sync` = 代表例の同期確認;
+  `test:share-urls` / "round-trip" = 共有URLの往復テスト.
 - Around each August rate-revision window, re-check constants in
   `tools/ikukyu.html` (childcare-leave benefit caps) and
   `tools/tedori.html` (social-insurance contribution rates) against
