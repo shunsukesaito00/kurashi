@@ -23,6 +23,24 @@ Google AdSense は副次的な収益源として位置づけています。
 | `privacy.html` | プライバシーポリシー(AdSense審査に必須)。`noindex` であり `sitemap.xml` には載せない |
 | `about.html` | 運営者情報(AdSense審査に有利) |
 
+### 共有URLのクエリキー
+
+各ツールは計算後に `updateShareUrl` でURLを更新し、開いたとき `readShareParams` で復元する。キーは次のとおり。
+
+| ページ | クエリキー | 意味 |
+|---|---|---|
+| `tools/tedori.html` | `a`, `b`, `c` | 月収比較の3つの金額(円)。2つ以上で比較結果を復元 |
+| `tools/zeikomi.html` | `a`, `r`, `d` | 金額(円)、税率(`0.08`/`0.10`)、方向(`excl`/`incl`) |
+| `tools/wareki.html` | `y` または `g`+`n` | 西暦年、または元号(`meiji`/`taisho`/`showa`/`heisei`/`reiwa`)+和暦年 |
+| `tools/nenrei.html` | `b` | 生年月日(`YYYY-MM-DD`) |
+| `tools/bmi.html` | `h`, `w` | 身長(cm)、体重(kg) |
+| `tools/tsumitate.html` | `m`, `r`, `y` | 毎月積立額(円)、年利率(%)、積立年数 |
+| `tools/waribiki.html` | `p`, `d` | 定価(円)、割引率(0〜100) |
+| `tools/jikyu.html` | `s`, `h`, `d`, `o` | 月給(円)、所定労働時間、月の勤務日数、残業時間(任意) |
+| `tools/ikukyu.html` | `s`, `m`, `support` | 月収(円)、休業月数、`support=1` で育児休業等給付の支援給付を含む |
+| `tools/taishoku.html` | `a`, `y` | 退職金額(円)、勤続年数 |
+| `tools/moji.html` | `t` | カウント対象テキスト(最大300文字) |
+
 フレームワーク・ビルド不要の静的HTML/CSS/JSのみ。サーバーサイド処理はありません。
 静的アセットは `css/`(共通スタイル)、`js/`(共有URL用の `share.js` など)、`tools/`(各計算ページ)に分かれています。
 共有URLの読み書きは `js/share.js` に集約しており、各ツールは次の4関数だけを使う: `readShareParams(keys)` はページ読み込み時にクエリ文字列から指定キーの値をオブジェクトで返す、`updateShareUrl(entries)` は `[キー, 値]` の配列から現在のURLを `history.replaceState` で更新する、`copyShareLink(btnId)` は現在のURLをクリップボードにコピーしボタン文言を一時的に「コピーしました」に変える、`showShareActions(actionsId, hintId)` は共有ボタンと説明文のブロックを表示する。`updateShareUrl` や `copyShareLink` をツール側へ重複実装しないこと。
