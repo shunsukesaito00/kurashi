@@ -22,6 +22,7 @@ Google AdSense は副次的な収益源として位置づけています。
 | `tools/moji.html` | 文字数カウント |
 | `privacy.html` | プライバシーポリシー(AdSense審査に必須)。`noindex` であり `sitemap.xml` には載せない |
 | `about.html` | 運営者情報(AdSense審査に有利) |
+| `scripts/README.md` | 共有URL検証スクリプトの説明(`npm test` の手順) |
 
 ### 共有URLのクエリキー
 
