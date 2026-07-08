@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * README の代表例列と index.html デモリンク、verify-share-urls.mjs の path が一致するか確認する。
- * 実行: cd scripts && node check-demo-sync.mjs
+ * 実行: cd scripts && npm run check:demo-sync
  */
 import { readFileSync } from 'fs';
 import { dirname, join } from 'path';
