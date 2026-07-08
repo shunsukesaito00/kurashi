@@ -369,6 +369,35 @@ h1 {
 
 .article th { background: var(--accent-light); }
 
+.demo-list {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 0;
+}
+
+.demo-list li {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+  padding: 0.9rem 1.1rem;
+  margin-bottom: 0.7rem;
+}
+
+.demo-list a {
+  font-weight: 700;
+  text-decoration: none;
+  display: block;
+}
+
+.demo-list a:hover { text-decoration: underline; }
+
+.demo-list span {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
 .note {
   font-size: 0.82rem;
   color: var(--muted);
