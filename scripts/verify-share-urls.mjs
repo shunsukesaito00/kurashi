@@ -4,7 +4,7 @@
  *
  * HTTPサーバー必須 — 別ターミナルで python3 -m http.server 8000 を起動したまま実行。
  * 初回のみ: cd scripts && npm install && npx playwright install chromium
- * 2回目以降: cd scripts && npm run test:share-urls
+ * 2回目以降: cd scripts && npm test（本スクリプトは HTTP サーバー必須）
  * 各ケースの path は README「共有URLのクエリキー」表の代表例と一致させること。
  */
 import { chromium } from 'playwright';
