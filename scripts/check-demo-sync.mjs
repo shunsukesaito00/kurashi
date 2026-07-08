@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * README の代表例列と verify-share-urls.mjs の path が一致するか確認する。
+ * README の代表例列と index.html デモリンク、verify-share-urls.mjs の path が一致するか確認する。
  * 実行: cd scripts && node check-demo-sync.mjs
  */
 import { readFileSync } from 'fs';
@@ -43,6 +43,20 @@ function parseReadmeExamples(markdown) {
   return paths;
 }
 
+function parseIndexDemoPaths(html) {
+  const section = html.match(/<ul class="demo-list">([\s\S]*?)<\/ul>/);
+  if (!section) return [];
+
+  const paths = [];
+  const re = /href="([^"]+)"/g;
+  let match;
+  while ((match = re.exec(section[1])) !== null) {
+    if (!match[1].includes('?')) continue;
+    paths.push(`/${match[1].replace(/&amp;/g, '&')}`);
+  }
+  return paths;
+}
+
 function parseVerifyPaths(source) {
   const paths = [];
   const re = /path:\s*'([^']+)'/g;
@@ -53,25 +67,31 @@ function parseVerifyPaths(source) {
   return paths;
 }
 
-function diffSets(label, expected, actual) {
+function diffSets(label, expected, actual, actualLabel) {
   const missing = expected.filter((p) => !actual.includes(p));
   const extra = actual.filter((p) => !expected.includes(p));
   if (!missing.length && !extra.length) return [];
 
   const messages = [`${label} mismatch:`];
-  for (const path of missing) messages.push(`  missing in verify-share-urls.mjs: ${path}`);
-  for (const path of extra) messages.push(`  extra in verify-share-urls.mjs: ${path}`);
+  for (const path of missing) messages.push(`  missing in ${actualLabel}: ${path}`);
+  for (const path of extra) messages.push(`  extra in ${actualLabel}: ${path}`);
   return messages;
 }
 
 const readmePaths = parseReadmeExamples(readFileSync(join(root, 'README.md'), 'utf8'));
+const indexPaths = parseIndexDemoPaths(readFileSync(join(root, 'index.html'), 'utf8'));
 const verifyPaths = parseVerifyPaths(readFileSync(join(scriptsDir, 'verify-share-urls.mjs'), 'utf8'));
 
-const errors = diffSets('README representative examples', readmePaths, verifyPaths);
+const errors = [
+  ...diffSets('README vs index.html demo links', readmePaths, indexPaths, 'index.html'),
+  ...diffSets('README vs verify-share-urls.mjs', readmePaths, verifyPaths, 'verify-share-urls.mjs'),
+];
 
 if (errors.length) {
   console.error(errors.join('\n'));
   process.exit(1);
 }
 
-console.log(`OK: ${readmePaths.length} demo paths match between README and verify-share-urls.mjs`);
+console.log(
+  `OK: ${readmePaths.length} demo paths match across README, index.html, and verify-share-urls.mjs`
+);
