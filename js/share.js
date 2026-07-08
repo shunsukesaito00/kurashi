@@ -1,3 +1,4 @@
+// file:// では history.replaceState が SecurityError になり得るため失敗時は無視する。
 function updateShareUrl(entries) {
   const params = new URLSearchParams();
   entries.forEach(([key, value]) => {
@@ -6,7 +7,11 @@ function updateShareUrl(entries) {
     }
   });
   const qs = params.toString();
-  history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : ''));
+  try {
+    history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : ''));
+  } catch (e) {
+    /* ignore (e.g. file://) */
+  }
 }
 
 function copyShareLink(btnId) {
