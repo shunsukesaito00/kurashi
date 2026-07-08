@@ -33,6 +33,8 @@ python3 -m http.server 8000
 # http://localhost:8000 を開く
 ```
 
+`index.html` を `file://` で直接開くと、一部ブラウザで共有URLの `history` API が動作しない場合があります。ローカル確認は上記の HTTP サーバー経由を推奨します。
+
 ## 公開までの手順(必須)
 
 1. **ホスティング**: 完了済み。GitHub Pages で配信中です。
