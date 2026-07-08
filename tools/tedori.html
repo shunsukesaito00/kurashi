@@ -47,6 +47,32 @@
 
   <div class="ad-slot">広告スペース</div>
 
+  <div class="card">
+    <h2 style="margin-top:0;font-size:1.2rem;">月収を並べて比較する(転職・昇給の検討に)</h2>
+    <p class="lead" style="margin-bottom:0.4rem;">2〜3つの月収を入力すると、手取り額の差を並べて比較できます。「月収が3万円上がると手取りはいくら増える?」がすぐわかります。</p>
+    <form class="tool-form" onsubmit="return false;">
+      <div class="field-row">
+        <div>
+          <label for="cmp-a">月収A(円)</label>
+          <input type="number" id="cmp-a" placeholder="例: 300000" min="0" inputmode="numeric">
+        </div>
+        <div>
+          <label for="cmp-b">月収B(円)</label>
+          <input type="number" id="cmp-b" placeholder="例: 330000" min="0" inputmode="numeric">
+        </div>
+        <div>
+          <label for="cmp-c">月収C(円・任意)</label>
+          <input type="number" id="cmp-c" placeholder="例: 360000" min="0" inputmode="numeric">
+        </div>
+      </div>
+      <button class="btn" onclick="compare()">比較する</button>
+    </form>
+    <div class="result" id="cmp-result">
+      <table id="cmp-table"></table>
+      <div class="note" style="background:transparent;padding:0.6rem 0 0;">※ ボーナスなし・扶養なしの概算です。住民税は入力した月収が1年続いた場合の見込み額で計算しています。</div>
+    </div>
+  </div>
+
   <section class="article">
     <h2>手取り額の計算方法</h2>
     <p>手取り額は「額面給与 − 社会保険料 − 所得税 − 住民税」で求められます。一般的に手取りは額面の75〜85%程度になります。</p>
@@ -103,11 +129,7 @@ function salaryDeduction(gross) {
   return 1950000;
 }
 
-function calc() {
-  const salary = Number(document.getElementById('salary').value);
-  const bonus = Number(document.getElementById('bonus').value) || 0;
-  if (!salary || salary <= 0) { alert('月収を入力してください'); return; }
-
+function computeNet(salary, bonus) {
   const annualGross = salary * 12 + bonus;
 
   const healthMonthly = salary * 0.0495;
@@ -123,16 +145,57 @@ function calc() {
 
   // 所得税は年収に占める月給分のみを月割りにする(ボーナス分を除く)
   const monthlyIncomeTax = incomeTaxA / 12 * (salary * 12 / annualGross);
-  const netSimple = salary - healthMonthly - pensionMonthly - empMonthly - monthlyIncomeTax - residentTaxA / 12;
+  const net = salary - healthMonthly - pensionMonthly - empMonthly - monthlyIncomeTax - residentTaxA / 12;
 
-  document.getElementById('net').textContent = yen(netSimple);
-  document.getElementById('health').textContent = yen(healthMonthly);
-  document.getElementById('pension').textContent = yen(pensionMonthly);
-  document.getElementById('emp').textContent = yen(empMonthly);
-  document.getElementById('income-tax').textContent = yen(monthlyIncomeTax);
-  document.getElementById('resident-tax').textContent = yen(residentTaxA / 12);
-  document.getElementById('total-deduction').textContent = yen(salary - netSimple);
+  return {
+    net: net,
+    health: healthMonthly,
+    pension: pensionMonthly,
+    emp: empMonthly,
+    incomeTax: monthlyIncomeTax,
+    residentTax: residentTaxA / 12
+  };
+}
+
+function calc() {
+  const salary = Number(document.getElementById('salary').value);
+  const bonus = Number(document.getElementById('bonus').value) || 0;
+  if (!salary || salary <= 0) { alert('月収を入力してください'); return; }
+
+  const r = computeNet(salary, bonus);
+  document.getElementById('net').textContent = yen(r.net);
+  document.getElementById('health').textContent = yen(r.health);
+  document.getElementById('pension').textContent = yen(r.pension);
+  document.getElementById('emp').textContent = yen(r.emp);
+  document.getElementById('income-tax').textContent = yen(r.incomeTax);
+  document.getElementById('resident-tax').textContent = yen(r.residentTax);
+  document.getElementById('total-deduction').textContent = yen(salary - r.net);
   document.getElementById('result').classList.add('show');
+}
+
+function compare() {
+  const salaries = ['cmp-a', 'cmp-b', 'cmp-c']
+    .map(id => Number(document.getElementById(id).value))
+    .filter(v => v > 0);
+  if (salaries.length < 2) { alert('比較する月収を2つ以上入力してください'); return; }
+
+  const results = salaries.map(s => ({ salary: s, r: computeNet(s, 0) }));
+  const base = results[0];
+  const labels = ['A', 'B', 'C'];
+
+  const esc = n => Math.round(n).toLocaleString('ja-JP');
+  let html = '<tr><th></th>' + results.map((_, i) => '<th>月収' + labels[i] + '</th>').join('') + '</tr>';
+  html += '<tr><td>額面月収</td>' + results.map(x => '<td>' + esc(x.salary) + ' 円</td>').join('') + '</tr>';
+  html += '<tr><th>毎月の手取り</th>' + results.map(x => '<th>' + esc(x.r.net) + ' 円</th>').join('') + '</tr>';
+  html += '<tr><td>控除合計</td>' + results.map(x => '<td>' + esc(x.salary - x.r.net) + ' 円</td>').join('') + '</tr>';
+  html += '<tr><td>手取り率</td>' + results.map(x => '<td>' + (x.r.net / x.salary * 100).toFixed(1) + ' %</td>').join('') + '</tr>';
+  html += '<tr><td>Aとの手取り差(月)</td>' + results.map((x, i) =>
+    '<td>' + (i === 0 ? '—' : (x.r.net >= base.r.net ? '+' : '−') + esc(Math.abs(x.r.net - base.r.net)) + ' 円') + '</td>').join('') + '</tr>';
+  html += '<tr><td>Aとの手取り差(年)</td>' + results.map((x, i) =>
+    '<td>' + (i === 0 ? '—' : (x.r.net >= base.r.net ? '+' : '−') + esc(Math.abs(x.r.net - base.r.net) * 12) + ' 円') + '</td>').join('') + '</tr>';
+
+  document.getElementById('cmp-table').innerHTML = html;
+  document.getElementById('cmp-result').classList.add('show');
 }
 </script>
 </body>
