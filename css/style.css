@@ -398,6 +398,19 @@ h1 {
   color: var(--muted);
 }
 
+.back-home {
+  display: inline-block;
+  margin-top: 0.7rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.back-home:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
 .note {
   font-size: 0.82rem;
   color: var(--muted);
