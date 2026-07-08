@@ -26,7 +26,7 @@ const cases = [
     urlKeys: ['a', 'r', 'd'],
   },
   {
-    name: 'wareki',
+    name: 'wareki-seireki',
     path: '/tools/wareki.html?y=2026',
     ready: '#result.show',
     snapshot: '#answer',

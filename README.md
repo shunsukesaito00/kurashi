@@ -31,7 +31,7 @@ Google AdSense は副次的な収益源として位置づけています。
 |---|---|---|
 | `tools/tedori.html` | `a`, `b`, `c` | 月収比較の3つの金額(円)。2つ以上で比較結果を復元 |
 | `tools/zeikomi.html` | `a`, `r`, `d` | 金額(円)、税率(`0.08`/`0.10`)、方向(`excl`/`incl`) |
-| `tools/wareki.html` | `y` または `g`+`n` | 西暦年、または元号(`meiji`/`taisho`/`showa`/`heisei`/`reiwa`)+和暦年。例: `?y=2026` / `?g=reiwa&n=8` |
+| `tools/wareki.html` | `y` または `g`+`n` | 西暦パラメータ(`y`)または和暦パラメータ(`g`+`n`)。例: 西暦 `?y=2026` / 和暦 `?g=reiwa&n=8` |
 | `tools/nenrei.html` | `b` | 生年月日(`YYYY-MM-DD`) |
 | `tools/bmi.html` | `h`, `w` | 身長(cm)、体重(kg) |
 | `tools/tsumitate.html` | `m`, `r`, `y` | 毎月積立額(円)、年利率(%)、積立年数 |
