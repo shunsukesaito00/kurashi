@@ -425,10 +425,10 @@ easy to change if you want something else."
 - When changing share-URL representative demo examples, update `README.md`
   (query key table), `index.html` (demo links), and
   `scripts/verify-share-urls.mjs` (case `path` values) together.
-- After updating those demo examples, run `cd scripts && npm run check:demo-sync`
-  (no HTTP server) and `npm run test:share-urls` (HTTP server required in
-  another terminal) to confirm all three files list the same query paths and
-  share URLs still round-trip.
+- After updating those demo examples, run `cd scripts && npm test` (starts with
+  `check:demo-sync`, no HTTP server; then `test:share-urls`, which needs
+  `python3 -m http.server 8000` in another terminal) to confirm all three
+  files list the same query paths and share URLs still round-trip.
 - Around each August rate-revision window, re-check constants in
   `tools/ikukyu.html` (childcare-leave benefit caps) and
   `tools/tedori.html` (social-insurance contribution rates) against
