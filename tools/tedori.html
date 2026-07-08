@@ -23,7 +23,7 @@
   <h1>手取り計算ツール(月収から自動計算)</h1>
   <p class="lead">月収(額面)を入力すると、社会保険料と税金を差し引いた手取り額の目安を計算します。</p>
 
-  <div class="card">
+  <div class="card" id="single-calc">
     <form class="tool-form" id="form" onsubmit="return false;">
       <label for="salary">月収(額面・円)</label>
       <input type="number" id="salary" placeholder="例: 300000" min="0" inputmode="numeric">
@@ -47,10 +47,10 @@
 
   <div class="ad-slot">広告スペース</div>
 
-  <div class="card">
+  <div class="card" id="compare-card">
     <h2 style="margin-top:0;font-size:1.2rem;">月収を並べて比較する(転職・昇給の検討に)</h2>
     <p class="lead" style="margin-bottom:0.4rem;">2〜3つの月収を入力すると、手取り額の差を並べて比較できます。「月収が3万円上がると手取りはいくら増える?」がすぐわかります。</p>
-    <form class="tool-form" onsubmit="return false;">
+    <form class="tool-form no-print" onsubmit="return false;">
       <div class="field-row">
         <div>
           <label for="cmp-a">月収A(円)</label>
@@ -68,8 +68,15 @@
       <button class="btn" onclick="compare()">比較する</button>
     </form>
     <div class="result" id="cmp-result">
-      <table id="cmp-table"></table>
-      <div class="note" style="background:transparent;padding:0.6rem 0 0;">※ ボーナスなし・扶養なしの概算です。住民税は入力した月収が1年続いた場合の見込み額で計算しています。</div>
+      <div id="cmp-print-sheet">
+        <div class="print-only">
+          <h2 style="margin:0 0 0.3rem;font-size:1.3rem;">手取り比較結果 — くらしの計算室</h2>
+          <p id="cmp-print-date" style="margin:0 0 1rem;font-size:0.85rem;color:#5f6b76;"></p>
+        </div>
+        <table id="cmp-table"></table>
+        <div class="note cmp-print-note">※ ボーナスなし・扶養なしの概算です。住民税は入力した月収が1年続いた場合の見込み額で計算しています。正確な金額は給与明細・勤務先にご確認ください。</div>
+      </div>
+      <button class="btn btn-outline no-print" id="cmp-print-btn" style="display:none;margin-top:1rem;" onclick="printCompare()">比較結果を印刷する</button>
     </div>
   </div>
 
@@ -195,7 +202,17 @@ function compare() {
     '<td>' + (i === 0 ? '—' : (x.r.net >= base.r.net ? '+' : '−') + esc(Math.abs(x.r.net - base.r.net) * 12) + ' 円') + '</td>').join('') + '</tr>';
 
   document.getElementById('cmp-table').innerHTML = html;
+  document.getElementById('cmp-print-date').textContent =
+    '計算日: ' + new Date().toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' });
+  document.getElementById('cmp-print-btn').style.display = 'inline-block';
   document.getElementById('cmp-result').classList.add('show');
+}
+
+function printCompare() {
+  if (!document.getElementById('cmp-result').classList.contains('show')) {
+    alert('先に比較を実行してください'); return;
+  }
+  window.print();
 }
 </script>
 </body>
