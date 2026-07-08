@@ -17,6 +17,8 @@ Google AdSense は副次的な収益源として位置づけています。
 | `tools/tsumitate.html` | 積立・複利シミュレーション |
 | `tools/waribiki.html` | 割引(〇%オフ)計算 |
 | `tools/jikyu.html` | 時給換算 |
+| `tools/ikukyu.html` | 育休給付金計算 |
+| `tools/taishoku.html` | 退職金の税金計算 |
 | `tools/moji.html` | 文字数カウント |
 | `privacy.html` | プライバシーポリシー(AdSense審査に必須)。`noindex` であり `sitemap.xml` には載せない |
 | `about.html` | 運営者情報(AdSense審査に有利) |
