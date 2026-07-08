@@ -54,7 +54,18 @@ python3 -m http.server 8000
 # http://localhost:8000 を開く
 ```
 
-`index.html` を `file://` で直接開くと、一部ブラウザで共有URLの `history` API が動作しない場合があります。ローカル確認は上記の HTTP サーバー経由を推奨します。代表例の同期チェックは `cd scripts && npm run check:demo-sync`。共有URLの往復テストは `cd scripts && npm install && npx playwright install chromium && npm run test:share-urls`（HTTPサーバーは別ターミナルで起動したまま）。
+`index.html` を `file://` で直接開くと、一部ブラウザで共有URLの `history` API が動作しない場合があります。ローカル確認は上記の HTTP サーバー経由を推奨します。
+
+共有URLの自動チェック(`scripts/` 配下)は次のとおりです。HTTPサーバーは別ターミナルで起動したまま実行してください。
+
+```bash
+# 初回のみ
+cd scripts && npm install && npx playwright install chromium
+
+# 2回目以降(代表例変更時など)
+cd scripts && npm run check:demo-sync    # README / index.html / verify-share-urls の一致
+cd scripts && npm run test:share-urls    # 共有URLの往復テスト(Playwright)
+```
 
 ## 公開までの手順(必須)
 
