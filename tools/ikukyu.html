@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>育休給付金計算ツール|月収からいくらもらえるか自動計算(2026年版) - くらしの計算室</title>
+<meta name="description" content="育休前の月収を入力するだけで、育児休業給付金の月額(67%・50%)と総額を自動計算。出生後休業支援給付金の13%上乗せにも対応した無料ツールです。">
+<link rel="canonical" href="https://shunsukesaito00.github.io/kurashi/tools/ikukyu.html">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="inner">
+    <a class="site-title" href="../index.html">くらしの<span>計算室</span></a>
+    <nav class="global-nav">
+      <a href="../index.html">ツール一覧</a>
+      <a href="../about.html">運営者情報</a>
+    </nav>
+  </div>
+</header>
+<main>
+  <p class="breadcrumb"><a href="../index.html">ホーム</a> › 育休給付金計算</p>
+  <h1>育休給付金計算ツール(育児休業給付金)</h1>
+  <p class="lead">育休前の月収と育休期間を入力すると、育児休業給付金の月額と総額の目安を計算します。2026年度(令和8年7月31日まで)の上限額に対応しています。</p>
+
+  <div class="card">
+    <form class="tool-form" onsubmit="return false;">
+      <label for="salary">育休前6か月の平均月収(額面・円)</label>
+      <input type="number" id="salary" placeholder="例: 300000" min="0" inputmode="numeric">
+      <label for="months">育休期間(か月)</label>
+      <input type="number" id="months" placeholder="例: 12" min="1" max="24" value="12" inputmode="numeric">
+      <label style="font-weight:400;display:flex;align-items:center;gap:0.5rem;margin-top:1rem;">
+        <input type="checkbox" id="support" style="width:auto;">
+        出生後休業支援給付金の対象(両親とも14日以上の育休取得など)
+      </label>
+      <button class="btn" onclick="calc()">給付金を計算する</button>
+    </form>
+    <div class="result" id="result">
+      <div>受け取れる給付金の総額(目安)</div>
+      <div class="big" id="total"></div>
+      <table>
+        <tr><td>〜180日(給付率67%)の月額</td><td id="first"></td></tr>
+        <tr><td>181日目以降(給付率50%)の月額</td><td id="second"></td></tr>
+        <tr id="support-row" style="display:none;"><td>出生後休業支援給付金(13%・最大28日)</td><td id="support-amount"></td></tr>
+        <tr><td>月収に対する割合(67%期間・実質)</td><td id="ratio"></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="ad-slot">広告スペース</div>
+
+  <section class="article">
+    <h2>育児休業給付金の計算方法</h2>
+    <p>育児休業給付金は「休業開始時賃金日額 × 支給日数 × 給付率」で計算されます。賃金日額は育休前6か月の給与総額(額面)を180で割った金額です。</p>
+    <table>
+      <tr><th>期間</th><th>給付率</th><th>月額上限(2026年度)</th></tr>
+      <tr><td>育休開始〜180日</td><td>67%</td><td>323,811円</td></tr>
+      <tr><td>181日目以降</td><td>50%</td><td>241,650円</td></tr>
+      <tr><td>出生後休業支援給付金(最大28日)</td><td>+13%</td><td>58,640円</td></tr>
+    </table>
+    <p>賃金日額には上限16,110円・下限3,014円があり、上限額は毎年8月1日に改定されます(本ページの数値は令和8年7月31日までの額)。</p>
+    <h2>手取りでは「約8割」になる理由</h2>
+    <p>給付率67%は額面に対する割合ですが、育休中は社会保険料(健康保険・厚生年金・雇用保険)が免除され、給付金は非課税です。そのため手取りベースでは休業前の約8割に相当します。出生後休業支援給付金(+13%)の対象期間は合計80%となり、手取り10割相当になります。</p>
+    <h2>よくある質問</h2>
+    <h3>もらえる条件は?</h3>
+    <p>雇用保険に加入しており、育休開始前2年間に賃金支払基礎日数11日以上の月が12か月以上あることが主な条件です。パート・契約社員でも条件を満たせば対象になります。</p>
+    <h3>いつまでもらえる?</h3>
+    <p>原則、子どもが1歳になるまでです。保育所に入れないなどの事情がある場合は最長2歳まで延長できます。</p>
+    <div class="note">※ 本ツールは概算です。実際の支給額は賃金日額の算定方法(残業代・手当の扱い)や支給単位期間の区切りにより変わります。正確な金額はハローワークまたは勤務先にご確認ください。出典: 厚生労働省「令和7年8月1日からの支給限度額」。</div>
+  </section>
+
+  <div class="ad-slot">広告スペース</div>
+</main>
+<footer class="site-footer">
+  <div class="inner">
+    <div>© 2026 くらしの計算室</div>
+    <div><a href="../privacy.html">プライバシーポリシー</a> / <a href="../about.html">運営者情報</a></div>
+  </div>
+</footer>
+<script>
+// 令和7年8月1日〜令和8年7月31日の額(毎年8月改定)
+const DAILY_CAP = 16110;
+const DAILY_FLOOR = 3014;
+const CAP_67 = 323811;
+const CAP_50 = 241650;
+const CAP_SUPPORT = 58640;
+
+function yen(n) { return Math.round(n).toLocaleString('ja-JP') + ' 円'; }
+
+function calc() {
+  const salary = Number(document.getElementById('salary').value);
+  const months = Number(document.getElementById('months').value);
+  const support = document.getElementById('support').checked;
+  if (!salary || salary <= 0 || !months || months <= 0) { alert('月収と育休期間を入力してください'); return; }
+
+  let daily = salary * 6 / 180;
+  daily = Math.min(Math.max(daily, DAILY_FLOOR), DAILY_CAP);
+
+  const monthly67 = Math.min(daily * 30 * 0.67, CAP_67);
+  const monthly50 = Math.min(daily * 30 * 0.50, CAP_50);
+
+  const first = Math.min(months, 6);
+  const rest = Math.max(months - 6, 0);
+  let total = monthly67 * first + monthly50 * rest;
+
+  let supportAmount = 0;
+  if (support) {
+    supportAmount = Math.min(daily * 28 * 0.13, CAP_SUPPORT);
+    total += supportAmount;
+  }
+
+  document.getElementById('total').textContent = yen(total);
+  document.getElementById('first').textContent = yen(monthly67);
+  document.getElementById('second').textContent = rest > 0 ? yen(monthly50) : '—(期間6か月以内)';
+  document.getElementById('support-row').style.display = support ? '' : 'none';
+  if (support) document.getElementById('support-amount').textContent = yen(supportAmount);
+  document.getElementById('ratio').textContent = (monthly67 / salary * 100).toFixed(1) + ' %(手取りでは約8割相当)';
+  document.getElementById('result').classList.add('show');
+}
+</script>
+</body>
+</html>

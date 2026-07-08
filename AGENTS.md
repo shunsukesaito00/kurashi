@@ -404,6 +404,11 @@ easy to change if you want something else."
 
 - "Next prompt" sections must contain exactly ONE suggestion, not 1-3.
   This overrides the guidance in rule 1 (Communication).
+- The user runs the suggested next prompt verbatim ("次回プロンプト案を実行して").
+  Therefore the suggestion MUST be executable by the agent alone — never
+  suggest a step that is blocked on user-only input (account credentials,
+  verification tags, ASP ad codes). List user-side work separately in the
+  report body instead.
 - After completing each unit of work in this project, commit the changes and
   push to `origin main` (github.com/shunsukesaito00/kurashi). The user has
   standing approval for commits and pushes here; this overrides the
