@@ -399,3 +399,13 @@ easy to change if you want something else."
 7. Are assumptions still labeled as assumptions?
 8. Does the answer end with concrete next-prompt suggestions (unless the
    exchange was trivial)?
+
+# Project-Specific Rules
+
+- After completing each unit of work in this project, commit the changes and
+  push to `origin main` (github.com/shunsukesaito00/kurashi). The user has
+  standing approval for commits and pushes here; this overrides the
+  "never commit unless asked" default.
+- The remote uses the SSH host alias `github-shunsukesaito00` (defined in
+  `~/.ssh/config`) because the default SSH key belongs to a different GitHub
+  account. Do not change the remote URL back to HTTPS or plain github.com.
