@@ -17,7 +17,7 @@
 | `tools/waribiki.html` | 割引(〇%オフ)計算 |
 | `tools/jikyu.html` | 時給換算 |
 | `tools/moji.html` | 文字数カウント |
-| `privacy.html` | プライバシーポリシー(AdSense審査に必須) |
+| `privacy.html` | プライバシーポリシー(AdSense審査に必須)。`noindex` であり `sitemap.xml` には載せない |
 | `about.html` | 運営者情報(AdSense審査に有利) |
 
 フレームワーク・ビルド不要の静的HTML/CSS/JSのみ。サーバーサイド処理はありません。
