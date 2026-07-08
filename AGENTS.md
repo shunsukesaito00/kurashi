@@ -426,8 +426,9 @@ easy to change if you want something else."
   (query key table), `index.html` (demo links), and
   `scripts/verify-share-urls.mjs` (case `path` values) together.
 - After updating those demo examples, run `cd scripts && npm run check:demo-sync`
-  and `npm run test:share-urls` (local HTTP server required) to confirm all
-  three files list the same query paths and share URLs still round-trip.
+  (no HTTP server) and `npm run test:share-urls` (HTTP server required in
+  another terminal) to confirm all three files list the same query paths and
+  share URLs still round-trip.
 - Around each August rate-revision window, re-check constants in
   `tools/ikukyu.html` (childcare-leave benefit caps) and
   `tools/tedori.html` (social-insurance contribution rates) against
