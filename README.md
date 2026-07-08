@@ -62,9 +62,8 @@ python3 -m http.server 8000
 # 初回のみ
 cd scripts && npm install && npx playwright install chromium
 
-# 2回目以降(代表例変更時など)
-cd scripts && npm run check:demo-sync    # HTTPサーバー不要 — README / index.html / verify-share-urls の一致
-cd scripts && npm run test:share-urls    # HTTPサーバー必須 — 共有URLの往復テスト(Playwright)
+# 2回目以降(代表例変更時など) — test:share-urls 用に別ターミナルで HTTP サーバーを起動したまま
+cd scripts && npm test
 ```
 
 ## 公開までの手順(必須)
