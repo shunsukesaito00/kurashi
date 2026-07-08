@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * README の代表例列と index.html デモリンク、verify-share-urls.mjs の path が一致するか確認する。
+ * 代表例の同期確認 — README の代表例列と index.html デモリンク、verify-share-urls.mjs の path が一致するか確認する。
  * HTTPサーバー不要。
  * 初回のみ: cd scripts && npm install && npx playwright install chromium
  * 2回目以降: cd scripts && npm test（本スクリプトは HTTP サーバー不要）
@@ -86,8 +86,8 @@ const indexPaths = parseIndexDemoPaths(readFileSync(join(root, 'index.html'), 'u
 const verifyPaths = parseVerifyPaths(readFileSync(join(scriptsDir, 'verify-share-urls.mjs'), 'utf8'));
 
 const errors = [
-  ...diffSets('README vs index.html demo links', readmePaths, indexPaths, 'index.html'),
-  ...diffSets('README vs verify-share-urls.mjs', readmePaths, verifyPaths, 'verify-share-urls.mjs'),
+  ...diffSets('代表例の同期確認: README vs index.html', readmePaths, indexPaths, 'index.html'),
+  ...diffSets('代表例の同期確認: README vs verify-share-urls.mjs', readmePaths, verifyPaths, 'verify-share-urls.mjs'),
 ];
 
 if (errors.length) {
@@ -96,5 +96,5 @@ if (errors.length) {
 }
 
 console.log(
-  `OK: ${readmePaths.length} demo paths match across README, index.html, and verify-share-urls.mjs`
+  `OK: 代表例の同期確認 — ${readmePaths.length} 件のデモパスが README / index.html / verify-share-urls.mjs で一致`
 );

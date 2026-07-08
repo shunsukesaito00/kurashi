@@ -22,7 +22,7 @@ Google AdSense は副次的な収益源として位置づけています。
 | `tools/moji.html` | 文字数カウント |
 | `privacy.html` | プライバシーポリシー(AdSense審査に必須)。`noindex` であり `sitemap.xml` には載せない |
 | `about.html` | 運営者情報(AdSense審査に有利) |
-| `scripts/README.md` | 共有URL検証用の `check-demo-sync.mjs`・`verify-share-urls.mjs` と `npm test` の説明 |
+| `scripts/README.md` | 代表例の同期確認・共有URLの往復テスト用スクリプトの説明 |
 
 ### 共有URLのクエリキー
 
@@ -42,10 +42,10 @@ Google AdSense は副次的な収益源として位置づけています。
 | `tools/taishoku.html` | `a`, `y` | 退職金額(円)、勤続年数 | `?a=10000000&y=20` |
 | `tools/moji.html` | `t` | カウント対象テキスト(最大300文字) | `?t=%E3%81%8F%E3%82%89%E3%81%97%E3%81%AE%E8%A8%88%E7%AE%97%E5%AE%A4` |
 
-代表例を変えるときは、この表と `index.html` のデモリンク、`scripts/verify-share-urls.mjs` の各ケース `path` を同時に更新すること。更新後は `cd scripts && npm test` で3ファイルの一致と共有URLの往復テストをまとめて検証できる（`test:share-urls` 用に別ターミナルで HTTP サーバーを起動したまま）。
+代表例を変えるときは、この表と `index.html` のデモリンク、`scripts/verify-share-urls.mjs` の各ケース `path` を同時に更新すること。更新後は `cd scripts && npm test` で代表例の同期確認と共有URLの往復テストをまとめて検証できる（`test:share-urls` 用に別ターミナルで HTTP サーバーを起動したまま）。
 
 フレームワーク・ビルド不要の静的HTML/CSS/JSのみ。サーバーサイド処理はありません。
-静的アセットは `css/`(共通スタイル)、`js/`(共有URL用の `share.js` など)、`tools/`(各計算ページ)、`scripts/`(共有URL検証用の `check-demo-sync.mjs`・`verify-share-urls.mjs` と `npm test`)に分かれています。
+静的アセットは `css/`(共通スタイル)、`js/`(共有URL用の `share.js` など)、`tools/`(各計算ページ)、`scripts/`(代表例の同期確認・共有URLの往復テスト用の `check-demo-sync.mjs`・`verify-share-urls.mjs` と `npm test`)に分かれています。
 共有URLの読み書きは `js/share.js` に集約しており、各ツールは次の4関数だけを使う: `readShareParams(keys)` はページ読み込み時にクエリ文字列から指定キーの値をオブジェクトで返す、`updateShareUrl(entries)` は `[キー, 値]` の配列から現在のURLを `history.replaceState` で更新する、`copyShareLink(btnId)` は現在のURLをクリップボードにコピーしボタン文言を一時的に「コピーしました」に変える、`showShareActions(actionsId, hintId)` は共有ボタンと説明文のブロックを表示する。`updateShareUrl` や `copyShareLink` をツール側へ重複実装しないこと。
 
 ## ローカルでの確認
@@ -57,7 +57,7 @@ python3 -m http.server 8000
 
 `index.html` を `file://` で直接開くと、一部ブラウザで共有URLの `history` API が動作しない場合があります。ローカル確認は上記の HTTP サーバー経由を推奨します。
 
-共有URLの自動チェック(`scripts/` 配下)は次のとおりです。`check:demo-sync` は HTTP サーバー不要、`test:share-urls` は別ターミナルで HTTP サーバーを起動したまま実行してください。
+代表例の同期確認と共有URLの往復テスト(`scripts/` 配下)は次のとおりです。`check:demo-sync`（代表例の同期確認）は HTTP サーバー不要、`test:share-urls`（共有URLの往復テスト）は別ターミナルで HTTP サーバーを起動したまま実行してください。
 
 ```bash
 # 初回のみ
