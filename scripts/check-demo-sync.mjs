@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /**
  * README の代表例列と index.html デモリンク、verify-share-urls.mjs の path が一致するか確認する。
- * 実行: cd scripts && npm run check:demo-sync
+ * 初回のみ: cd scripts && npm install && npx playwright install chromium
+ * 2回目以降: cd scripts && npm run check:demo-sync
  */
 import { readFileSync } from 'fs';
 import { dirname, join } from 'path';
