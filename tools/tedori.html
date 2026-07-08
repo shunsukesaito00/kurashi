@@ -7,6 +7,7 @@
 <meta name="description" content="月収(額面)を入力するだけで、社会保険料・所得税・住民税を差し引いた手取り額を自動計算。健康保険・厚生年金・雇用保険の内訳も表示します。">
 <link rel="canonical" href="https://shunsukesaito00.github.io/kurashi/tools/tedori.html">
 <link rel="stylesheet" href="../css/style.css">
+<script src="../js/share.js"></script>
 </head>
 <body>
 <header class="site-header">
@@ -78,7 +79,7 @@
       </div>
       <div class="cmp-actions no-print" id="cmp-actions" style="display:none;">
         <button class="btn btn-outline" onclick="printCompare()">比較結果を印刷する</button>
-        <button class="btn btn-outline" id="cmp-copy-btn" onclick="copyCompareLink()">共有リンクをコピー</button>
+        <button class="btn btn-outline" id="cmp-copy-btn" onclick="copyShareLink('cmp-copy-btn')">共有リンクをコピー</button>
       </div>
       <p class="note no-print" id="cmp-share-hint" style="display:none;margin:0.5rem 0 0;background:transparent;padding:0;">URLに月収が含まれます。共有先で同じ比較結果が自動表示されます。</p>
     </div>
@@ -208,53 +209,13 @@ function compare() {
   document.getElementById('cmp-table').innerHTML = html;
   document.getElementById('cmp-print-date').textContent =
     '計算日: ' + new Date().toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' });
-  document.getElementById('cmp-actions').style.display = 'flex';
-  document.getElementById('cmp-share-hint').style.display = 'block';
+  showShareActions('cmp-actions', 'cmp-share-hint');
   document.getElementById('cmp-result').classList.add('show');
-  updateCompareUrl();
-}
-
-function updateCompareUrl() {
-  const params = new URLSearchParams();
-  [['cmp-a', 'a'], ['cmp-b', 'b'], ['cmp-c', 'c']].forEach(([id, key]) => {
-    const v = Number(document.getElementById(id).value);
-    if (v > 0) params.set(key, v);
-  });
-  const qs = params.toString();
-  const url = window.location.pathname + (qs ? '?' + qs : '');
-  history.replaceState(null, '', url);
-}
-
-function copyCompareLink() {
-  const url = window.location.href;
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(url).then(showCopyDone).catch(() => fallbackCopy(url));
-  } else {
-    fallbackCopy(url);
-  }
-}
-
-function fallbackCopy(text) {
-  const ta = document.createElement('textarea');
-  ta.value = text;
-  ta.style.position = 'fixed';
-  ta.style.left = '-9999px';
-  document.body.appendChild(ta);
-  ta.select();
-  try {
-    document.execCommand('copy');
-    showCopyDone();
-  } catch (e) {
-    alert('コピーに失敗しました');
-  }
-  document.body.removeChild(ta);
-}
-
-function showCopyDone() {
-  const btn = document.getElementById('cmp-copy-btn');
-  const orig = btn.textContent;
-  btn.textContent = 'コピーしました';
-  setTimeout(() => { btn.textContent = orig; }, 2000);
+  updateShareUrl(
+    [['cmp-a', 'a'], ['cmp-b', 'b'], ['cmp-c', 'c']]
+      .map(([id, key]) => [key, Number(document.getElementById(id).value)])
+      .filter(([, v]) => v > 0)
+  );
 }
 
 function printCompare() {
