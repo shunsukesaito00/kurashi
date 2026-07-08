@@ -52,7 +52,7 @@ python3 -m http.server 8000
 # http://localhost:8000 を開く
 ```
 
-`index.html` を `file://` で直接開くと、一部ブラウザで共有URLの `history` API が動作しない場合があります。ローカル確認は上記の HTTP サーバー経由を推奨します。
+`index.html` を `file://` で直接開くと、一部ブラウザで共有URLの `history` API が動作しない場合があります。ローカル確認は上記の HTTP サーバー経由を推奨します。共有URLの往復テストは `cd scripts && npm install && npx playwright install chromium && node verify-share-urls.mjs`（HTTPサーバーは別ターミナルで起動したまま）。
 
 ## 公開までの手順(必須)
 
