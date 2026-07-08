@@ -27,19 +27,19 @@ Google AdSense は副次的な収益源として位置づけています。
 
 各ツールは計算後に `updateShareUrl` でURLを更新し、開いたとき `readShareParams` で復元する。キーは次のとおり。
 
-| ページ | クエリキー | 意味 |
-|---|---|---|
-| `tools/tedori.html` | `a`, `b`, `c` | 月収比較の3つの金額(円)。2つ以上で比較結果を復元 |
-| `tools/zeikomi.html` | `a`, `r`, `d` | 金額(円)、税率(`0.08`/`0.10`)、方向(`excl`/`incl`) |
-| `tools/wareki.html` | `y` または `g`+`n` | 西暦パラメータ(`y`)または和暦パラメータ(`g`+`n`)。例: 西暦 `?y=2026` / 和暦 `?g=reiwa&n=8` |
-| `tools/nenrei.html` | `b` | 生年月日(`YYYY-MM-DD`) |
-| `tools/bmi.html` | `h`, `w` | 身長(cm)、体重(kg) |
-| `tools/tsumitate.html` | `m`, `r`, `y` | 毎月積立額(円)、年利率(%)、積立年数 |
-| `tools/waribiki.html` | `p`, `d` | 定価(円)、割引率(0〜100) |
-| `tools/jikyu.html` | `s`, `h`, `d`, `o` | 月給(円)、所定労働時間、月の勤務日数、残業時間(任意) |
-| `tools/ikukyu.html` | `s`, `m`, `support` | 月収(円)、休業月数、`support=1` で育児休業等給付の支援給付を含む |
-| `tools/taishoku.html` | `a`, `y` | 退職金額(円)、勤続年数 |
-| `tools/moji.html` | `t` | カウント対象テキスト(最大300文字) |
+| ページ | クエリキー | 意味 | 代表例(`index.html` デモ) |
+|---|---|---|---|
+| `tools/tedori.html` | `a`, `b`, `c` | 月収比較の3つの金額(円)。2つ以上で比較結果を復元 | `?a=300000&b=330000&c=360000` |
+| `tools/zeikomi.html` | `a`, `r`, `d` | 金額(円)、税率(`0.08`/`0.10`)、方向(`excl`/`incl`) | `?a=10000&r=0.10&d=excl` |
+| `tools/wareki.html` | `y` または `g`+`n` | 西暦パラメータ(`y`)または和暦パラメータ(`g`+`n`) | `?y=2026` / `?g=reiwa&n=8` |
+| `tools/nenrei.html` | `b` | 生年月日(`YYYY-MM-DD`) | `?b=1990-05-15` |
+| `tools/bmi.html` | `h`, `w` | 身長(cm)、体重(kg) | `?h=170&w=65` |
+| `tools/tsumitate.html` | `m`, `r`, `y` | 毎月積立額(円)、年利率(%)、積立年数 | `?m=30000&r=5&y=20` |
+| `tools/waribiki.html` | `p`, `d` | 定価(円)、割引率(0〜100) | `?p=10000&d=20` |
+| `tools/jikyu.html` | `s`, `h`, `d`, `o` | 月給(円)、所定労働時間、月の勤務日数、残業時間(任意) | `?s=300000&h=160&d=20&o=20` |
+| `tools/ikukyu.html` | `s`, `m`, `support` | 月収(円)、休業月数、`support=1` で育児休業等給付の支援給付を含む | `?s=300000&m=12&support=1` |
+| `tools/taishoku.html` | `a`, `y` | 退職金額(円)、勤続年数 | `?a=10000000&y=20` |
+| `tools/moji.html` | `t` | カウント対象テキスト(最大300文字) | `?t=%E3%81%8F%E3%82%89%E3%81%97%E3%81%AE%E8%A8%88%E7%AE%97%E5%AE%A4` |
 
 フレームワーク・ビルド不要の静的HTML/CSS/JSのみ。サーバーサイド処理はありません。
 静的アセットは `css/`(共通スタイル)、`js/`(共有URL用の `share.js` など)、`tools/`(各計算ページ)に分かれています。
