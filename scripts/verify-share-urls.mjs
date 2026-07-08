@@ -33,6 +33,13 @@ const cases = [
     urlKeys: ['y'],
   },
   {
+    name: 'wareki-wareki',
+    path: '/tools/wareki.html?g=reiwa&n=8',
+    ready: '#result.show',
+    snapshot: '#answer',
+    urlKeys: ['g', 'n'],
+  },
+  {
     name: 'nenrei',
     path: '/tools/nenrei.html?b=1990-05-15',
     ready: '#result.show',
@@ -166,7 +173,7 @@ async function main() {
     console.error(`\n${failures.length} tool(s) failed: ${failures.join(', ')}`);
     process.exit(1);
   }
-  console.log(`\nALL_PASS (${cases.length} tools)`);
+  console.log(`\nALL_PASS (${cases.length} cases)`);
 }
 
 main().catch((e) => {
