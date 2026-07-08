@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://YOUR-DOMAIN.example/index.html</loc><priority>1.0</priority></url>
-  <url><loc>https://YOUR-DOMAIN.example/tools/tedori.html</loc><priority>0.9</priority></url>
-  <url><loc>https://YOUR-DOMAIN.example/tools/zeikomi.html</loc><priority>0.9</priority></url>
-  <url><loc>https://YOUR-DOMAIN.example/tools/wareki.html</loc><priority>0.9</priority></url>
-  <url><loc>https://YOUR-DOMAIN.example/tools/nenrei.html</loc><priority>0.9</priority></url>
-  <url><loc>https://YOUR-DOMAIN.example/tools/bmi.html</loc><priority>0.9</priority></url>
-  <url><loc>https://YOUR-DOMAIN.example/tools/tsumitate.html</loc><priority>0.9</priority></url>
-  <url><loc>https://YOUR-DOMAIN.example/tools/waribiki.html</loc><priority>0.9</priority></url>
-  <url><loc>https://YOUR-DOMAIN.example/tools/jikyu.html</loc><priority>0.9</priority></url>
-  <url><loc>https://YOUR-DOMAIN.example/tools/moji.html</loc><priority>0.9</priority></url>
-  <url><loc>https://YOUR-DOMAIN.example/about.html</loc><priority>0.3</priority></url>
+  <url><loc>https://shunsukesaito00.github.io/kurashi/</loc><priority>1.0</priority></url>
+  <url><loc>https://shunsukesaito00.github.io/kurashi/tools/tedori.html</loc><priority>0.9</priority></url>
+  <url><loc>https://shunsukesaito00.github.io/kurashi/tools/zeikomi.html</loc><priority>0.9</priority></url>
+  <url><loc>https://shunsukesaito00.github.io/kurashi/tools/wareki.html</loc><priority>0.9</priority></url>
+  <url><loc>https://shunsukesaito00.github.io/kurashi/tools/nenrei.html</loc><priority>0.9</priority></url>
+  <url><loc>https://shunsukesaito00.github.io/kurashi/tools/bmi.html</loc><priority>0.9</priority></url>
+  <url><loc>https://shunsukesaito00.github.io/kurashi/tools/tsumitate.html</loc><priority>0.9</priority></url>
+  <url><loc>https://shunsukesaito00.github.io/kurashi/tools/waribiki.html</loc><priority>0.9</priority></url>
+  <url><loc>https://shunsukesaito00.github.io/kurashi/tools/jikyu.html</loc><priority>0.9</priority></url>
+  <url><loc>https://shunsukesaito00.github.io/kurashi/tools/moji.html</loc><priority>0.9</priority></url>
+  <url><loc>https://shunsukesaito00.github.io/kurashi/about.html</loc><priority>0.3</priority></url>
 </urlset>
