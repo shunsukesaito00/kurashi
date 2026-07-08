@@ -3,14 +3,15 @@
  * 共有URLの往復テスト: クエリ付きで開く → 結果表示 → URL正規化 → 再読み込み → 同じ結果
  *
  * 前提: ローカルHTTPサーバーが起動していること (README の python3 -m http.server 8000)
- * 実行: npx --yes -p playwright@1.61.1 node scripts/verify-share-urls.mjs
- * 初回: npx playwright install chromium
+ * 実行: cd scripts && npm install && npx playwright install chromium && node verify-share-urls.mjs
+ * 各ケースの path は README「共有URLのクエリキー」表の代表例と一致させること。
  */
 import { chromium } from 'playwright';
 
 const BASE = (process.env.BASE_URL || 'http://127.0.0.1:8000').replace(/\/$/, '');
 
 const cases = [
+  // README 代表例: ?a=300000&b=330000&c=360000 (tools/tedori.html)
   {
     name: 'tedori',
     path: '/tools/tedori.html?a=300000&b=330000&c=360000',
@@ -18,6 +19,7 @@ const cases = [
     snapshot: '#cmp-table',
     urlKeys: ['a', 'b', 'c'],
   },
+  // README 代表例: ?a=10000&r=0.10&d=excl (tools/zeikomi.html)
   {
     name: 'zeikomi',
     path: '/tools/zeikomi.html?a=10000&r=0.10&d=excl',
@@ -25,6 +27,7 @@ const cases = [
     snapshot: '#result table',
     urlKeys: ['a', 'r', 'd'],
   },
+  // README 代表例: ?y=2026 (tools/wareki.html · 西暦パラメータ)
   {
     name: 'wareki-seireki',
     path: '/tools/wareki.html?y=2026',
@@ -32,6 +35,7 @@ const cases = [
     snapshot: '#answer',
     urlKeys: ['y'],
   },
+  // README 代表例: ?g=reiwa&n=8 (tools/wareki.html · 和暦パラメータ)
   {
     name: 'wareki-wareki',
     path: '/tools/wareki.html?g=reiwa&n=8',
@@ -39,6 +43,7 @@ const cases = [
     snapshot: '#answer',
     urlKeys: ['g', 'n'],
   },
+  // README 代表例: ?b=1990-05-15 (tools/nenrei.html)
   {
     name: 'nenrei',
     path: '/tools/nenrei.html?b=1990-05-15',
@@ -46,6 +51,7 @@ const cases = [
     snapshot: '#result',
     urlKeys: ['b'],
   },
+  // README 代表例: ?h=170&w=65 (tools/bmi.html)
   {
     name: 'bmi',
     path: '/tools/bmi.html?h=170&w=65',
@@ -53,6 +59,7 @@ const cases = [
     snapshot: '#result',
     urlKeys: ['h', 'w'],
   },
+  // README 代表例: ?m=30000&r=5&y=20 (tools/tsumitate.html)
   {
     name: 'tsumitate',
     path: '/tools/tsumitate.html?m=30000&r=5&y=20',
@@ -60,6 +67,7 @@ const cases = [
     snapshot: '#result',
     urlKeys: ['m', 'r', 'y'],
   },
+  // README 代表例: ?p=10000&d=20 (tools/waribiki.html)
   {
     name: 'waribiki',
     path: '/tools/waribiki.html?p=10000&d=20',
@@ -67,6 +75,7 @@ const cases = [
     snapshot: '#result',
     urlKeys: ['p', 'd'],
   },
+  // README 代表例: ?s=300000&h=160&d=20&o=20 (tools/jikyu.html)
   {
     name: 'jikyu',
     path: '/tools/jikyu.html?s=300000&h=160&d=20&o=20',
@@ -74,6 +83,7 @@ const cases = [
     snapshot: '#result',
     urlKeys: ['s', 'h', 'd', 'o'],
   },
+  // README 代表例: ?s=300000&m=12&support=1 (tools/ikukyu.html)
   {
     name: 'ikukyu',
     path: '/tools/ikukyu.html?s=300000&m=12&support=1',
@@ -81,6 +91,7 @@ const cases = [
     snapshot: '#result',
     urlKeys: ['s', 'm', 'support'],
   },
+  // README 代表例: ?a=10000000&y=20 (tools/taishoku.html)
   {
     name: 'taishoku',
     path: '/tools/taishoku.html?a=10000000&y=20',
@@ -88,6 +99,7 @@ const cases = [
     snapshot: '#result',
     urlKeys: ['a', 'y'],
   },
+  // README 代表例: ?t=%E3%81%8F%E3%82%89%E3%81%97%E3%81%AE%E8%A8%88%E7%AE%97%E5%AE%A4 (tools/moji.html)
   {
     name: 'moji',
     path: '/tools/moji.html?t=%E3%81%8F%E3%82%89%E3%81%97%E3%81%AE%E8%A8%88%E7%AE%97%E5%AE%A4',
