@@ -402,6 +402,8 @@ easy to change if you want something else."
 
 # Project-Specific Rules
 
+- "Next prompt" sections must contain exactly ONE suggestion, not 1-3.
+  This overrides the guidance in rule 1 (Communication).
 - After completing each unit of work in this project, commit the changes and
   push to `origin main` (github.com/shunsukesaito00/kurashi). The user has
   standing approval for commits and pushes here; this overrides the
