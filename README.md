@@ -37,6 +37,8 @@ python3 -m http.server 8000
 1. **ホスティング**: 完了済み。GitHub Pages で配信中です。
    公開URL: https://shunsukesaito00.github.io/kurashi/
    `main` へのプッシュ後は `git push origin main:gh-pages` で本番を同期する。
+   現状の確認済み: `robots.txt` の `Sitemap:` 行と `sitemap.xml` 先頭の
+   `<loc>` は同一オリジン(`https://shunsukesaito00.github.io/kurashi/`)を指している。
 2. **独自ドメイン取得(強く推奨)**: AdSense はサブドメイン(`*.github.io` 等)では
    審査に通りにくいため、独自ドメイン(年1,000〜1,500円程度)を取得して割り当てる。
 3. **残りのプレースホルダ置換**:
