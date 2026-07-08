@@ -1,6 +1,9 @@
 {
   "private": true,
   "type": "module",
+  "scripts": {
+    "check:demo-sync": "node check-demo-sync.mjs"
+  },
   "dependencies": {
     "playwright": "1.61.1"
   }
