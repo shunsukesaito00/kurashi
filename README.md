@@ -44,7 +44,7 @@ Google AdSense は副次的な収益源として位置づけています。
 代表例を変えるときは、この表と `index.html` のデモリンク、`scripts/verify-share-urls.mjs` の各ケース `path` を同時に更新すること。更新後は `cd scripts && npm test` で3ファイルの一致と共有URLの往復動作をまとめて検証できる（`test:share-urls` 用に別ターミナルで HTTP サーバーを起動したまま）。
 
 フレームワーク・ビルド不要の静的HTML/CSS/JSのみ。サーバーサイド処理はありません。
-静的アセットは `css/`(共通スタイル)、`js/`(共有URL用の `share.js` など)、`tools/`(各計算ページ)に分かれています。
+静的アセットは `css/`(共通スタイル)、`js/`(共有URL用の `share.js` など)、`tools/`(各計算ページ)、`scripts/`(共有URL検証用の `check-demo-sync.mjs`・`verify-share-urls.mjs` と `npm test`)に分かれています。
 共有URLの読み書きは `js/share.js` に集約しており、各ツールは次の4関数だけを使う: `readShareParams(keys)` はページ読み込み時にクエリ文字列から指定キーの値をオブジェクトで返す、`updateShareUrl(entries)` は `[キー, 値]` の配列から現在のURLを `history.replaceState` で更新する、`copyShareLink(btnId)` は現在のURLをクリップボードにコピーしボタン文言を一時的に「コピーしました」に変える、`showShareActions(actionsId, hintId)` は共有ボタンと説明文のブロックを表示する。`updateShareUrl` や `copyShareLink` をツール側へ重複実装しないこと。
 
 ## ローカルでの確認
