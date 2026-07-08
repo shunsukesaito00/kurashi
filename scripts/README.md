@@ -5,3 +5,4 @@
 - `check-demo-sync.mjs` — README・`index.html`・`verify-share-urls.mjs` の代表例クエリが一致するか確認
 - `verify-share-urls.mjs` — 各ツールの共有URLが再読み込み後も同じ結果になるか Playwright で検証
 - `package.json` — `check:demo-sync`・`test:share-urls`・`test` の npm スクリプト定義
+- `README.md` — 本ファイル。初回セットアップ・`npm test` の手順
