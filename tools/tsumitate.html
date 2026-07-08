@@ -137,10 +137,9 @@ function calc() {
 }
 
 (function initFromUrl() {
-  const params = new URLSearchParams(window.location.search);
-  const m = Number(params.get('m'));
-  const r = params.get('r');
-  const y = Number(params.get('y'));
+  const { m: mRaw, r, y: yRaw } = readShareParams(['m', 'r', 'y']);
+  const m = Number(mRaw);
+  const y = Number(yRaw);
   if (m > 0) document.getElementById('monthly').value = m;
   if (r !== null && r !== '' && Number(r) >= 0) document.getElementById('rate').value = r;
   if (y > 0) document.getElementById('years').value = y;

@@ -106,9 +106,8 @@ function calc() {
 }
 
 (function initFromUrl() {
-  const params = new URLSearchParams(window.location.search);
-  const p = Number(params.get('p'));
-  const d = params.get('d');
+  const { p: pRaw, d } = readShareParams(['p', 'd']);
+  const p = Number(pRaw);
   if (p > 0) document.getElementById('price').value = p;
   if (d !== null && d !== '' && Number(d) >= 0 && Number(d) <= 100) document.getElementById('discount').value = d;
   if (p > 0 && d !== null && d !== '') calc();

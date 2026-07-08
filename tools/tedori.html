@@ -234,10 +234,10 @@ function printCompare() {
 }
 
 (function initFromUrl() {
-  const params = new URLSearchParams(window.location.search);
-  const a = Number(params.get('a'));
-  const b = Number(params.get('b'));
-  const c = Number(params.get('c'));
+  const { a: aRaw, b: bRaw, c: cRaw } = readShareParams(['a', 'b', 'c']);
+  const a = Number(aRaw);
+  const b = Number(bRaw);
+  const c = Number(cRaw);
   if (a > 0) document.getElementById('cmp-a').value = a;
   if (b > 0) document.getElementById('cmp-b').value = b;
   if (c > 0) document.getElementById('cmp-c').value = c;

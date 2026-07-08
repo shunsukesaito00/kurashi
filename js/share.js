@@ -1,3 +1,12 @@
+function readShareParams(keys) {
+  const params = new URLSearchParams(window.location.search);
+  const result = {};
+  keys.forEach((key) => {
+    result[key] = params.get(key);
+  });
+  return result;
+}
+
 // file:// では history.replaceState が SecurityError になり得るため失敗時は無視する。
 function updateShareUrl(entries) {
   const params = new URLSearchParams();

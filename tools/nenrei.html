@@ -105,8 +105,7 @@ function calc() {
 }
 
 (function initFromUrl() {
-  const params = new URLSearchParams(window.location.search);
-  const b = params.get('b');
+  const { b } = readShareParams(['b']);
   if (b && /^\d{4}-\d{2}-\d{2}$/.test(b)) {
     document.getElementById('birthday').value = b;
     calc();

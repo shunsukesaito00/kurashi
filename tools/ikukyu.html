@@ -138,12 +138,12 @@ function calc() {
 }
 
 (function initFromUrl() {
-  const params = new URLSearchParams(window.location.search);
-  const salary = Number(params.get('s'));
-  const months = Number(params.get('m'));
+  const { s, m, support } = readShareParams(['s', 'm', 'support']);
+  const salary = Number(s);
+  const months = Number(m);
   if (salary > 0) document.getElementById('salary').value = salary;
   if (months > 0) document.getElementById('months').value = months;
-  if (params.get('support') === '1') document.getElementById('support').checked = true;
+  if (support === '1') document.getElementById('support').checked = true;
   if (salary > 0 && months > 0) calc();
 })();
 </script>

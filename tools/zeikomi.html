@@ -120,10 +120,8 @@ function calc() {
 }
 
 (function initFromUrl() {
-  const params = new URLSearchParams(window.location.search);
-  const a = Number(params.get('a'));
-  const r = params.get('r');
-  const d = params.get('d');
+  const { a: aRaw, r, d } = readShareParams(['a', 'r', 'd']);
+  const a = Number(aRaw);
   if (a > 0) document.getElementById('amount').value = a;
   if (r === '0.08' || r === '0.1' || r === '0.10') document.getElementById('rate').value = r === '0.1' ? '0.10' : r;
   if (d === 'excl' || d === 'incl') document.getElementById('direction').value = d;

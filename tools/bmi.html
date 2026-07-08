@@ -116,9 +116,9 @@ function calc() {
 }
 
 (function initFromUrl() {
-  const params = new URLSearchParams(window.location.search);
-  const h = Number(params.get('h'));
-  const w = Number(params.get('w'));
+  const { h: hRaw, w: wRaw } = readShareParams(['h', 'w']);
+  const h = Number(hRaw);
+  const w = Number(wRaw);
   if (h > 0) document.getElementById('height').value = h;
   if (w > 0) document.getElementById('weight').value = w;
   if (h > 0 && w > 0) calc();

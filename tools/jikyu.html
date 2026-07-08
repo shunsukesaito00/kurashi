@@ -138,11 +138,10 @@ function calc() {
 }
 
 (function initFromUrl() {
-  const params = new URLSearchParams(window.location.search);
-  const s = Number(params.get('s'));
-  const h = Number(params.get('h'));
-  const d = Number(params.get('d'));
-  const o = params.get('o');
+  const { s: sRaw, h: hRaw, d: dRaw, o } = readShareParams(['s', 'h', 'd', 'o']);
+  const s = Number(sRaw);
+  const h = Number(hRaw);
+  const d = Number(dRaw);
   if (s > 0) document.getElementById('salary').value = s;
   if (h > 0) document.getElementById('hours').value = h;
   if (d > 0) document.getElementById('days').value = d;

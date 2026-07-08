@@ -108,8 +108,7 @@ function update() {
 textarea.addEventListener('input', update);
 
 (function initFromUrl() {
-  const params = new URLSearchParams(window.location.search);
-  const t = params.get('t');
+  const { t } = readShareParams(['t']);
   if (t !== null && t !== '') {
     textarea.value = t.slice(0, SHARE_LIMIT);
     update();

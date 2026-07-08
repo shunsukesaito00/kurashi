@@ -147,9 +147,9 @@ function calc() {
 }
 
 (function initFromUrl() {
-  const params = new URLSearchParams(window.location.search);
-  const amount = Number(params.get('a'));
-  const years = Number(params.get('y'));
+  const { a, y } = readShareParams(['a', 'y']);
+  const amount = Number(a);
+  const years = Number(y);
   if (amount > 0) document.getElementById('amount').value = amount;
   if (years > 0) document.getElementById('years').value = years;
   if (amount > 0 && years > 0) calc();

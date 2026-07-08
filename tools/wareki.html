@@ -130,10 +130,9 @@ function fromWareki() {
 }
 
 (function initFromUrl() {
-  const params = new URLSearchParams(window.location.search);
-  const y = Number(params.get('y'));
-  const g = params.get('g');
-  const n = Number(params.get('n'));
+  const { y: yRaw, g, n: nRaw } = readShareParams(['y', 'g', 'n']);
+  const y = Number(yRaw);
+  const n = Number(nRaw);
   if (y >= 1868 && y <= 2100) {
     document.getElementById('seireki').value = y;
     fromSeireki();
