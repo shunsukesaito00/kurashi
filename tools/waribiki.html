@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>割引計算ツール|〇%オフの値段を瞬時に計算 - くらしの計算室</title>
+<meta name="description" content="定価と割引率を入力するだけで、割引後の価格と割引額を自動計算。セールやクーポンの「30%オフはいくら?」が一瞬でわかります。">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="inner">
+    <a class="site-title" href="../index.html">くらしの<span>計算室</span></a>
+    <nav class="global-nav">
+      <a href="../index.html">ツール一覧</a>
+      <a href="../about.html">運営者情報</a>
+    </nav>
+  </div>
+</header>
+<main>
+  <p class="breadcrumb"><a href="../index.html">ホーム</a> › 割引計算</p>
+  <h1>割引計算ツール(〇%オフ)</h1>
+  <p class="lead">定価と割引率を入力すると、割引後の価格を瞬時に計算します。セールでのお買い物にどうぞ。</p>
+
+  <div class="card">
+    <form class="tool-form" onsubmit="return false;">
+      <div class="field-row">
+        <div>
+          <label for="price">定価(円)</label>
+          <input type="number" id="price" placeholder="例: 4980" min="0" inputmode="numeric">
+        </div>
+        <div>
+          <label for="discount">割引率(%)</label>
+          <input type="number" id="discount" placeholder="例: 30" min="0" max="100" inputmode="numeric">
+        </div>
+      </div>
+      <button class="btn" onclick="calc()">割引後の価格を計算</button>
+    </form>
+    <div class="result" id="result">
+      <div>割引後の価格</div>
+      <div class="big" id="after"></div>
+      <table>
+        <tr><td>割引額</td><td id="off"></td></tr>
+        <tr><td>支払う割合</td><td id="pay-ratio"></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="ad-slot">広告スペース</div>
+
+  <section class="article">
+    <h2>割引価格の計算方法</h2>
+    <p>割引後の価格は「定価 × (100 − 割引率) ÷ 100」で計算できます。例えば4,980円の30%オフなら、4,980 × 0.7 = 3,486円です。</p>
+    <h2>よく使う割引率の早見表</h2>
+    <table>
+      <tr><th>割引率</th><th>支払う金額の割合</th><th>1,000円の場合</th></tr>
+      <tr><td>10%オフ</td><td>90%</td><td>900円</td></tr>
+      <tr><td>20%オフ</td><td>80%</td><td>800円</td></tr>
+      <tr><td>30%オフ</td><td>70%</td><td>700円</td></tr>
+      <tr><td>半額(50%オフ)</td><td>50%</td><td>500円</td></tr>
+      <tr><td>70%オフ</td><td>30%</td><td>300円</td></tr>
+    </table>
+    <h3>「2割引」と「20%オフ」は同じ?</h3>
+    <p>はい、同じ意味です。「割」は10%を表すため、2割引 = 20%オフ、3割引 = 30%オフとなります。</p>
+    <div class="note">※ 端数は切り捨てで表示しています。店舗により端数処理が異なる場合があります。</div>
+  </section>
+
+  <div class="ad-slot">広告スペース</div>
+</main>
+<footer class="site-footer">
+  <div class="inner">
+    <div>© 2026 くらしの計算室</div>
+    <div><a href="../privacy.html">プライバシーポリシー</a> / <a href="../about.html">運営者情報</a></div>
+  </div>
+</footer>
+<script>
+function calc() {
+  const price = Number(document.getElementById('price').value);
+  const discount = Number(document.getElementById('discount').value);
+  if (!price || price <= 0) { alert('定価を入力してください'); return; }
+  if (discount < 0 || discount > 100 || document.getElementById('discount').value === '') {
+    alert('割引率は0〜100で入力してください'); return;
+  }
+
+  const after = Math.floor(price * (100 - discount) / 100);
+  document.getElementById('after').textContent = after.toLocaleString('ja-JP') + ' 円';
+  document.getElementById('off').textContent = (price - after).toLocaleString('ja-JP') + ' 円おトク';
+  document.getElementById('pay-ratio').textContent = (100 - discount) + ' %';
+  document.getElementById('result').classList.add('show');
+}
+</script>
+</body>
+</html>

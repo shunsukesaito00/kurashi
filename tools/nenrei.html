@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>年齢計算ツール|生年月日から今日の満年齢を自動計算 - くらしの計算室</title>
+<meta name="description" content="生年月日を入力するだけで今日時点の満年齢を自動計算。干支・生まれてからの日数も表示する無料ツールです。">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="inner">
+    <a class="site-title" href="../index.html">くらしの<span>計算室</span></a>
+    <nav class="global-nav">
+      <a href="../index.html">ツール一覧</a>
+      <a href="../about.html">運営者情報</a>
+    </nav>
+  </div>
+</header>
+<main>
+  <p class="breadcrumb"><a href="../index.html">ホーム</a> › 年齢計算</p>
+  <h1>年齢計算ツール(生年月日から満年齢)</h1>
+  <p class="lead">生年月日を入力すると、今日時点の満年齢・干支・生まれてからの日数を計算します。</p>
+
+  <div class="card">
+    <form class="tool-form" onsubmit="return false;">
+      <label for="birthday">生年月日</label>
+      <input type="date" id="birthday" min="1900-01-01">
+      <button class="btn" onclick="calc()">年齢を計算する</button>
+    </form>
+    <div class="result" id="result">
+      <div>今日時点の満年齢</div>
+      <div class="big" id="age"></div>
+      <table>
+        <tr><td>次の誕生日まで</td><td id="next"></td></tr>
+        <tr><td>生まれてからの日数</td><td id="days"></td></tr>
+        <tr><td>干支(えと)</td><td id="eto"></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="ad-slot">広告スペース</div>
+
+  <section class="article">
+    <h2>満年齢と数え年の違い</h2>
+    <p>「満年齢」は誕生日を迎えるたびに1歳ずつ増える、現在一般的に使われる数え方です。一方「数え年」は生まれた時点を1歳とし、元日(1月1日)を迎えるたびに1歳増えます。七五三や厄年では数え年を使うことがあります。</p>
+    <h2>法律上、年齢が増えるのは誕生日の前日</h2>
+    <p>年齢計算ニ関スル法律により、法律上は誕生日の前日が満了した時点(誕生日前日の24時)で年齢が加算されます。4月1日生まれの人が「早生まれ」として扱われるのはこのためです。</p>
+    <div class="note">※ 本ツールは一般的な感覚に合わせ、誕生日当日に年齢が増えるものとして計算しています。</div>
+  </section>
+
+  <div class="ad-slot">広告スペース</div>
+</main>
+<footer class="site-footer">
+  <div class="inner">
+    <div>© 2026 くらしの計算室</div>
+    <div><a href="../privacy.html">プライバシーポリシー</a> / <a href="../about.html">運営者情報</a></div>
+  </div>
+</footer>
+<script>
+const ETO = ['子(ね)', '丑(うし)', '寅(とら)', '卯(う)', '辰(たつ)', '巳(み)', '午(うま)', '未(ひつじ)', '申(さる)', '酉(とり)', '戌(いぬ)', '亥(い)'];
+
+function calc() {
+  const value = document.getElementById('birthday').value;
+  if (!value) { alert('生年月日を入力してください'); return; }
+  const birth = new Date(value + 'T00:00:00');
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  if (birth > today) { alert('未来の日付は入力できません'); return; }
+
+  let age = today.getFullYear() - birth.getFullYear();
+  const beforeBirthday =
+    today.getMonth() < birth.getMonth() ||
+    (today.getMonth() === birth.getMonth() && today.getDate() < birth.getDate());
+  if (beforeBirthday) age--;
+
+  let nextBirthday = new Date(today.getFullYear(), birth.getMonth(), birth.getDate());
+  if (nextBirthday <= today) nextBirthday = new Date(today.getFullYear() + 1, birth.getMonth(), birth.getDate());
+  const daysToNext = Math.round((nextBirthday - today) / 86400000);
+  const daysAlive = Math.floor((today - birth) / 86400000);
+  // 子年=1900年基準(1900年は子年)
+  const eto = ETO[((birth.getFullYear() - 1900) % 12 + 12) % 12];
+
+  document.getElementById('age').textContent = age + ' 歳';
+  document.getElementById('next').textContent = daysToNext === 0 ? '今日が誕生日です!' : 'あと ' + daysToNext + ' 日';
+  document.getElementById('days').textContent = daysAlive.toLocaleString('ja-JP') + ' 日';
+  document.getElementById('eto').textContent = eto;
+  document.getElementById('result').classList.add('show');
+}
+</script>
+</body>
+</html>

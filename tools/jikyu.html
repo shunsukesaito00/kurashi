@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>時給計算ツール|月収・年収から時給換算 - くらしの計算室</title>
+<meta name="description" content="月収と労働時間から実質時給を自動計算。残業時間を含めた「本当の時給」がわかります。アルバイトの月収シミュレーションにも対応。">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="inner">
+    <a class="site-title" href="../index.html">くらしの<span>計算室</span></a>
+    <nav class="global-nav">
+      <a href="../index.html">ツール一覧</a>
+      <a href="../about.html">運営者情報</a>
+    </nav>
+  </div>
+</header>
+<main>
+  <p class="breadcrumb"><a href="../index.html">ホーム</a> › 時給計算</p>
+  <h1>時給計算ツール(月収から時給換算)</h1>
+  <p class="lead">月収と1か月の労働時間から、実質的な時給を計算します。転職の検討や働き方の見直しにどうぞ。</p>
+
+  <div class="card">
+    <form class="tool-form" onsubmit="return false;">
+      <div class="field-row">
+        <div>
+          <label for="salary">月収(円)</label>
+          <input type="number" id="salary" placeholder="例: 280000" min="0" inputmode="numeric">
+        </div>
+        <div>
+          <label for="hours">1日の労働時間(時間)</label>
+          <input type="number" id="hours" placeholder="例: 8" min="0.5" max="24" step="0.5" value="8" inputmode="decimal">
+        </div>
+        <div>
+          <label for="days">月の勤務日数(日)</label>
+          <input type="number" id="days" placeholder="例: 20" min="1" max="31" value="20" inputmode="numeric">
+        </div>
+      </div>
+      <label for="overtime">月の残業時間(時間・なければ0)</label>
+      <input type="number" id="overtime" placeholder="例: 20" min="0" value="0" inputmode="numeric">
+      <button class="btn" onclick="calc()">時給を計算する</button>
+    </form>
+    <div class="result" id="result">
+      <div>実質時給</div>
+      <div class="big" id="hourly"></div>
+      <table>
+        <tr><td>月の総労働時間</td><td id="total-hours"></td></tr>
+        <tr><td>年収換算(月収×12)</td><td id="annual"></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="ad-slot">広告スペース</div>
+
+  <section class="article">
+    <h2>実質時給の計算方法</h2>
+    <p>実質時給は「月収 ÷ 月の総労働時間(所定労働時間+残業時間)」で計算します。残業が多いほど実質時給は下がるため、給与の額面だけでは見えない働き方の実態を把握できます。</p>
+    <h2>月収別の時給換算の目安(残業なし・月160時間)</h2>
+    <table>
+      <tr><th>月収</th><th>時給換算</th></tr>
+      <tr><td>20万円</td><td>1,250円</td></tr>
+      <tr><td>25万円</td><td>1,563円</td></tr>
+      <tr><td>30万円</td><td>1,875円</td></tr>
+      <tr><td>40万円</td><td>2,500円</td></tr>
+      <tr><td>50万円</td><td>3,125円</td></tr>
+    </table>
+    <div class="note">※ 額面月収ベースの概算です。残業代が別途支給される場合は、残業代を含めた月収を入力してください。</div>
+  </section>
+
+  <div class="ad-slot">広告スペース</div>
+</main>
+<footer class="site-footer">
+  <div class="inner">
+    <div>© 2026 くらしの計算室</div>
+    <div><a href="../privacy.html">プライバシーポリシー</a> / <a href="../about.html">運営者情報</a></div>
+  </div>
+</footer>
+<script>
+function calc() {
+  const salary = Number(document.getElementById('salary').value);
+  const hours = Number(document.getElementById('hours').value);
+  const days = Number(document.getElementById('days').value);
+  const overtime = Number(document.getElementById('overtime').value) || 0;
+  if (!salary || salary <= 0 || !hours || !days) { alert('月収・労働時間・勤務日数を入力してください'); return; }
+
+  const totalHours = hours * days + overtime;
+  const hourly = salary / totalHours;
+
+  document.getElementById('hourly').textContent = Math.round(hourly).toLocaleString('ja-JP') + ' 円';
+  document.getElementById('total-hours').textContent = totalHours.toLocaleString('ja-JP') + ' 時間';
+  document.getElementById('annual').textContent = (salary * 12).toLocaleString('ja-JP') + ' 円';
+  document.getElementById('result').classList.add('show');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BMI計算ツール|適正体重・肥満度を自動判定 - くらしの計算室</title>
+<meta name="description" content="身長と体重を入力するだけでBMIと適正体重を自動計算。日本肥満学会の基準による肥満度判定つきの無料ツールです。">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="inner">
+    <a class="site-title" href="../index.html">くらしの<span>計算室</span></a>
+    <nav class="global-nav">
+      <a href="../index.html">ツール一覧</a>
+      <a href="../about.html">運営者情報</a>
+    </nav>
+  </div>
+</header>
+<main>
+  <p class="breadcrumb"><a href="../index.html">ホーム</a> › BMI計算</p>
+  <h1>BMI計算ツール(適正体重・肥満度判定)</h1>
+  <p class="lead">身長と体重を入力すると、BMI・肥満度判定・適正体重を表示します。</p>
+
+  <div class="card">
+    <form class="tool-form" onsubmit="return false;">
+      <div class="field-row">
+        <div>
+          <label for="height">身長(cm)</label>
+          <input type="number" id="height" placeholder="例: 170" min="50" max="250" step="0.1" inputmode="decimal">
+        </div>
+        <div>
+          <label for="weight">体重(kg)</label>
+          <input type="number" id="weight" placeholder="例: 65" min="10" max="300" step="0.1" inputmode="decimal">
+        </div>
+      </div>
+      <button class="btn" onclick="calc()">BMIを計算する</button>
+    </form>
+    <div class="result" id="result">
+      <div>あなたのBMI</div>
+      <div class="big" id="bmi"></div>
+      <table>
+        <tr><td>判定</td><td id="category"></td></tr>
+        <tr><td>適正体重(BMI 22)</td><td id="ideal"></td></tr>
+        <tr><td>適正体重との差</td><td id="diff"></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="ad-slot">広告スペース</div>
+
+  <section class="article">
+    <h2>BMIとは</h2>
+    <p>BMI(Body Mass Index)は「体重(kg) ÷ 身長(m)の2乗」で求められる体格指数です。日本肥満学会では、統計的に最も病気になりにくいBMI 22を「適正体重」としています。</p>
+    <h2>BMIの判定基準(日本肥満学会)</h2>
+    <table>
+      <tr><th>BMI</th><th>判定</th></tr>
+      <tr><td>18.5未満</td><td>低体重(やせ)</td></tr>
+      <tr><td>18.5〜25未満</td><td>普通体重</td></tr>
+      <tr><td>25〜30未満</td><td>肥満(1度)</td></tr>
+      <tr><td>30〜35未満</td><td>肥満(2度)</td></tr>
+      <tr><td>35〜40未満</td><td>肥満(3度)</td></tr>
+      <tr><td>40以上</td><td>肥満(4度)</td></tr>
+    </table>
+    <div class="note">※ BMIは筋肉量を考慮しないため、筋肉質の方は高めに出る傾向があります。健康状態の判断は医師にご相談ください。</div>
+  </section>
+
+  <div class="ad-slot">広告スペース</div>
+</main>
+<footer class="site-footer">
+  <div class="inner">
+    <div>© 2026 くらしの計算室</div>
+    <div><a href="../privacy.html">プライバシーポリシー</a> / <a href="../about.html">運営者情報</a></div>
+  </div>
+</footer>
+<script>
+function calc() {
+  const h = Number(document.getElementById('height').value);
+  const w = Number(document.getElementById('weight').value);
+  if (!h || !w || h <= 0 || w <= 0) { alert('身長と体重を入力してください'); return; }
+
+  const hm = h / 100;
+  const bmi = w / (hm * hm);
+  const ideal = 22 * hm * hm;
+  const diff = w - ideal;
+
+  let category;
+  if (bmi < 18.5) category = '低体重(やせ)';
+  else if (bmi < 25) category = '普通体重';
+  else if (bmi < 30) category = '肥満(1度)';
+  else if (bmi < 35) category = '肥満(2度)';
+  else if (bmi < 40) category = '肥満(3度)';
+  else category = '肥満(4度)';
+
+  document.getElementById('bmi').textContent = bmi.toFixed(1);
+  document.getElementById('category').textContent = category;
+  document.getElementById('ideal').textContent = ideal.toFixed(1) + ' kg';
+  document.getElementById('diff').textContent = (diff >= 0 ? '+' : '') + diff.toFixed(1) + ' kg';
+  document.getElementById('result').classList.add('show');
+}
+</script>
+</body>
+</html>

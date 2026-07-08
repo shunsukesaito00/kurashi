@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>積立シミュレーション|複利計算で将来いくらになるか自動計算 - くらしの計算室</title>
+<meta name="description" content="毎月の積立額・利回り・期間を入力するだけで、複利運用した場合の将来の資産額をシミュレーション。元本と運用益の内訳も表示します。">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="inner">
+    <a class="site-title" href="../index.html">くらしの<span>計算室</span></a>
+    <nav class="global-nav">
+      <a href="../index.html">ツール一覧</a>
+      <a href="../about.html">運営者情報</a>
+    </nav>
+  </div>
+</header>
+<main>
+  <p class="breadcrumb"><a href="../index.html">ホーム</a> › 積立シミュレーション</p>
+  <h1>積立シミュレーション(複利計算)</h1>
+  <p class="lead">毎月の積立額・想定利回り・期間から、将来の資産額を複利で計算します。NISAでの資産形成の目安にどうぞ。</p>
+
+  <div class="card">
+    <form class="tool-form" onsubmit="return false;">
+      <div class="field-row">
+        <div>
+          <label for="monthly">毎月の積立額(円)</label>
+          <input type="number" id="monthly" placeholder="例: 30000" min="0" inputmode="numeric">
+        </div>
+        <div>
+          <label for="rate">想定利回り(年率%)</label>
+          <input type="number" id="rate" placeholder="例: 5" min="0" max="30" step="0.1" value="5" inputmode="decimal">
+        </div>
+        <div>
+          <label for="years">積立期間(年)</label>
+          <input type="number" id="years" placeholder="例: 20" min="1" max="60" inputmode="numeric">
+        </div>
+      </div>
+      <button class="btn" onclick="calc()">シミュレーションする</button>
+    </form>
+    <div class="result" id="result">
+      <div>最終的な資産額(目安)</div>
+      <div class="big" id="total"></div>
+      <table>
+        <tr><td>積立元本</td><td id="principal"></td></tr>
+        <tr><td>運用益</td><td id="profit"></td></tr>
+        <tr><td>元本に対する増加率</td><td id="ratio"></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="ad-slot">広告スペース</div>
+
+  <section class="article">
+    <h2>複利の力とは</h2>
+    <p>複利とは、運用で得た利益を再投資することで「利益が利益を生む」仕組みです。期間が長いほど効果が大きくなるため、少額でも早く始めることが資産形成では有利とされています。</p>
+    <h2>毎月3万円を年利5%で積み立てた場合</h2>
+    <table>
+      <tr><th>期間</th><th>元本</th><th>資産額(目安)</th></tr>
+      <tr><td>10年</td><td>360万円</td><td>約466万円</td></tr>
+      <tr><td>20年</td><td>720万円</td><td>約1,233万円</td></tr>
+      <tr><td>30年</td><td>1,080万円</td><td>約2,497万円</td></tr>
+    </table>
+    <div class="note">※ 本シミュレーションは月次複利・利回り一定を仮定した概算であり、実際の運用成果を保証するものではありません。金融商品には価格変動リスクがあります。投資判断はご自身の責任でお願いします。</div>
+  </section>
+
+  <div class="ad-slot">広告スペース</div>
+</main>
+<footer class="site-footer">
+  <div class="inner">
+    <div>© 2026 くらしの計算室</div>
+    <div><a href="../privacy.html">プライバシーポリシー</a> / <a href="../about.html">運営者情報</a></div>
+  </div>
+</footer>
+<script>
+function yen(n) { return Math.round(n).toLocaleString('ja-JP') + ' 円'; }
+
+function calc() {
+  const monthly = Number(document.getElementById('monthly').value);
+  const rate = Number(document.getElementById('rate').value);
+  const years = Number(document.getElementById('years').value);
+  if (!monthly || monthly <= 0 || !years || years <= 0 || rate < 0) {
+    alert('積立額と期間を入力してください'); return;
+  }
+
+  const r = rate / 100 / 12;
+  const n = years * 12;
+  const total = r === 0 ? monthly * n : monthly * ((Math.pow(1 + r, n) - 1) / r);
+  const principal = monthly * n;
+
+  document.getElementById('total').textContent = yen(total);
+  document.getElementById('principal').textContent = yen(principal);
+  document.getElementById('profit').textContent = yen(total - principal);
+  document.getElementById('ratio').textContent = '+' + ((total / principal - 1) * 100).toFixed(1) + ' %';
+  document.getElementById('result').classList.add('show');
+}
+</script>
+</body>
+</html>

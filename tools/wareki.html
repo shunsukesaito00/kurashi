@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>西暦・和暦変換ツール|令和・平成・昭和を早見表付きで変換 - くらしの計算室</title>
+<meta name="description" content="西暦と和暦(令和・平成・昭和・大正・明治)を相互変換する無料ツール。履歴書や書類作成に便利な早見表付き。">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="inner">
+    <a class="site-title" href="../index.html">くらしの<span>計算室</span></a>
+    <nav class="global-nav">
+      <a href="../index.html">ツール一覧</a>
+      <a href="../about.html">運営者情報</a>
+    </nav>
+  </div>
+</header>
+<main>
+  <p class="breadcrumb"><a href="../index.html">ホーム</a> › 西暦・和暦変換</p>
+  <h1>西暦・和暦変換ツール</h1>
+  <p class="lead">西暦を入力すると和暦(元号)に、和暦を選ぶと西暦に変換します。履歴書や公的書類の記入にどうぞ。</p>
+
+  <div class="card">
+    <form class="tool-form" onsubmit="return false;">
+      <label for="seireki">西暦から変換</label>
+      <div class="field-row">
+        <div><input type="number" id="seireki" placeholder="例: 1995" min="1868" max="2100" inputmode="numeric"></div>
+        <div><button class="btn" style="margin-top:0" onclick="fromSeireki()">和暦にする</button></div>
+      </div>
+      <label>和暦から変換</label>
+      <div class="field-row">
+        <div>
+          <select id="gengo">
+            <option value="reiwa">令和</option>
+            <option value="heisei">平成</option>
+            <option value="showa">昭和</option>
+            <option value="taisho">大正</option>
+            <option value="meiji">明治</option>
+          </select>
+        </div>
+        <div><input type="number" id="nen" placeholder="年(例: 7)" min="1" inputmode="numeric"></div>
+        <div><button class="btn" style="margin-top:0" onclick="fromWareki()">西暦にする</button></div>
+      </div>
+    </form>
+    <div class="result" id="result">
+      <div class="big" id="answer"></div>
+      <div id="extra"></div>
+    </div>
+  </div>
+
+  <div class="ad-slot">広告スペース</div>
+
+  <section class="article">
+    <h2>和暦・西暦早見表(近年)</h2>
+    <table>
+      <tr><th>和暦</th><th>西暦</th><th>和暦</th><th>西暦</th></tr>
+      <tr><td>令和8年</td><td>2026年</td><td>平成30年</td><td>2018年</td></tr>
+      <tr><td>令和7年</td><td>2025年</td><td>平成20年</td><td>2008年</td></tr>
+      <tr><td>令和5年</td><td>2023年</td><td>平成10年</td><td>1998年</td></tr>
+      <tr><td>令和元年</td><td>2019年</td><td>平成元年</td><td>1989年</td></tr>
+      <tr><td>昭和60年</td><td>1985年</td><td>昭和40年</td><td>1965年</td></tr>
+    </table>
+    <h2>変換のコツ</h2>
+    <p>令和は「西暦 − 2018」、平成は「西暦 − 1988」、昭和は「西暦 − 1925」で年数を計算できます。例えば2026年は 2026 − 2018 = 令和8年です。</p>
+    <div class="note">※ 改元年(1989年、2019年など)は途中で元号が変わるため、月によって元号が異なります。本ツールでは両方の表記を表示します。</div>
+  </section>
+
+  <div class="ad-slot">広告スペース</div>
+</main>
+<footer class="site-footer">
+  <div class="inner">
+    <div>© 2026 くらしの計算室</div>
+    <div><a href="../privacy.html">プライバシーポリシー</a> / <a href="../about.html">運営者情報</a></div>
+  </div>
+</footer>
+<script>
+const ERAS = [
+  { key: 'reiwa', name: '令和', start: 2019, end: null },
+  { key: 'heisei', name: '平成', start: 1989, end: 2019 },
+  { key: 'showa', name: '昭和', start: 1926, end: 1989 },
+  { key: 'taisho', name: '大正', start: 1912, end: 1926 },
+  { key: 'meiji', name: '明治', start: 1868, end: 1912 }
+];
+
+function show(main, extra) {
+  document.getElementById('answer').textContent = main;
+  document.getElementById('extra').textContent = extra || '';
+  document.getElementById('result').classList.add('show');
+}
+
+function eraYearLabel(n) { return n === 1 ? '元年' : n + '年'; }
+
+function fromSeireki() {
+  const y = Number(document.getElementById('seireki').value);
+  if (!y || y < 1868 || y > 2100) { alert('1868〜2100の西暦を入力してください'); return; }
+  const matches = ERAS.filter(e => y >= e.start && (e.end === null || y <= e.end));
+  const label = matches.map(e => e.name + eraYearLabel(y - e.start + 1)).join(' / ');
+  const extra = matches.length > 1 ? '改元の年のため、月によって元号が異なります。' : '';
+  show(y + '年 = ' + label, extra);
+}
+
+function fromWareki() {
+  const key = document.getElementById('gengo').value;
+  const n = Number(document.getElementById('nen').value);
+  const era = ERAS.find(e => e.key === key);
+  if (!n || n < 1) { alert('年数を入力してください'); return; }
+  const y = era.start + n - 1;
+  const maxYear = era.end === null ? 2100 : era.end;
+  if (y > maxYear) { alert(era.name + eraYearLabel(n) + ' は存在しません'); return; }
+  show(era.name + eraYearLabel(n) + ' = 西暦' + y + '年');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>文字数カウントツール|リアルタイムで文字数・行数を計測 - くらしの計算室</title>
+<meta name="description" content="テキストを貼り付けるだけで文字数・空白を除いた文字数・行数・原稿用紙換算をリアルタイム表示。レポートやSNS投稿の文字数確認に。">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="inner">
+    <a class="site-title" href="../index.html">くらしの<span>計算室</span></a>
+    <nav class="global-nav">
+      <a href="../index.html">ツール一覧</a>
+      <a href="../about.html">運営者情報</a>
+    </nav>
+  </div>
+</header>
+<main>
+  <p class="breadcrumb"><a href="../index.html">ホーム</a> › 文字数カウント</p>
+  <h1>文字数カウントツール</h1>
+  <p class="lead">入力と同時に文字数を自動カウント。レポート・エントリーシート・SNS投稿の文字数確認にどうぞ。</p>
+
+  <div class="card">
+    <form class="tool-form" onsubmit="return false;">
+      <label for="text">テキスト</label>
+      <textarea id="text" rows="10" placeholder="ここに文章を入力または貼り付けてください"></textarea>
+    </form>
+    <div class="result show" id="result">
+      <table>
+        <tr><th>文字数(すべて)</th><th id="count-all">0 文字</th></tr>
+        <tr><td>文字数(空白・改行を除く)</td><td id="count-no-space">0 文字</td></tr>
+        <tr><td>行数</td><td id="count-lines">0 行</td></tr>
+        <tr><td>原稿用紙(400字)換算</td><td id="count-pages">0 枚</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="ad-slot">広告スペース</div>
+
+  <section class="article">
+    <h2>文字数の数え方について</h2>
+    <p>「すべて」は空白や改行も1文字として数えます。「空白・改行を除く」は、全角・半角スペースと改行を除いた純粋な文字数です。エントリーシートや小論文では空白を除いた文字数が指定されることが多いため、両方を確認できるようにしています。</p>
+    <h2>主なサービスの文字数制限</h2>
+    <table>
+      <tr><th>サービス・用途</th><th>制限の目安</th></tr>
+      <tr><td>X(旧Twitter)の投稿</td><td>全角140文字</td></tr>
+      <tr><td>エントリーシートの自己PR</td><td>300〜400字が一般的</td></tr>
+      <tr><td>メールの件名</td><td>20〜30字程度が読みやすい</td></tr>
+      <tr><td>ブログのメタディスクリプション</td><td>80〜120字程度</td></tr>
+    </table>
+    <div class="note">※ 入力されたテキストはブラウザ内でのみ処理され、サーバーには送信されません。</div>
+  </section>
+
+  <div class="ad-slot">広告スペース</div>
+</main>
+<footer class="site-footer">
+  <div class="inner">
+    <div>© 2026 くらしの計算室</div>
+    <div><a href="../privacy.html">プライバシーポリシー</a> / <a href="../about.html">運営者情報</a></div>
+  </div>
+</footer>
+<script>
+const textarea = document.getElementById('text');
+
+function update() {
+  const text = textarea.value;
+  const all = [...text].length;
+  const noSpace = [...text.replace(/[\s　]/g, '')].length;
+  const lines = text === '' ? 0 : text.split('\n').length;
+  const pages = (all / 400).toFixed(1);
+
+  document.getElementById('count-all').textContent = all.toLocaleString('ja-JP') + ' 文字';
+  document.getElementById('count-no-space').textContent = noSpace.toLocaleString('ja-JP') + ' 文字';
+  document.getElementById('count-lines').textContent = lines.toLocaleString('ja-JP') + ' 行';
+  document.getElementById('count-pages').textContent = pages + ' 枚';
+}
+
+textarea.addEventListener('input', update);
+</script>
+</body>
+</html>

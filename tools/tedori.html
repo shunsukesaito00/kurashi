@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>手取り計算ツール|月収から手取り額を自動計算(2026年版) - くらしの計算室</title>
+<meta name="description" content="月収(額面)を入力するだけで、社会保険料・所得税・住民税を差し引いた手取り額を自動計算。健康保険・厚生年金・雇用保険の内訳も表示します。">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="inner">
+    <a class="site-title" href="../index.html">くらしの<span>計算室</span></a>
+    <nav class="global-nav">
+      <a href="../index.html">ツール一覧</a>
+      <a href="../about.html">運営者情報</a>
+    </nav>
+  </div>
+</header>
+<main>
+  <p class="breadcrumb"><a href="../index.html">ホーム</a> › 手取り計算</p>
+  <h1>手取り計算ツール(月収から自動計算)</h1>
+  <p class="lead">月収(額面)を入力すると、社会保険料と税金を差し引いた手取り額の目安を計算します。</p>
+
+  <div class="card">
+    <form class="tool-form" id="form" onsubmit="return false;">
+      <label for="salary">月収(額面・円)</label>
+      <input type="number" id="salary" placeholder="例: 300000" min="0" inputmode="numeric">
+      <label for="bonus">年間ボーナス(円・なければ0)</label>
+      <input type="number" id="bonus" placeholder="例: 600000" min="0" value="0" inputmode="numeric">
+      <button class="btn" onclick="calc()">手取りを計算する</button>
+    </form>
+    <div class="result" id="result">
+      <div>毎月の手取り額(目安)</div>
+      <div class="big" id="net"></div>
+      <table>
+        <tr><td>健康保険料</td><td id="health"></td></tr>
+        <tr><td>厚生年金保険料</td><td id="pension"></td></tr>
+        <tr><td>雇用保険料</td><td id="emp"></td></tr>
+        <tr><td>所得税(月割)</td><td id="income-tax"></td></tr>
+        <tr><td>住民税(月割)</td><td id="resident-tax"></td></tr>
+        <tr><th>控除合計</th><th id="total-deduction"></th></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="ad-slot">広告スペース</div>
+
+  <section class="article">
+    <h2>手取り額の計算方法</h2>
+    <p>手取り額は「額面給与 − 社会保険料 − 所得税 − 住民税」で求められます。一般的に手取りは額面の75〜85%程度になります。</p>
+    <h3>差し引かれるものの内訳</h3>
+    <table>
+      <tr><th>項目</th><th>おおよその料率</th></tr>
+      <tr><td>健康保険料(協会けんぽ・本人負担)</td><td>約5%</td></tr>
+      <tr><td>厚生年金保険料(本人負担)</td><td>9.15%</td></tr>
+      <tr><td>雇用保険料(本人負担)</td><td>0.55%</td></tr>
+      <tr><td>所得税</td><td>課税所得に応じ5〜45%</td></tr>
+      <tr><td>住民税</td><td>約10%(前年所得に対して)</td></tr>
+    </table>
+    <h2>よくある質問</h2>
+    <h3>新社会人1年目は住民税が引かれない?</h3>
+    <p>住民税は前年の所得に対して課税されるため、新卒1年目は原則かかりません。2年目の6月から天引きが始まります。</p>
+    <h3>ボーナスからも保険料は引かれる?</h3>
+    <p>はい。賞与からも健康保険・厚生年金・雇用保険・所得税が差し引かれます。本ツールはボーナスを年収に含めて概算しています。</p>
+    <div class="note">※ 本ツールの結果は概算です。健康保険料率は都道府県や加入する健保組合で異なり、扶養家族の有無・各種控除によっても実際の手取りは変わります。正確な金額は給与明細・勤務先にご確認ください。</div>
+  </section>
+
+  <div class="ad-slot">広告スペース</div>
+</main>
+<footer class="site-footer">
+  <div class="inner">
+    <div>© 2026 くらしの計算室</div>
+    <div><a href="../privacy.html">プライバシーポリシー</a> / <a href="../about.html">運営者情報</a></div>
+  </div>
+</footer>
+<script>
+function yen(n) { return Math.round(n).toLocaleString('ja-JP') + ' 円'; }
+
+function incomeTaxAnnual(taxable) {
+  const brackets = [
+    [1950000, 0.05, 0],
+    [3300000, 0.10, 97500],
+    [6950000, 0.20, 427500],
+    [9000000, 0.23, 636000],
+    [18000000, 0.33, 1536000],
+    [40000000, 0.40, 2796000],
+    [Infinity, 0.45, 4796000]
+  ];
+  if (taxable <= 0) return 0;
+  for (const [limit, rate, deduction] of brackets) {
+    if (taxable <= limit) return taxable * rate - deduction;
+  }
+}
+
+function salaryDeduction(gross) {
+  if (gross <= 1625000) return 550000;
+  if (gross <= 1800000) return gross * 0.4 - 100000;
+  if (gross <= 3600000) return gross * 0.3 + 80000;
+  if (gross <= 6600000) return gross * 0.2 + 440000;
+  if (gross <= 8500000) return gross * 0.1 + 1100000;
+  return 1950000;
+}
+
+function calc() {
+  const salary = Number(document.getElementById('salary').value);
+  const bonus = Number(document.getElementById('bonus').value) || 0;
+  if (!salary || salary <= 0) { alert('月収を入力してください'); return; }
+
+  const annualGross = salary * 12 + bonus;
+
+  const healthMonthly = salary * 0.0495;
+  const pensionMonthly = salary * 0.0915;
+  const empMonthly = salary * 0.0055;
+  const socialAnnual = (healthMonthly + pensionMonthly + empMonthly) * 12
+    + bonus * (0.0495 + 0.0915 + 0.0055);
+
+  const taxable = Math.max(0, annualGross - salaryDeduction(annualGross) - socialAnnual - 480000);
+  const incomeTaxA = incomeTaxAnnual(taxable) * 1.021; // 復興特別所得税
+  const residentTaxable = Math.max(0, annualGross - salaryDeduction(annualGross) - socialAnnual - 430000);
+  const residentTaxA = residentTaxable * 0.10 + 5000;
+
+  // 所得税は年収に占める月給分のみを月割りにする(ボーナス分を除く)
+  const monthlyIncomeTax = incomeTaxA / 12 * (salary * 12 / annualGross);
+  const netSimple = salary - healthMonthly - pensionMonthly - empMonthly - monthlyIncomeTax - residentTaxA / 12;
+
+  document.getElementById('net').textContent = yen(netSimple);
+  document.getElementById('health').textContent = yen(healthMonthly);
+  document.getElementById('pension').textContent = yen(pensionMonthly);
+  document.getElementById('emp').textContent = yen(empMonthly);
+  document.getElementById('income-tax').textContent = yen(monthlyIncomeTax);
+  document.getElementById('resident-tax').textContent = yen(residentTaxA / 12);
+  document.getElementById('total-deduction').textContent = yen(salary - netSimple);
+  document.getElementById('result').classList.add('show');
+}
+</script>
+</body>
+</html>
