@@ -411,3 +411,6 @@ easy to change if you want something else."
 - The remote uses the SSH host alias `github-shunsukesaito00` (defined in
   `~/.ssh/config`) because the default SSH key belongs to a different GitHub
   account. Do not change the remote URL back to HTTPS or plain github.com.
+- The site is served by GitHub Pages from the `gh-pages` branch at
+  https://shunsukesaito00.github.io/kurashi/ . After pushing to `main`, also
+  run `git push origin main:gh-pages` so the live site stays in sync.
