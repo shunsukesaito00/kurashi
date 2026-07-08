@@ -66,6 +66,8 @@ cd scripts && npm install && npx playwright install chromium
 cd scripts && npm test
 ```
 
+各スクリプトの詳細は [scripts/README.md](scripts/README.md) を参照。
+
 ## 公開までの手順(必須)
 
 1. **ホスティング**: 完了済み。GitHub Pages で配信中です。
