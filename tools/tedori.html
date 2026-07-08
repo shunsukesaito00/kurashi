@@ -76,7 +76,11 @@
         <table id="cmp-table"></table>
         <div class="note cmp-print-note">※ ボーナスなし・扶養なしの概算です。住民税は入力した月収が1年続いた場合の見込み額で計算しています。正確な金額は給与明細・勤務先にご確認ください。</div>
       </div>
-      <button class="btn btn-outline no-print" id="cmp-print-btn" style="display:none;margin-top:1rem;" onclick="printCompare()">比較結果を印刷する</button>
+      <div class="cmp-actions no-print" id="cmp-actions" style="display:none;">
+        <button class="btn btn-outline" onclick="printCompare()">比較結果を印刷する</button>
+        <button class="btn btn-outline" id="cmp-copy-btn" onclick="copyCompareLink()">共有リンクをコピー</button>
+      </div>
+      <p class="note no-print" id="cmp-share-hint" style="display:none;margin:0.5rem 0 0;background:transparent;padding:0;">URLに月収が含まれます。共有先で同じ比較結果が自動表示されます。</p>
     </div>
   </div>
 
@@ -204,8 +208,53 @@ function compare() {
   document.getElementById('cmp-table').innerHTML = html;
   document.getElementById('cmp-print-date').textContent =
     '計算日: ' + new Date().toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' });
-  document.getElementById('cmp-print-btn').style.display = 'inline-block';
+  document.getElementById('cmp-actions').style.display = 'flex';
+  document.getElementById('cmp-share-hint').style.display = 'block';
   document.getElementById('cmp-result').classList.add('show');
+  updateCompareUrl();
+}
+
+function updateCompareUrl() {
+  const params = new URLSearchParams();
+  [['cmp-a', 'a'], ['cmp-b', 'b'], ['cmp-c', 'c']].forEach(([id, key]) => {
+    const v = Number(document.getElementById(id).value);
+    if (v > 0) params.set(key, v);
+  });
+  const qs = params.toString();
+  const url = window.location.pathname + (qs ? '?' + qs : '');
+  history.replaceState(null, '', url);
+}
+
+function copyCompareLink() {
+  const url = window.location.href;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(showCopyDone).catch(() => fallbackCopy(url));
+  } else {
+    fallbackCopy(url);
+  }
+}
+
+function fallbackCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.left = '-9999px';
+  document.body.appendChild(ta);
+  ta.select();
+  try {
+    document.execCommand('copy');
+    showCopyDone();
+  } catch (e) {
+    alert('コピーに失敗しました');
+  }
+  document.body.removeChild(ta);
+}
+
+function showCopyDone() {
+  const btn = document.getElementById('cmp-copy-btn');
+  const orig = btn.textContent;
+  btn.textContent = 'コピーしました';
+  setTimeout(() => { btn.textContent = orig; }, 2000);
 }
 
 function printCompare() {
@@ -214,6 +263,20 @@ function printCompare() {
   }
   window.print();
 }
+
+(function initFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const a = Number(params.get('a'));
+  const b = Number(params.get('b'));
+  const c = Number(params.get('c'));
+  if (a > 0) document.getElementById('cmp-a').value = a;
+  if (b > 0) document.getElementById('cmp-b').value = b;
+  if (c > 0) document.getElementById('cmp-c').value = c;
+  if (a > 0 && b > 0) {
+    compare();
+    document.getElementById('compare-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+})();
 </script>
 </body>
 </html>
