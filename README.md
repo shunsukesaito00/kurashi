@@ -31,12 +31,16 @@ python3 -m http.server 8000
 
 ## 公開までの手順(必須)
 
-1. **ホスティング**: GitHub Pages / Cloudflare Pages / Netlify のいずれかに無料デプロイ。
+1. **ホスティング**: 完了済み。GitHub Pages で配信中です。
+   公開URL: https://shunsukesaito00.github.io/kurashi/
+   `main` へのプッシュ後は `git push origin main:gh-pages` で本番を同期する。
 2. **独自ドメイン取得(強く推奨)**: AdSense はサブドメイン(`*.github.io` 等)では
    審査に通りにくいため、独自ドメイン(年1,000〜1,500円程度)を取得して割り当てる。
-3. **プレースホルダの置換**:
-   - `about.html` の運営者名・連絡先を実際の情報に書き換える
-   - `sitemap.xml` と `robots.txt` の `YOUR-DOMAIN.example` を実ドメインに置換する
+3. **残りのプレースホルダ置換**:
+   - `about.html` の運営者名・連絡先(`準備中` 表記)を実際の情報に書き換える
+   - 独自ドメイン取得後: `sitemap.xml` と `robots.txt` の
+     `https://shunsukesaito00.github.io/kurashi/` を実ドメインに置換する
+     (現在は github.io URL 済み。`YOUR-DOMAIN.example` は残っていない)
 4. **Google Search Console に登録**し、`sitemap.xml` を送信する。
 
 ## 収益化ロードマップ(月5万円へ)— 2026年7月改訂版
