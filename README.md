@@ -83,7 +83,7 @@ cd scripts && npm test
    - 独自ドメイン取得後: `sitemap.xml` と `robots.txt` の
      `https://shunsukesaito00.github.io/kurashi/` を実ドメインに置換する
      (現在は github.io URL 済み。`YOUR-DOMAIN.example` は残っていない)
-4. **Google Search Console に登録**し、`sitemap.xml` を送信する。
+4. **Google Search Console に登録**し、`sitemap.xml` を送信する。手順は下記「Search Console 登録〜sitemap送信」
 
 ## 収益化ロードマップ(月5万円へ)— 2026年7月改訂版(進捗更新)
 
@@ -123,7 +123,7 @@ cd scripts && npm test
 1. **ASP登録・提携申請**(A8.net / もしもアフィリエイト等) — 手順は下記「A8.net 登録〜広告設置」
 2. **広告コード設置** — `tools/tsumitate.html`・`tools/jikyu.html`・`tools/tedori.html` の `aff-slot` に貼り付け
 3. **`about.html` を実名義で埋める** — 完了（運営者: 斎藤 俊介、連絡先メール設置済み）
-4. **Google Search Console 登録** + `sitemap.xml` 送信(確認タグは運営者取得)
+4. **Google Search Console 登録** + `sitemap.xml` 送信 — 手順は下記「Search Console 登録〜sitemap送信」
 5. **独自ドメイン取得**(強く推奨) — `github.io` のままでは AdSense 審査が不利。取得後は sitemap・robots・canonical を一括置換
 
 **AdSense**: 申請はするが主軸にしない。独自ドメイン + 運営者情報充実後に申請。全ページの `ad-slot` はプレースホルダのまま。
@@ -200,6 +200,76 @@ cd scripts && npm test
 | 初成約 | 設置後すぐ〜数週間（流入次第） |
 
 **もしもアフィリエイトを併用する場合**: A8.netで承認が取れない案件の補完用。手順は A8.net と同型（登録 → メディア `https://shunsukesaito00.github.io/kurashi/` → 提携申請 → コード貼付）。同一 aff-slot に2社のASPコードを混在させず、枠ごとに1社ずつ割り当てる。
+
+#### Search Console 登録〜sitemap送信（運営者作業）
+
+[Google Search Console](https://search.google.com/search-console) で進める。サイトのインデックス登録と検索パフォーマンス確認に使う。AdSense申請前の準備としても推奨。
+
+**本サイトで使うURL**
+
+| 項目 | 値 |
+|---|---|
+| プロパティ種別 | **URLプレフィックス**（`github.io/リポジトリ名` 形式のため） |
+| 登録するURL | `https://shunsukesaito00.github.io/kurashi/` |
+| sitemap URL | `https://shunsukesaito00.github.io/kurashi/sitemap.xml` |
+| robots.txt | `https://shunsukesaito00.github.io/kurashi/robots.txt`（`Sitemap:` 行あり） |
+
+`sitemap.xml` には **13 URL**（トップ + 11ツール + about）が登録済み。`privacy.html` は `noindex` のため含めない。
+
+**Step 1: プロパティを追加（約5分）**
+
+1. [Search Console](https://search.google.com/search-console) に Google アカウントでログイン
+2. 左上のプロパティ選択 →「プロパティを追加」
+3. **URLプレフィックス**を選び、`https://shunsukesaito00.github.io/kurashi/` を入力 → 続行
+4. 所有権の確認方法を選ぶ（GitHub Pages 静的サイト向けのおすすめ順）:
+
+| 方法 | 手順 | 備考 |
+|---|---|---|
+| **HTMLファイル**（推奨） | Search Console が表示する `googlexxxxx.html` をリポジトリ直下に置く | 取得後、エージェントに「確認用HTMLを配置して」と依頼可。デプロイ後に「確認」をクリック |
+| **HTMLタグ** | `<meta name="google-site-verification" content="…" />` を `index.html` の `<head>` 内に追加 | 同上。エージェントが1行追加してデプロイ |
+| DNSレコード | ドメインのTXTレコードを追加 | **独自ドメイン取得後**に使う。現状の `github.io` では不可 |
+
+5. 確認が成功すると「所有権を確認しました」と表示される
+
+**確認用ファイルを置く場合のデプロイ手順（エージェント向けメモ）**
+
+```bash
+# 例: Search Console からダウンロードした googlexxxxx.html をリポジトリ直下に配置
+git add googlexxxxx.html
+git commit -m "Search Console 所有権確認用HTMLを追加"
+git push origin main && git push origin main:gh-pages
+```
+
+配置後、ブラウザで `https://shunsukesaito00.github.io/kurashi/googlexxxxx.html` が開けることを確認してから Search Console で「確認」を押す。
+
+**Step 2: sitemap を送信（約2分）**
+
+1. Search Console 左メニュー →「サイトマップ」（または「Sitemaps」）
+2. 「新しいサイトマップの追加」に `sitemap.xml` と入力 → 送信
+   - フルURLではなく **`sitemap.xml` のみ**でよい（プレフィックスが既に登録済みのため）
+3. 状態が「成功」になれば完了。初回は数時間〜数日かかることがある
+
+**Step 3: 動作確認**
+
+| 確認項目 | 方法 |
+|---|---|
+| sitemap が読める | ブラウザで `https://shunsukesaito00.github.io/kurashi/sitemap.xml` を開く |
+| robots が正しい | `robots.txt` の `Sitemap:` が上記URLを指しているか確認（済） |
+| インデックス状況 | Search Console →「ページ」→ 登録済みURL数が増えていくか（即日反映されない） |
+| 手動インデックス（任意） | 上部のURL検査に `https://shunsukesaito00.github.io/kurashi/tools/tedori.html` 等を入力 →「インデックス登録をリクエスト」 |
+
+**独自ドメイン取得後にやること**
+
+1. Search Console に**新しいURLプレフィックス**（例: `https://kurashi.example.com/`）を追加し、再確認
+2. `sitemap.xml`・`robots.txt`・全HTMLの `canonical` を新ドメインに一括置換してデプロイ
+3. 新プロパティに `sitemap.xml` を再送信
+4. 旧 `github.io` プロパティはしばらく併存してよい（移行期間のデータ参照用）
+
+**よくあるつまずき**
+
+- **URLプレフィックスとドメインプロパティを混同** — 本サイトは `…/kurashi/` まで含めたプレフィックス登録が正しい
+- **確認ファイルが404** — `gh-pages` への push を忘れている、またはファイルがリポジトリ直下ではない
+- **sitemap が「取得できませんでした」** — デプロイ直後は数分待つ。URLの typo（`/kurashi` の有無）を確認
 
 ### フェーズ2: 検索非依存の販売チャネル(2〜4か月)
 
