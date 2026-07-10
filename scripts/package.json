@@ -4,6 +4,7 @@
   "scripts": {
     "check:demo-sync": "node check-demo-sync.mjs",
     "check:affiliate-sections": "node check-affiliate-sections.mjs",
+    "replace-site-url": "node replace-site-url.mjs",
     "test:share-urls": "node verify-share-urls.mjs",
     "test": "npm run check:demo-sync && npm run check:affiliate-sections && npm run test:share-urls"
   },

@@ -124,7 +124,7 @@ cd scripts && npm test
 2. **広告コード設置** — `tools/tsumitate.html`・`tools/jikyu.html`・`tools/tedori.html` の `aff-slot` に貼り付け
 3. **`about.html` を実名義で埋める** — 完了（運営者: 斎藤 俊介、連絡先メール設置済み）
 4. **Google Search Console 登録** + `sitemap.xml` 送信 — 手順は下記「Search Console 登録〜sitemap送信」
-5. **独自ドメイン取得**(強く推奨) — `github.io` のままでは AdSense 審査が不利。取得後は sitemap・robots・canonical を一括置換
+5. **独自ドメイン取得**(強く推奨) — `github.io` のままでは AdSense 審査が不利。取得後は `cd scripts && npm run replace-site-url -- --to https://YOUR-DOMAIN --dry-run` で確認してから本実行 → `main` / `gh-pages` にデプロイ
 
 **AdSense**: 申請はするが主軸にしない。独自ドメイン + 運営者情報充実後に申請。全ページの `ad-slot` はプレースホルダのまま。
 
@@ -261,9 +261,10 @@ git push origin main && git push origin main:gh-pages
 **独自ドメイン取得後にやること**
 
 1. Search Console に**新しいURLプレフィックス**（例: `https://kurashi.example.com/`）を追加し、再確認
-2. `sitemap.xml`・`robots.txt`・全HTMLの `canonical` を新ドメインに一括置換してデプロイ
-3. 新プロパティに `sitemap.xml` を再送信
-4. 旧 `github.io` プロパティはしばらく併存してよい（移行期間のデータ参照用）
+2. `cd scripts && npm run replace-site-url -- --to https://kurashi.example.com` で URL を一括置換（事前に `--dry-run` で確認）
+3. `git diff` → commit → `git push origin main && git push origin main:gh-pages`
+4. 新プロパティに `sitemap.xml` を再送信
+5. 旧 `github.io` プロパティはしばらく併存してよい（移行期間のデータ参照用）
 
 **よくあるつまずき**
 
