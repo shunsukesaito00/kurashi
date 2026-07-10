@@ -3,8 +3,9 @@
   "type": "module",
   "scripts": {
     "check:demo-sync": "node check-demo-sync.mjs",
+    "check:affiliate-sections": "node check-affiliate-sections.mjs",
     "test:share-urls": "node verify-share-urls.mjs",
-    "test": "npm run check:demo-sync && npm run test:share-urls"
+    "test": "npm run check:demo-sync && npm run check:affiliate-sections && npm run test:share-urls"
   },
   "dependencies": {
     "playwright": "1.61.1"
