@@ -7,13 +7,14 @@
  *   node set-booth-url.mjs --url https://example.booth.pm/items/123
  *   node set-booth-url.mjs --clear
  */
-import { readFileSync, writeFileSync, readdirSync, statSync } from 'fs';
-import { dirname, join, relative } from 'path';
+import { readFileSync, writeFileSync } from 'fs';
+import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import {
   BOOTH_URL_ATTR_PATTERN,
   REQUIRED_BOOTH_FILES,
   boothStructureMissing,
+  findExtraBoothHtmlFiles,
   isRequiredBoothFile,
 } from './booth-config.mjs';
 
@@ -31,32 +32,6 @@ function parseArgs(argv) {
     else if (!opts.url && !opts.clear) opts.url = arg;
   }
   return opts;
-}
-
-function collectHtmlFiles(dir, acc = []) {
-  for (const name of readdirSync(dir)) {
-    if (name === 'node_modules' || name === '.git') continue;
-    const path = join(dir, name);
-    const st = statSync(path);
-    if (st.isDirectory()) {
-      collectHtmlFiles(path, acc);
-      continue;
-    }
-    if (path.endsWith('.html')) acc.push(path);
-  }
-  return acc;
-}
-
-function findExtraBoothFiles() {
-  const extras = [];
-  for (const file of collectHtmlFiles(root)) {
-    const rel = relative(root, file);
-    if (isRequiredBoothFile(rel)) continue;
-    if (readFileSync(file, 'utf8').includes('data-booth-url=')) {
-      extras.push(rel);
-    }
-  }
-  return extras.sort();
 }
 
 function escapeAttr(value) {
@@ -128,7 +103,7 @@ for (const rel of REQUIRED_BOOTH_FILES.filter(isRequiredBoothFile)) {
   }
 }
 
-const extras = findExtraBoothFiles();
+const extras = findExtraBoothHtmlFiles(root);
 
 if (changed.length === 0) {
   console.log('変更なし: 必須ファイルの data-booth-url は既に同じ値です。');

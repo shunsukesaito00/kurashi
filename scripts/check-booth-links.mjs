@@ -5,64 +5,20 @@
  * 必須3ファイルの URL 未設定を FAIL にできる。必須外の空属性は WARN のみ。
  * HTTPサーバー不要。
  */
-import { readFileSync, readdirSync, statSync } from 'fs';
-import { dirname, join, relative } from 'path';
+import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import {
-  BOOTH_URL_PATTERN,
   REQUIRED_BOOTH_FILES,
   boothUrlPending,
   isRequiredBoothFile,
+  scanBoothLinks,
 } from './booth-config.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const strict =
   process.argv.includes('--strict') || process.env.BOOTH_URL_STRICT === '1';
 
-function collectHtmlFiles(dir, acc = []) {
-  for (const name of readdirSync(dir)) {
-    if (name === 'node_modules' || name === '.git') continue;
-    const path = join(dir, name);
-    if (statSync(path).isDirectory()) {
-      collectHtmlFiles(path, acc);
-      continue;
-    }
-    if (path.endsWith('.html')) acc.push(path);
-  }
-  return acc;
-}
-
-function scanBoothLinks() {
-  const configured = [];
-  const extraPending = [];
-  const withAttr = new Set();
-
-  for (const file of collectHtmlFiles(root)) {
-    const html = readFileSync(file, 'utf8');
-    const rel = relative(root, file);
-    const matches = [...html.matchAll(BOOTH_URL_PATTERN)];
-    if (matches.length === 0) continue;
-
-    withAttr.add(rel);
-    const isRequired = isRequiredBoothFile(rel);
-    for (const match of matches) {
-      const url = match[1].trim();
-      if (url) {
-        configured.push({ file: rel, url, required: isRequired });
-      } else if (!isRequired) {
-        extraPending.push(rel);
-      }
-    }
-  }
-
-  return {
-    configured,
-    extraPending: [...new Set(extraPending)],
-    withAttr,
-  };
-}
-
-const { configured, extraPending, withAttr } = scanBoothLinks();
+const { configured, extraPending, withAttr } = scanBoothLinks(root);
 const pending = boothUrlPending(root);
 
 const missingRequired = REQUIRED_BOOTH_FILES.filter(
