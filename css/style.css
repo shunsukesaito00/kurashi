@@ -281,6 +281,20 @@ h1 {
   padding: 1rem;
 }
 
+.aff-slot:has(a) {
+  border-style: solid;
+  border-color: var(--border);
+  background: transparent;
+  color: inherit;
+  min-height: auto;
+  padding: 0.5rem;
+}
+
+.aff-slot img[width="468"] {
+  max-width: 100%;
+  height: auto;
+}
+
 .step-list {
   counter-reset: step;
   list-style: none;
