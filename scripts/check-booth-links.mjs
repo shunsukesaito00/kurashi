@@ -1,15 +1,17 @@
 #!/usr/bin/env node
 /**
- * BOOTH 導線（data-booth-url）の状態を確認する。
- * 出品前は警告のみ（exit 0）。本番化時は --strict または環境変数 BOOTH_URL_STRICT=1 で
+ * BOOTH 導線（data-booth-url）と出品ZIP（同梱3ファイル）の状態を確認する。
+ * 出品前は URL 未設定は警告のみ（exit 0）。本番化時は --strict または環境変数 BOOTH_URL_STRICT=1 で
  * 必須3ファイルの URL 未設定を FAIL にできる。必須外の空属性は WARN のみ。
- * HTTPサーバー不要。
+ * 出品ZIPの同梱不足は常に FAIL（exit 1）。HTTPサーバー不要。
  */
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import {
+  BOOTH_ZIP_ENTRIES,
   REQUIRED_BOOTH_FILES,
   boothUrlPending,
+  boothZipStatus,
   isRequiredBoothFile,
   scanBoothLinks,
 } from './booth-config.mjs';
@@ -45,6 +47,16 @@ if (missingRequired.length > 0) {
 
 console.log(
   `OK: BOOTH 導線構造 — 必須 ${REQUIRED_BOOTH_FILES.length} ファイル揃い (${REQUIRED_BOOTH_FILES.join(', ')})`,
+);
+
+const boothZip = boothZipStatus(root);
+if (!boothZip.ok) {
+  console.error(`FAIL: BOOTH 出品ZIP — ${boothZip.block}`);
+  process.exit(1);
+}
+
+console.log(
+  `OK: BOOTH 出品ZIP — 同梱3ファイル揃い (${BOOTH_ZIP_ENTRIES.join(', ')})`,
 );
 
 for (const { file, url, required } of configured) {

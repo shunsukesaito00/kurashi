@@ -1,11 +1,11 @@
 import { strict as assert } from 'node:assert';
-import { spawnSync } from 'node:child_process';
+import { execSync, spawnSync } from 'node:child_process';
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { describe, it } from 'node:test';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { REQUIRED_BOOTH_FILES } from './booth-config.mjs';
+import { BOOTH_ZIP_ENTRIES, REQUIRED_BOOTH_FILES } from './booth-config.mjs';
 import { boothCliChildEnv } from './booth-cli-test-helpers.mjs';
 
 const scriptsDir = dirname(fileURLToPath(import.meta.url));
@@ -31,6 +31,24 @@ function withTempFixture(fn) {
     return fn(fixtureRoot);
   } finally {
     rmSync(fixtureRoot, { recursive: true, force: true });
+  }
+}
+
+function writeBoothZipFixture(fixtureRoot, entries = BOOTH_ZIP_ENTRIES) {
+  const productsDir = join(fixtureRoot, 'products');
+  mkdirSync(productsDir, { recursive: true });
+  const files = entries.map((name) => {
+    const filePath = join(productsDir, name);
+    writeFileSync(filePath, 'fixture', 'utf8');
+    return filePath;
+  });
+  const zipPath = join(productsDir, 'tedori-kakei-booth.zip');
+  execSync(`zip -j -q "${zipPath}" ${files.map((file) => `"${file}"`).join(' ')}`);
+}
+
+function writeRequiredBoothHtmlFixture(fixtureRoot, url = '') {
+  for (const file of REQUIRED_BOOTH_FILES) {
+    writeHtmlFixture(fixtureRoot, file, htmlWithBoothAttr(url));
   }
 }
 
@@ -64,14 +82,14 @@ describe('check-booth-links.mjs CLI', () => {
 
   it('必須3ファイルの URL 未設定かつ --strict 指定時は exit code 1 を返す', () => {
     withTempFixture((fixtureRoot) => {
-      for (const file of REQUIRED_BOOTH_FILES) {
-        writeHtmlFixture(fixtureRoot, file, htmlWithBoothAttr());
-      }
+      writeRequiredBoothHtmlFixture(fixtureRoot);
+      writeBoothZipFixture(fixtureRoot);
 
       const result = runCheckBoothLinks(fixtureRoot, ['--strict']);
       assert.equal(result.status, 1);
       assert.match(result.stderr, /FAIL: BOOTH 商品URL 未設定（必須）/);
       assert.match(result.stdout, /OK: BOOTH 導線構造/);
+      assert.match(result.stdout, /OK: BOOTH 出品ZIP/);
       for (const file of REQUIRED_BOOTH_FILES) {
         assert.match(result.stderr, new RegExp(file.replace('.', '\\.')));
       }
@@ -80,13 +98,13 @@ describe('check-booth-links.mjs CLI', () => {
 
   it('必須3ファイルの URL 未設定かつ --strict なしのときは exit code 0 を返す', () => {
     withTempFixture((fixtureRoot) => {
-      for (const file of REQUIRED_BOOTH_FILES) {
-        writeHtmlFixture(fixtureRoot, file, htmlWithBoothAttr());
-      }
+      writeRequiredBoothHtmlFixture(fixtureRoot);
+      writeBoothZipFixture(fixtureRoot);
 
       const result = runCheckBoothLinks(fixtureRoot);
       assert.equal(result.status, 0);
       assert.match(result.stdout, /OK: BOOTH 導線構造/);
+      assert.match(result.stdout, /OK: BOOTH 出品ZIP/);
       assert.match(result.stdout, /WARN: BOOTH 商品URL 未設定（必須）/);
       for (const file of REQUIRED_BOOTH_FILES) {
         assert.match(result.stdout, new RegExp(file.replace('.', '\\.')));
@@ -99,13 +117,13 @@ describe('check-booth-links.mjs CLI', () => {
     process.env.BOOTH_URL_STRICT = '1';
     try {
       withTempFixture((fixtureRoot) => {
-        for (const file of REQUIRED_BOOTH_FILES) {
-          writeHtmlFixture(fixtureRoot, file, htmlWithBoothAttr());
-        }
+        writeRequiredBoothHtmlFixture(fixtureRoot);
+        writeBoothZipFixture(fixtureRoot);
 
         const result = runCheckBoothLinks(fixtureRoot);
         assert.equal(result.status, 0);
         assert.match(result.stdout, /OK: BOOTH 導線構造/);
+      assert.match(result.stdout, /OK: BOOTH 出品ZIP/);
         assert.match(result.stdout, /WARN: BOOTH 商品URL 未設定（必須）/);
         assert.doesNotMatch(result.stderr, /FAIL: BOOTH 商品URL 未設定（必須）/);
         for (const file of REQUIRED_BOOTH_FILES) {
@@ -125,9 +143,8 @@ describe('check-booth-links.mjs CLI', () => {
     const boothUrl = 'https://example.booth.pm/items/123456';
 
     withTempFixture((fixtureRoot) => {
-      for (const file of REQUIRED_BOOTH_FILES) {
-        writeHtmlFixture(fixtureRoot, file, htmlWithBoothAttr(boothUrl));
-      }
+      writeRequiredBoothHtmlFixture(fixtureRoot, boothUrl);
+      writeBoothZipFixture(fixtureRoot);
 
       const result = runCheckBoothLinks(fixtureRoot);
       assert.equal(result.status, 0);
@@ -136,6 +153,7 @@ describe('check-booth-links.mjs CLI', () => {
         /OK: BOOTH 導線 — 必須ファイルの data-booth-url はすべて設定済みです。/,
       );
       assert.match(result.stdout, /OK: BOOTH 導線構造/);
+      assert.match(result.stdout, /OK: BOOTH 出品ZIP/);
       for (const file of REQUIRED_BOOTH_FILES) {
         assert.match(result.stdout, new RegExp(file.replace('.', '\\.')));
       }
@@ -146,9 +164,8 @@ describe('check-booth-links.mjs CLI', () => {
     const boothUrl = 'https://example.booth.pm/items/123456';
 
     withTempFixture((fixtureRoot) => {
-      for (const file of REQUIRED_BOOTH_FILES) {
-        writeHtmlFixture(fixtureRoot, file, htmlWithBoothAttr(boothUrl));
-      }
+      writeRequiredBoothHtmlFixture(fixtureRoot, boothUrl);
+      writeBoothZipFixture(fixtureRoot);
       writeHtmlFixture(fixtureRoot, 'privacy.html', htmlWithBoothAttr());
 
       const result = runCheckBoothLinks(fixtureRoot);
@@ -157,6 +174,7 @@ describe('check-booth-links.mjs CLI', () => {
         result.stdout,
         /OK: BOOTH 導線 — 必須ファイルの data-booth-url はすべて設定済みです。/,
       );
+      assert.match(result.stdout, /OK: BOOTH 出品ZIP/);
       assert.match(
         result.stdout,
         /WARN  privacy\.html  \(必須外・data-booth-url="" — 更新対象外\)/,
@@ -165,6 +183,30 @@ describe('check-booth-links.mjs CLI', () => {
         result.stdout,
         /WARN: 必須外の空 data-booth-url 1 ファイル: privacy\.html/,
       );
+    });
+  });
+
+  it('出品ZIP が無いときは exit code 1 を返す', () => {
+    withTempFixture((fixtureRoot) => {
+      writeRequiredBoothHtmlFixture(fixtureRoot);
+
+      const result = runCheckBoothLinks(fixtureRoot);
+      assert.equal(result.status, 1);
+      assert.match(result.stderr, /FAIL: BOOTH 出品ZIP/);
+      assert.match(result.stdout, /OK: BOOTH 導線構造/);
+    });
+  });
+
+  it('出品ZIP に同梱ファイルが不足しているときは exit code 1 を返す', () => {
+    withTempFixture((fixtureRoot) => {
+      writeRequiredBoothHtmlFixture(fixtureRoot);
+      writeBoothZipFixture(fixtureRoot, ['tedori-kakei-template.xlsx']);
+
+      const result = runCheckBoothLinks(fixtureRoot);
+      assert.equal(result.status, 1);
+      assert.match(result.stderr, /FAIL: BOOTH 出品ZIP/);
+      assert.match(result.stderr, /manual\.pdf/);
+      assert.match(result.stdout, /OK: BOOTH 導線構造/);
     });
   });
 });

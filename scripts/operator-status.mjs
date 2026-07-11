@@ -122,7 +122,7 @@ if (boothPending.length > 0) {
 console.log(`\nエージェント側の準備: 完了（ツール・導線・テスト・手順書）`);
 console.log(`運営者側の未完了: ${pending} 項目`);
 console.log(
-  '参考: npm run test:booth — BOOTH導線のユニット・CLI・クライアント（JSDOM）テスト 62件（cd scripts && npm run test:booth）',
+  '参考: npm run test:booth — BOOTH導線のユニット・CLI・クライアント（JSDOM）テスト 64件（cd scripts && npm run test:booth）',
 );
 
 if (pending > 0) {
