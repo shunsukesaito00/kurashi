@@ -88,4 +88,25 @@ describe('check-booth-links.mjs CLI', () => {
       }
     });
   });
+
+  it('必須3ファイルすべてに URL 設定済みなら exit code 0 で完了メッセージを出す', () => {
+    const boothUrl = 'https://example.booth.pm/items/123456';
+
+    withTempFixture((fixtureRoot) => {
+      for (const file of REQUIRED_BOOTH_FILES) {
+        writeHtmlFixture(fixtureRoot, file, htmlWithBoothAttr(boothUrl));
+      }
+
+      const result = runCheckBoothLinks(fixtureRoot);
+      assert.equal(result.status, 0);
+      assert.match(
+        result.stdout,
+        /OK: BOOTH 導線 — 必須ファイルの data-booth-url はすべて設定済みです。/,
+      );
+      assert.match(result.stdout, /OK: BOOTH 導線構造/);
+      for (const file of REQUIRED_BOOTH_FILES) {
+        assert.match(result.stdout, new RegExp(file.replace('.', '\\.')));
+      }
+    });
+  });
 });
