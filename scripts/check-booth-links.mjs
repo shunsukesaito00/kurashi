@@ -14,7 +14,18 @@ import {
   scanBoothLinks,
 } from './booth-config.mjs';
 
-const root = join(dirname(fileURLToPath(import.meta.url)), '..');
+function resolveRoot() {
+  const rootArgIndex = process.argv.indexOf('--root');
+  if (rootArgIndex !== -1 && process.argv[rootArgIndex + 1]) {
+    return process.argv[rootArgIndex + 1];
+  }
+  if (process.env.BOOTH_CHECK_ROOT) {
+    return process.env.BOOTH_CHECK_ROOT;
+  }
+  return join(dirname(fileURLToPath(import.meta.url)), '..');
+}
+
+const root = resolveRoot();
 const strict =
   process.argv.includes('--strict') || process.env.BOOTH_URL_STRICT === '1';
 
