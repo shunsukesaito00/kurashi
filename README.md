@@ -121,7 +121,7 @@ cd scripts && npm test
 収益化の律速はすべて**運営者本人の作業**。エージェント側でできる準備は済んでいる。
 
 1. **ASP登録・提携申請**(A8.net / もしもアフィリエイト等) — 手順は下記「A8.net 登録〜広告設置」
-2. **広告コード設置** — `tools/tsumitate.html`・`tools/jikyu.html`・`tools/tedori.html` の `aff-slot` に貼り付け
+2. **広告コード設置** — 証券は `tsumitate.html` 済み。転職は `affiliates/job-slot1.html`・`job-slot2.html` にHTMLを貼り付け → `cd scripts && npm run apply-job-affiliates`
 3. **`about.html` を実名義で埋める** — 完了（運営者: 斎藤 俊介、連絡先メール設置済み）
 4. **Google Search Console 登録** + `sitemap.xml` 送信 — 手順は下記「Search Console 登録〜sitemap送信」
 5. **独自ドメイン取得**(強く推奨) — `github.io` のままでは AdSense 審査が不利。取得後は `cd scripts && npm run replace-site-url -- --to https://YOUR-DOMAIN --dry-run` で確認してから本実行 → `main` / `gh-pages` にデプロイ
