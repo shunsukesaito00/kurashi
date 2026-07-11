@@ -30,3 +30,11 @@ python3 scripts/build-booth-package.py
 `products/tedori-kakei-booth.zip` に xlsx と `manual.pdf`（READMEシート内容ベース）が同梱されます。要: `pip install -r products/requirements-booth.txt`
 
 BOOTH出品後は `node scripts/set-booth-url.mjs --url <商品URL>` でサイトの導線を有効化できます。
+
+### サムネイル（1280×1280）
+
+```bash
+node scripts/generate-booth-thumbnail.mjs
+```
+
+`products/booth-thumbnail.html` と `products/booth-thumbnail.png` を生成します。BOOTH の商品画像に `booth-thumbnail.png` をアップロードしてください。HTML のみ必要な場合は `--html-only`。
