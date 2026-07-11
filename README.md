@@ -113,7 +113,7 @@ cd scripts && npm run test:booth-strict
 | 公開基盤 | **完了** — GitHub Pages 配信中([本番URL](https://shunsukesaito00.github.io/kurashi/))。11ツール・sitemap・robots・canonical・共有URL |
 | 差別化機能 | **一部完了** — 手取り比較・印刷・全ツール共有URL。育休・退職金ツール追加済み |
 | アフィリエイト導線(UI) | **一部完了** — 積立・時給・手取りページにPR表記付き比較セクションと広告枠(証券3枠設置済み・転職7枠は承認待ち) |
-| BOOTH導線・検証 | **完了** — 必須3ファイルの `data-booth-url` 導線・`test:booth` 69件・`set-booth-url.mjs` / `check-booth-links.mjs`（`npm test` で出品ZIP同梱3ファイルも確認。出品URLは未設定）・`test:booth-strict`（出品前は exit 1 だが ZIP 同梱は `OK` のまま） |
+| BOOTH導線・検証 | **完了** — 必須3ファイルの `data-booth-url` 導線・`test:booth` 69件（運営者情報チェック含む）・`set-booth-url.mjs` / `check-booth-links.mjs`（`npm test` で出品ZIP同梱3ファイルも確認。出品URLは未設定）・`operator-checks.mjs` / `operator-status.mjs`・`test:booth-strict`（出品前は exit 1 だが ZIP 同梱は `OK` のまま） |
 | 収益 | **0円** — ASP未登録・広告コード未設置・AdSense未申請 |
 | 運営者作業(律速) | **一部完了** — about 実名義済み・A8/Search Console 手順・コピペ文済み・BOOTH（ZIP同梱3ファイル・導線・検証スクリプト済み）。ブロッカー確認: `cd scripts && npm run status`。**未完了**: Search Console（`google-site-verification` または `googlexxx.html` をチャットに貼付）・A8.net（承認済み案件の広告HTMLをチャットに貼付、`aff-slot` 6枠）・独自ドメイン取得・BOOTH出品（アカウント開設・980円出品・`set-booth-url.mjs --url <商品URL>`） |
 
