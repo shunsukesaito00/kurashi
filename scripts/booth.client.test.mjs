@@ -78,4 +78,29 @@ describe('js/booth.js', () => {
     assert.equal(block.classList.contains('is-pending'), false);
     assert.equal(pending.hidden, true);
   });
+
+  it('tedori 構造で data-booth-url が空のとき is-pending を付け pending を表示する', () => {
+    const window = initBoothInDom(`
+      <div class="booth-cta" id="booth-cta" data-booth-url="">
+        <p><a class="btn booth-cta-link" id="booth-cta-link" href="#">BOOTHでテンプレートを見る</a></p>
+        <p class="note booth-cta-pending">※ 出品URL確定後、上のブロックの data-booth-url にBOOTHの商品URLを設定してください。</p>
+      </div>
+    `);
+    const { document } = window;
+    const block = document.getElementById('booth-cta');
+    const link = document.getElementById('booth-cta-link');
+    const pending = document.querySelector('.booth-cta-pending');
+
+    assert.equal(link.getAttribute('href'), '#');
+    assert.equal(link.classList.contains('is-pending'), true);
+    assert.equal(block.classList.contains('is-pending'), true);
+    assert.equal(pending.hidden, false);
+
+    const event = new window.MouseEvent('click', {
+      bubbles: true,
+      cancelable: true,
+    });
+    link.dispatchEvent(event);
+    assert.equal(event.defaultPrevented, true);
+  });
 });
