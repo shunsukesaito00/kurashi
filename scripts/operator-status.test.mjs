@@ -11,6 +11,7 @@ import {
   README_ANCHOR_A8_NET,
   README_ANCHOR_BOOTH,
   README_ANCHOR_SEARCH_CONSOLE,
+  shouldSkipBoothStrictIntegrationTest,
 } from './operator-checks.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -110,7 +111,7 @@ describe('operator-status.mjs CLI', () => {
 describe('npm run test:booth-strict（本番リポジトリ）', () => {
   it(
     '出品前は exit 1 で ZIP は OK・商品URL は FAIL',
-    { skip: process.env.BOOTH_URL_STRICT === '1' },
+    { skip: shouldSkipBoothStrictIntegrationTest() },
     () => {
       const result = spawnSync('npm', ['run', 'test:booth-strict'], {
         encoding: 'utf8',
@@ -123,4 +124,18 @@ describe('npm run test:booth-strict（本番リポジトリ）', () => {
       assert.match(output, /FAIL: BOOTH 商品URL/);
     },
   );
+});
+
+describe('shouldSkipBoothStrictIntegrationTest', () => {
+  it('BOOTH_URL_STRICT=1 のとき true（test:booth-strict 統合テストを skip）', () => {
+    assert.equal(
+      shouldSkipBoothStrictIntegrationTest({ BOOTH_URL_STRICT: '1' }),
+      true,
+    );
+    assert.equal(shouldSkipBoothStrictIntegrationTest({}), false);
+    assert.equal(
+      shouldSkipBoothStrictIntegrationTest({ BOOTH_URL_STRICT: '0' }),
+      false,
+    );
+  });
 });
