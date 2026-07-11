@@ -115,7 +115,7 @@ cd scripts && npm run test:booth-strict
 | アフィリエイト導線(UI) | **一部完了** — 積立・時給・手取りページにPR表記付き比較セクションと広告枠(証券3枠設置済み・転職7枠は承認待ち) |
 | BOOTH導線・検証 | **完了** — 必須3ファイルの `data-booth-url` 導線・`test:booth` 69件（BOOTH導線・運営者情報チェック（`operator-checks.mjs`））・`set-booth-url.mjs` / `check-booth-links.mjs`（`npm test` で出品ZIP同梱3ファイルも確認。出品URLは未設定）・`operator-status.mjs`・`test:booth-strict`（出品前は exit 1 だが ZIP 同梱は `OK` のまま） |
 | 収益 | **0円** — ASP未登録・広告コード未設置・AdSense未申請 |
-| 運営者作業(律速) | **一部完了** — about 実名義済み・A8/Search Console 手順・コピペ文済み・BOOTH（ZIP同梱3ファイル・導線・検証スクリプト済み）。ブロッカー確認: `cd scripts && npm run status`。**未完了**: Search Console（`google-site-verification` または `googlexxx.html` をチャットに貼付）・A8.net（承認済み案件の広告HTMLをチャットに貼付、`aff-slot` 6枠）・独自ドメイン取得・BOOTH出品（アカウント開設・980円出品・`set-booth-url.mjs --url <商品URL>`） |
+| 運営者作業(律速) | **一部完了** — about 実名義済み・A8/Search Console 手順・コピペ文済み・BOOTH（ZIP同梱3ファイル・導線・検証スクリプト済み）。ブロッカー確認: `cd scripts && npm run status`（[scripts/README.md の operator-status.mjs](scripts/README.md)）。**チャット貼付例**（`status` の「次に貼り付けてほしいもの」1〜4番と対応）: [Search Console](#search-console-登録sitemap送信運営者作業)・[A8.net](#a8net-登録広告設置運営者作業)・[BOOTH](#booth販売案-手取り家計シミュレーション用スプレッドシート)（各節の**チャットへの貼付例**）。**未完了**: Search Console（確認コード取得）・A8.net（承認済み案件の広告HTML、`aff-slot` 6枠）・独自ドメイン取得・BOOTH出品（アカウント開設・980円出品・`set-booth-url.mjs --url <商品URL>`） |
 
 月5万円の目安は依然として**月5〜10成約**(アフィリエイト単価3,000〜15,000円)。PVではなく成約で勝負する。
 
