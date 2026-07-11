@@ -483,6 +483,23 @@ h1 {
 
 .site-footer a { color: var(--muted); }
 
+.site-footer-links {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.15rem 0.35rem;
+}
+
+.footer-booth-pending {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.site-footer .footer-booth-link.is-pending {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 @media (max-width: 600px) {
   .global-nav { display: none; }
   h1 { font-size: 1.3rem; }

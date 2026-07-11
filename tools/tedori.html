@@ -15,6 +15,7 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"手取り計算ツール|月収から手取り額を自動計算(2026年版)","description":"月収(額面)を入力するだけで、社会保険料・所得税・住民税を差し引いた手取り額を自動計算。健康保険・厚生年金・雇用保険の内訳も表示します。","url":"https://shunsukesaito00.github.io/kurashi/tools/tedori.html"}</script>
 <link rel="stylesheet" href="../css/style.css">
 <script src="../js/share.js"></script>
+<script src="../js/booth.js"></script>
 </head>
 <body>
 <header class="site-header">
@@ -262,24 +263,6 @@ function printCompare() {
   window.print();
 }
 
-function initBoothCta() {
-  const block = document.getElementById('booth-cta');
-  const link = document.getElementById('booth-cta-link');
-  if (!block || !link) return;
-  const url = (block.dataset.boothUrl || '').trim();
-  const pending = block.querySelector('.booth-cta-pending');
-  if (url) {
-    link.href = url;
-    link.target = '_blank';
-    link.rel = 'noopener noreferrer';
-    if (pending) pending.hidden = true;
-    block.classList.remove('is-pending');
-  } else {
-    link.addEventListener('click', (e) => e.preventDefault());
-    block.classList.add('is-pending');
-  }
-}
-
 function showBoothCta() {
   const block = document.getElementById('booth-cta');
   if (block) block.hidden = false;
@@ -297,7 +280,6 @@ function showBoothCta() {
     compare();
     document.getElementById('compare-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
-  initBoothCta();
 })();
 </script>
 </body>
