@@ -6,7 +6,7 @@ BOOTH出品後に導線未設定をテスト失敗にする場合は `BOOTH_URL_
 
 - `check-demo-sync.mjs` — 代表例の同期確認（README・`index.html`・`verify-share-urls.mjs` のクエリパス一致）
 - `booth-config.mjs` — BOOTH 導線の必須ファイル一覧・`isRequiredBoothFile()`・`scanBoothLinks()`・`findExtraBoothHtmlFiles()` 等の共通ヘルパー
-- `booth-cli-test-helpers.mjs` — BOOTH CLI テスト用の子プロセス env ヘルパー（`boothCliChildEnv()`。`check-booth-links.cli.test.mjs` / `set-booth-url.cli.test.mjs` が `test:booth-strict` 実行時に親の `BOOTH_URL_STRICT` を子へ渡さない）
+- `booth-cli-test-helpers.mjs` — BOOTH CLI テスト用の子プロセス env ヘルパー（`boothCliChildEnv()`。`check-booth-links.cli.test.mjs` / `set-booth-url.cli.test.mjs` が `test:booth-strict` 実行時に親の `BOOTH_URL_STRICT` を子へ渡さない）。`boothCliChildEnv` のユニットテストは `check-booth-links.test.mjs` にある
 - `check-booth-links.mjs` — BOOTH 導線（`data-booth-url`）の設定状況。必須3ファイルの構造・URL チェック。必須外の空属性は WARN のみ（`--strict` / `BOOTH_URL_STRICT=1` は必須のみ FAIL）。`--root <dir>` または `BOOTH_CHECK_ROOT` で対象ルートを上書き可能
 - `check-booth-links.test.mjs` / `check-booth-links.cli.test.mjs` / `set-booth-url.cli.test.mjs` / `booth.client.test.mjs` — BOOTH 導線のユニット・CLI・クライアント（JSDOM）テスト（`npm run test:booth`）
 
