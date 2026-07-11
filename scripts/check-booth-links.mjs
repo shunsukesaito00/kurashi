@@ -1,13 +1,18 @@
 #!/usr/bin/env node
 /**
  * BOOTH 導線（data-booth-url）の状態を確認する。
- * 出品前は警告のみ（exit 0）。本番化時は --strict または環境変数 BOOTH_URL_STRICT=1 で未設定を FAIL にできる。
+ * 出品前は警告のみ（exit 0）。本番化時は --strict または環境変数 BOOTH_URL_STRICT=1 で
+ * 必須3ファイルの URL 未設定を FAIL にできる。必須外の空属性は WARN のみ。
  * HTTPサーバー不要。
  */
 import { readFileSync, readdirSync, statSync } from 'fs';
 import { dirname, join, relative } from 'path';
 import { fileURLToPath } from 'url';
-import { BOOTH_URL_PATTERN, REQUIRED_BOOTH_FILES } from './booth-config.mjs';
+import {
+  BOOTH_URL_PATTERN,
+  REQUIRED_BOOTH_FILES,
+  boothUrlPending,
+} from './booth-config.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const strict =
@@ -28,7 +33,7 @@ function collectHtmlFiles(dir, acc = []) {
 
 function scanBoothLinks() {
   const configured = [];
-  const pending = [];
+  const extraPending = [];
   const withAttr = new Set();
 
   for (const file of collectHtmlFiles(root)) {
@@ -38,21 +43,26 @@ function scanBoothLinks() {
     if (matches.length === 0) continue;
 
     withAttr.add(rel);
+    const isRequired = REQUIRED_BOOTH_FILES.includes(rel);
     for (const match of matches) {
       const url = match[1].trim();
-      if (url) configured.push({ file: rel, url });
-      else pending.push(rel);
+      if (url) {
+        configured.push({ file: rel, url, required: isRequired });
+      } else if (!isRequired) {
+        extraPending.push(rel);
+      }
     }
   }
 
   return {
     configured,
-    pending: [...new Set(pending)],
+    extraPending: [...new Set(extraPending)],
     withAttr,
   };
 }
 
-const { configured, pending, withAttr } = scanBoothLinks();
+const { configured, extraPending, withAttr } = scanBoothLinks();
+const pending = boothUrlPending(root);
 
 const missingRequired = REQUIRED_BOOTH_FILES.filter((file) => !withAttr.has(file));
 if (missingRequired.length > 0) {
@@ -67,27 +77,33 @@ console.log(
   `OK: BOOTH 導線構造 — 必須 ${REQUIRED_BOOTH_FILES.length} ファイル揃い (${REQUIRED_BOOTH_FILES.join(', ')})`,
 );
 
-if (configured.length === 0 && pending.length === 0) {
-  console.error('FAIL: data-booth-url 属性を持つ HTML がありません。');
-  process.exit(1);
-}
-
-for (const { file, url } of configured) {
-  console.log(`設定済  ${file}  (${url})`);
+for (const { file, url, required } of configured) {
+  const tag = required ? '' : '（必須外）';
+  console.log(`設定済  ${file}${tag}  (${url})`);
 }
 
 for (const file of pending) {
   console.log(`未設定  ${file}  (data-booth-url="")`);
 }
 
+for (const file of extraPending) {
+  console.log(`WARN  ${file}  (必須外・data-booth-url="" — 更新対象外)`);
+}
+
+if (extraPending.length > 0) {
+  console.log(
+    `WARN: 必須外の空 data-booth-url ${extraPending.length} ファイル: ${extraPending.join(', ')}`,
+  );
+}
+
 if (pending.length > 0) {
   const detail = `${pending.join(', ')} — 出品後 node scripts/set-booth-url.mjs --url <商品URL>`;
   if (strict) {
-    console.error(`FAIL: BOOTH 商品URL 未設定 ${pending.length} ファイル: ${detail}`);
+    console.error(`FAIL: BOOTH 商品URL 未設定（必須） ${pending.length} ファイル: ${detail}`);
     process.exit(1);
   }
-  console.log(`WARN: BOOTH 商品URL 未設定 ${pending.length} ファイル: ${detail}`);
+  console.log(`WARN: BOOTH 商品URL 未設定（必須） ${pending.length} ファイル: ${detail}`);
   process.exit(0);
 }
 
-console.log('OK: BOOTH 導線 — 全 data-booth-url が設定済みです。');
+console.log('OK: BOOTH 導線 — 必須ファイルの data-booth-url はすべて設定済みです。');
