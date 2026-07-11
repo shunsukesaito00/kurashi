@@ -89,6 +89,12 @@
         <button class="btn btn-outline" id="cmp-copy-btn" onclick="copyShareLink('cmp-copy-btn')">共有リンクをコピー</button>
       </div>
       <p class="note no-print" id="cmp-share-hint" style="display:none;margin:0.5rem 0 0;background:transparent;padding:0;">URLに月収が含まれます。共有先で同じ比較結果が自動表示されます。</p>
+      <div class="booth-cta no-print" id="booth-cta" data-booth-url="" hidden>
+        <h3>この比較をスプレッドシートで保存する</h3>
+        <p>手取り試算・比較・家計サマリ・積立メモ入りのExcelテンプレート（有料）をBOOTHで販売しています。共有URLで比較は再現できますが、複数シナリオの保存や家計全体の見直しにはテンプレートが便利です。</p>
+        <p><a class="btn booth-cta-link" id="booth-cta-link" href="#">BOOTHでテンプレートを見る</a></p>
+        <p class="note booth-cta-pending">※ 出品URL確定後、上のブロックの <code>data-booth-url</code> にBOOTHの商品URLを設定してください。</p>
+      </div>
       <a class="back-home no-print" href="../index.html">← トップに戻る</a>
     </div>
   </div>
@@ -241,6 +247,7 @@ function compare() {
     '計算日: ' + new Date().toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' });
   showShareActions('cmp-actions', 'cmp-share-hint');
   document.getElementById('cmp-result').classList.add('show');
+  showBoothCta();
   updateShareUrl(
     [['cmp-a', 'a'], ['cmp-b', 'b'], ['cmp-c', 'c']]
       .map(([id, key]) => [key, Number(document.getElementById(id).value)])
@@ -255,6 +262,29 @@ function printCompare() {
   window.print();
 }
 
+function initBoothCta() {
+  const block = document.getElementById('booth-cta');
+  const link = document.getElementById('booth-cta-link');
+  if (!block || !link) return;
+  const url = (block.dataset.boothUrl || '').trim();
+  const pending = block.querySelector('.booth-cta-pending');
+  if (url) {
+    link.href = url;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    if (pending) pending.hidden = true;
+    block.classList.remove('is-pending');
+  } else {
+    link.addEventListener('click', (e) => e.preventDefault());
+    block.classList.add('is-pending');
+  }
+}
+
+function showBoothCta() {
+  const block = document.getElementById('booth-cta');
+  if (block) block.hidden = false;
+}
+
 (function initFromUrl() {
   const { a: aRaw, b: bRaw, c: cRaw } = readShareParams(['a', 'b', 'c']);
   const a = Number(aRaw);
@@ -267,6 +297,7 @@ function printCompare() {
     compare();
     document.getElementById('compare-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
+  initBoothCta();
 })();
 </script>
 </body>
