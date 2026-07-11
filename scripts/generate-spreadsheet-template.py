@@ -107,8 +107,9 @@ def build_readme_sheet(wb):
         ("2. 手取り比較シート", "パターンA〜Cの月収・ボーナスを入力し、手取りとAとの差額（月・年）を横並びで比較できます。転職・昇給の検討に使えます。"),
         ("3. 家計サマリシート", "手取り試算の手取りを参照し、固定費・変動費を入力すると「自由に使える額」と貯蓄率がわかります。各費目は自由に書き換えてください。"),
         ("4. 積立メモシート", "家計サマリの余剰額を積立額の初期値に、想定利回り・期間から将来の資産額を複利で試算します（tsumitate.html と同一ロジック）。"),
-        ("5. 保存・編集", "数値は自由に書き換えてください。別名で保存すれば、複数シナリオをファイルごとに残せます。"),
-        ("6. 推奨環境", "編集はPC版 Excel または Google スプレッドシート（xlsxインポート）を推奨します。スマホは閲覧のみ想定です。"),
+        ("5. 年間俯瞰シート", "12か月分の手取り・支出・貯蓄を一覧し、年間合計と累計貯蓄を確認できます。印刷・面談用のサマリです。"),
+        ("6. 保存・編集", "数値は自由に書き換えてください。別名で保存すれば、複数シナリオをファイルごとに残せます。"),
+        ("7. 推奨環境", "編集はPC版 Excel または Google スプレッドシート（xlsxインポート）を推奨します。スマホは閲覧のみ想定です。"),
     ]
     for title, detail in usage:
         row += 1
@@ -444,6 +445,108 @@ def build_savings_sheet(wb):
     ws["A23"].alignment = Alignment(wrap_text=True, vertical="top")
 
 
+def build_annual_overview_sheet(wb):
+    ws = wb.create_sheet("年間俯瞰")
+    ws["A1"] = "年間俯瞰 — くらしの計算室"
+    ws["A1"].font = Font(bold=True, size=14)
+    ws["A2"] = (
+        "※ 各月は手取り試算・家計サマリの月次値を固定で反映しています。"
+        "ボーナス月の変動は簡略化しています（年間ボーナスは下記参考欄）。"
+    )
+    ws["A2"].font = Font(size=9, color="666666")
+    ws.merge_cells("A2:E2")
+    ws["A2"].alignment = Alignment(wrap_text=True, vertical="top")
+
+    label_font = Font(size=10)
+    section_font = Font(bold=True, size=11, color="333333")
+    thin = Side(style="thin", color="CCCCCC")
+    table_border = Border(left=thin, right=thin, top=thin, bottom=thin)
+    header_fill = PatternFill("solid", fgColor="F0F4F8")
+    total_fill = PatternFill("solid", fgColor="E8F4EA")
+
+    ws.column_dimensions["A"].width = 12
+    for col in "BCDE":
+        ws.column_dimensions[col].width = 16
+
+    refs = [
+        (4, "毎月の手取り（参照）", "='手取り試算'!B17"),
+        (5, "毎月の支出（参照）", "='家計サマリ'!B22"),
+        (6, "毎月の貯蓄（参照）", "='家計サマリ'!B23"),
+    ]
+    for row, label, formula in refs:
+        ws[f"A{row}"] = label
+        ws[f"A{row}"].font = label_font
+        ws[f"B{row}"] = formula
+        ws[f"B{row}"].number_format = "#,##0"
+
+    ws["D4"] = "年間ボーナス（参考）"
+    ws["D4"].font = label_font
+    ws["E4"] = "='手取り試算'!B4"
+    ws["E4"].number_format = "#,##0"
+
+    header_row = 8
+    headers = ("月", "手取り", "支出", "貯蓄", "累計貯蓄")
+    for col, header in zip("ABCDE", headers):
+        cell = ws[f"{col}{header_row}"]
+        cell.value = header
+        cell.font = Font(bold=True, size=10)
+        cell.fill = header_fill
+        cell.border = table_border
+        cell.alignment = Alignment(horizontal="center")
+
+    months = (
+        "1月", "2月", "3月", "4月", "5月", "6月",
+        "7月", "8月", "9月", "10月", "11月", "12月",
+    )
+    first_data = header_row + 1
+    for i, month in enumerate(months):
+        row = first_data + i
+        ws[f"A{row}"] = month
+        ws[f"A{row}"].font = label_font
+        ws[f"B{row}"] = "=$B$4"
+        ws[f"C{row}"] = "=$B$5"
+        ws[f"D{row}"] = "=$B$6"
+        if i == 0:
+            ws[f"E{row}"] = f"=D{row}"
+        else:
+            ws[f"E{row}"] = f"=E{row - 1}+D{row}"
+        for col in "BCDE":
+            ws[f"{col}{row}"].number_format = "#,##0"
+            ws[f"{col}{row}"].border = table_border
+
+    total_row = first_data + 12
+    ws[f"A{total_row}"] = "年間合計"
+    ws[f"A{total_row}"].font = Font(bold=True)
+    ws[f"B{total_row}"] = f"=SUM(B{first_data}:B{total_row - 1})"
+    ws[f"C{total_row}"] = f"=SUM(C{first_data}:C{total_row - 1})"
+    ws[f"D{total_row}"] = f"=SUM(D{first_data}:D{total_row - 1})"
+    ws[f"E{total_row}"] = f"=E{total_row - 1}"
+    for col in "ABCDE":
+        ws[f"{col}{total_row}"].font = Font(bold=True)
+        ws[f"{col}{total_row}"].fill = total_fill
+        ws[f"{col}{total_row}"].border = table_border
+        if col != "A":
+            ws[f"{col}{total_row}"].number_format = "#,##0"
+
+    summary_row = total_row + 2
+    ws[f"A{summary_row}"] = "年間サマリ"
+    ws[f"A{summary_row}"].font = section_font
+    summaries = [
+        (summary_row + 1, "年間貯蓄率", f"=IF(B{total_row}=0,\"\",D{total_row}/B{total_row})"),
+        (summary_row + 2, "月平均手取り", f"=B{total_row}/12"),
+        (summary_row + 3, "月平均支出", f"=C{total_row}/12"),
+        (summary_row + 4, "月平均貯蓄", f"=D{total_row}/12"),
+    ]
+    for row, label, formula in summaries:
+        ws[f"A{row}"] = label
+        ws[f"A{row}"].font = label_font
+        ws[f"B{row}"] = formula
+        if label == "年間貯蓄率":
+            ws[f"B{row}"].number_format = "0.0%"
+        else:
+            ws[f"B{row}"].number_format = "#,##0"
+
+
 def verify_with_tedori_logic():
     """tools/tedori.html の computeNet と代表例が一致するか（Python再実装）。"""
 
@@ -532,6 +635,7 @@ def main():
     build_compare_sheet(wb)
     build_budget_summary_sheet(wb)
     build_savings_sheet(wb)
+    build_annual_overview_sheet(wb)
     wb.save(OUT)
     print(f"OK: {OUT.relative_to(ROOT)}")
 

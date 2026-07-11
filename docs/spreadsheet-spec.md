@@ -177,7 +177,7 @@ B11  = MAX(0, B5 - B10 - B9 - 480000)
 | ファイル | 役割 |
 |---|---|
 | `tools/tedori.html` | 本仕様の参照実装 |
-| `products/tedori-kakei-template.xlsx` | BOOTH向け Excel テンプレート（README・手取り試算・比較・家計サマリ・積立メモの5シート） |
+| `products/tedori-kakei-template.xlsx` | BOOTH向け Excel テンプレート（README・手取り試算・比較・家計サマリ・積立メモ・年間俯瞰の6シート） |
 | `scripts/generate-spreadsheet-template.py` | 上記 xlsx の再生成スクリプト |
 | `README.md` フェーズ2 | BOOTH商品構成・価格 |
 | `affiliates/` | A8.net 広告コード（サイト側） |
