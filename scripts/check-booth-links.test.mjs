@@ -390,6 +390,30 @@ describe('BOOTH 導線 完全設定（一時ディレクトリ）', () => {
       );
     });
   });
+
+  it('必須3ファイルすべてが data-booth-url 属性を欠いていれば boothStructureMissing は3件で configured は空', () => {
+    withTempFixture((fixtureRoot) => {
+      for (const file of REQUIRED_BOOTH_FILES) {
+        writeHtmlFixture(fixtureRoot, file, htmlWithoutBoothAttr());
+      }
+
+      assert.deepEqual(
+        boothStructureMissing(fixtureRoot).sort(),
+        [...REQUIRED_BOOTH_FILES].sort(),
+      );
+      assert.deepEqual(
+        boothUrlPending(fixtureRoot).sort(),
+        [...REQUIRED_BOOTH_FILES].sort(),
+      );
+
+      const { configured, extraPending, withAttr } = scanBoothLinks(fixtureRoot);
+      assert.deepEqual(configured, []);
+      assert.deepEqual(extraPending, []);
+      for (const file of REQUIRED_BOOTH_FILES) {
+        assert.equal(withAttr.has(file), false);
+      }
+    });
+  });
 });
 
 describe('scanBoothLinks（本番リポジトリ）', () => {
