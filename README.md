@@ -368,7 +368,7 @@ git push origin main && git push origin main:gh-pages
 - **デジタル商品(BOOTH・note)**: 家計・転職・育休向けスプレッドシート等を500〜1,500円で販売。
 - 本サイトのツールは「無料の入口」、有料版はテンプレート・詳細解説として販売チャネルへ誘導。
 
-- [x] **BOOTH導線・検証スクリプト整備完了** — `js/booth.js` と必須3ファイル（`about.html`・`index.html`・`tools/tedori.html`）の `data-booth-url` 導線、`set-booth-url.mjs` / `check-booth-links.mjs`（`npm test` で出品ZIP同梱3ファイルも確認）、`operator-checks.mjs`（運営者情報の誤判定防止）/ `operator-status.mjs`、`test:booth`（73件: BOOTH導線・運営者情報チェック（`operator-checks.mjs`）・ユニット・CLI・クライアント（JSDOM））、`test:booth-strict` / `BOOTH_URL_STRICT=1` 対応（出品前は exit 1 だが ZIP 同梱は `OK` のまま）。出品URL確定後は `set-booth-url.mjs --url <商品URL>` のみ運営者作業
+- [x] **BOOTH導線・検証スクリプト整備完了** — `js/booth.js` と必須3ファイル（`about.html`・`index.html`・`tools/tedori.html`）の `data-booth-url` 導線、`set-booth-url.mjs` / `check-booth-links.mjs`（`npm test` で出品ZIP同梱3ファイルも確認）、`operator-checks.mjs`（運営者情報の誤判定防止）/ `operator-status.mjs`、`test:booth`（73件: BOOTH導線・運営者情報チェック（`operator-checks.mjs`）・ユニット・CLI・クライアント（JSDOM））、`test:booth-strict` / `BOOTH_URL_STRICT=1` 対応（出品前は exit 1 だが ZIP 同梱は `OK` のまま。`shouldSkipBoothStrictIntegrationTest()` で `test:booth-strict` → `npm test` → `test:booth` の再帰を回避）。出品URL確定後は `set-booth-url.mjs --url <商品URL>` のみ運営者作業
 
 #### BOOTH販売案: 手取り・家計シミュレーション用スプレッドシート
 
@@ -444,7 +444,7 @@ BOOTH URL は出品後に、まず `node scripts/set-booth-url.mjs --url <商品
 - [x] `tedori-kakei-booth.zip` の同梱3ファイル確認済み → `tedori-kakei-template.xlsx`（6シート）/ `manual.pdf`（2ページ）/ `booth-thumbnail.png`（1280×1280）
 - [x] 免責・概算である旨をREADMEシートに記載 → `products/tedori-kakei-template.xlsx` の README シート
 - [x] サムネイル（1280×1280、比較表のスクショ＋タイトル）→ `node scripts/generate-booth-thumbnail.mjs` で `products/booth-thumbnail.png` を生成
-- [x] BOOTH導線・検証スクリプト整備完了 → `js/booth.js`、必須3ファイル、`test:booth` 73件（BOOTH導線・運営者情報チェック（`operator-checks.mjs`））、`set-booth-url.mjs` / `check-booth-links.mjs`（`npm test` で出品ZIP同梱3ファイルも確認）/ `operator-checks.mjs`（運営者情報の誤判定防止）/ `operator-status.mjs` / `test:booth-strict`（出品前は exit 1 だが ZIP 同梱は `OK` のまま）
+- [x] BOOTH導線・検証スクリプト整備完了 → `js/booth.js`、必須3ファイル、`test:booth` 73件（BOOTH導線・運営者情報チェック（`operator-checks.mjs`））、`set-booth-url.mjs` / `check-booth-links.mjs`（`npm test` で出品ZIP同梱3ファイルも確認）/ `operator-checks.mjs`（運営者情報の誤判定防止）/ `operator-status.mjs` / `test:booth-strict`（出品前は exit 1 だが ZIP 同梱は `OK` のまま。`shouldSkipBoothStrictIntegrationTest()` で `test:booth-strict` → `npm test` → `test:booth` の再帰を回避）
 - [ ] BOOTHアカウント開設・本人確認
 - [ ] 価格 980円・ダウンロード販売で出品
 - [ ] 本番反映前に置換内容を確認 → `cd scripts && node set-booth-url.mjs --url <商品URL> --dry-run`（必須3ファイルの差分表示のみ。書き込まない）
