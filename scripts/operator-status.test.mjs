@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { describe, it } from 'node:test';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { isOperatorInfoReady } from './operator-checks.mjs';
+import { isOperatorInfoReady, PASTE_TEMPLATE_REFERENCE_LINE } from './operator-checks.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const scriptsDir = dirname(fileURLToPath(import.meta.url));
@@ -79,15 +79,9 @@ describe('operator-status.mjs CLI', () => {
 
     assert.equal(result.status, 0, result.stderr);
     assert.match(result.stdout, /次に貼り付けてほしいもの/);
-    assert.match(
-      result.stdout,
-      /参考: チャット貼付テンプレート（README\.md）/,
-    );
-    assert.match(result.stdout, /#search-console-登録sitemap送信運営者作業/);
-    assert.match(result.stdout, /#a8net-登録広告設置運営者作業/);
-    assert.match(
-      result.stdout,
-      /#booth販売案-手取り家計シミュレーション用スプレッドシート/,
+    assert.ok(
+      result.stdout.includes(PASTE_TEMPLATE_REFERENCE_LINE),
+      '貼付テンプレート参照行が出力に含まれる',
     );
   });
 });

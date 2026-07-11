@@ -12,7 +12,7 @@ import {
   boothZipStatus,
   scanBoothLinks,
 } from './booth-config.mjs';
-import { isOperatorInfoReady } from './operator-checks.mjs';
+import { isOperatorInfoReady, PASTE_TEMPLATE_REFERENCE_LINE } from './operator-checks.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const { configured, extraPending, withAttr } = scanBoothLinks(root);
@@ -142,9 +142,7 @@ if (pending > 0) {
       '  4. BOOTH出品後: 商品URLをチャットに貼付 → まず cd scripts && node set-booth-url.mjs --url <商品URL> --dry-run で置換内容を確認 → --dry-run を外して about/index/tedori を一括更新・デプロイ',
     );
   }
-  console.log(
-    '参考: チャット貼付テンプレート（README.md）— 1番 Search Console: #search-console-登録sitemap送信運営者作業 / 2番 A8.net: #a8net-登録広告設置運営者作業 / 3〜4番 BOOTH: #booth販売案-手取り家計シミュレーション用スプレッドシート（各節の「チャットへの貼付例」）',
-  );
+  console.log(PASTE_TEMPLATE_REFERENCE_LINE);
   process.exit(0);
 }
 
