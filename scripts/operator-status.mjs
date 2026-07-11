@@ -104,6 +104,12 @@ if (extraPending.length > 0) {
   );
 }
 
+if (boothPending.length > 0) {
+  console.log(
+    '\n参考: npm run test:booth-strict は出品前では check:booth-links で exit 1 になりますが、必須3ファイルの data-booth-url が空の間は正常です。',
+  );
+}
+
 console.log(`\nエージェント側の準備: 完了（ツール・導線・テスト・手順書）`);
 console.log(`運営者側の未完了: ${pending} 項目`);
 
