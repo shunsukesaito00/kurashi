@@ -3,7 +3,8 @@
  * 収益化フェーズ1の運営者ブロッカー状況を一覧表示する。
  * HTTPサーバー不要。
  */
-import { readFileSync, readdirSync } from 'fs';
+import { existsSync, readFileSync, readdirSync } from 'fs';
+import { execSync } from 'child_process';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import {
@@ -20,6 +21,41 @@ const boothStructureMissingList = REQUIRED_BOOTH_FILES.filter(
 const boothPending = boothUrlPending(root);
 const boothConfiguredRequired = configured.filter((entry) => entry.required);
 const requiredBoothLabel = REQUIRED_BOOTH_FILES.join(', ');
+const BOOTH_ZIP = 'products/tedori-kakei-booth.zip';
+const BOOTH_ZIP_ENTRIES = [
+  'tedori-kakei-template.xlsx',
+  'manual.pdf',
+  'booth-thumbnail.png',
+];
+
+function boothZipStatus() {
+  const zipPath = join(root, BOOTH_ZIP);
+  if (!existsSync(zipPath)) {
+    return {
+      ok: false,
+      block: `${BOOTH_ZIP} なし — python3 scripts/build-booth-package.py で生成`,
+    };
+  }
+  try {
+    const listing = execSync(`unzip -Z1 "${zipPath}"`, { encoding: 'utf8' });
+    const names = listing.trim().split('\n').filter(Boolean);
+    const missing = BOOTH_ZIP_ENTRIES.filter((name) => !names.includes(name));
+    if (missing.length > 0) {
+      return {
+        ok: false,
+        block: `${BOOTH_ZIP} に不足: ${missing.join(', ')} — python3 scripts/build-booth-package.py で再生成`,
+      };
+    }
+    return { ok: true };
+  } catch {
+    return {
+      ok: false,
+      block: `${BOOTH_ZIP} の一覧取得に失敗 — unzip コマンドを確認`,
+    };
+  }
+}
+
+const boothZip = boothZipStatus();
 
 function has(file, pattern) {
   return readFileSync(join(root, file), 'utf8').includes(pattern);
@@ -61,6 +97,13 @@ const checks = [
     done: !has('sitemap.xml', 'github.io'),
     action: 'github.io 運用中（AdSense審査は不利）',
     block: 'ドメイン取得後 replace-site-url.mjs で一括置換',
+  },
+  {
+    label: 'BOOTH 出品ZIP（同梱3ファイル）',
+    done: boothZip.ok,
+    action:
+      'tedori-kakei-template.xlsx（6シート）/ manual.pdf（2ページ）/ booth-thumbnail.png（1280×1280）',
+    block: boothZip.block,
   },
   {
     label: 'BOOTH 導線構造（必須3ファイル）',
@@ -121,7 +164,10 @@ if (pending > 0) {
   console.log('  1. Search Console: google-site-verification: googlexxx.html');
   console.log('  2. A8.net: 承認済み案件の広告HTML');
   if (boothPending.length > 0) {
-    console.log('  3. BOOTH: アカウント開設・980円ダウンロード販売で出品（products/tedori-kakei-booth.zip）');
+    const zipNote = boothZip.ok ? ' — 同梱3ファイル確認済み' : '';
+    console.log(
+      `  3. BOOTH: アカウント開設・980円ダウンロード販売で出品（products/tedori-kakei-booth.zip${zipNote}）`,
+    );
     console.log(
       '  4. BOOTH出品後: 商品URLをチャットに貼付 → まず cd scripts && node set-booth-url.mjs --url <商品URL> --dry-run で置換内容を確認 → --dry-run を外して about/index/tedori を一括更新・デプロイ',
     );
