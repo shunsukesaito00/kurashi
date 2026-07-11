@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * BOOTH 導線（data-booth-url）の状態を確認する。
- * 出品前は警告のみ（exit 0）。本番化時は --strict で未設定を FAIL にできる。
+ * 出品前は警告のみ（exit 0）。本番化時は --strict または環境変数 BOOTH_URL_STRICT=1 で未設定を FAIL にできる。
  * HTTPサーバー不要。
  */
 import { readFileSync, readdirSync, statSync } from 'fs';
@@ -9,7 +9,8 @@ import { dirname, join, relative } from 'path';
 import { fileURLToPath } from 'url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const strict = process.argv.includes('--strict');
+const strict =
+  process.argv.includes('--strict') || process.env.BOOTH_URL_STRICT === '1';
 
 function collectHtmlFiles(dir, acc = []) {
   for (const name of readdirSync(dir)) {
