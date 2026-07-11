@@ -124,6 +124,9 @@ console.log(`運営者側の未完了: ${pending} 項目`);
 console.log(
   '参考: npm run test:booth — BOOTH導線のユニット・CLI・クライアント（JSDOM）テスト 64件（cd scripts && npm run test:booth）',
 );
+console.log(
+  '参考: npm run check:booth-links — BOOTH 導線（data-booth-url）と出品ZIP同梱3ファイルを確認（npm test に含まれる）',
+);
 
 if (pending > 0) {
   console.log('\n次に貼り付けてほしいもの（どちらか先に）:');
