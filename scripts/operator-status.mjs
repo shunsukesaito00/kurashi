@@ -40,7 +40,9 @@ function affPending() {
 const checks = [
   {
     label: '運営者情報（実名義）',
-    done: has('about.html', '斎藤 俊介') && !has('about.html', '準備中'),
+    done:
+      has('about.html', '斎藤 俊介') &&
+      has('about.html', 'infomationshunsuke@gmail.com'),
     action: 'about.html 済み',
     block: 'about.html に運営者名・連絡先を記載',
   },
