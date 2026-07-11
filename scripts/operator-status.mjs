@@ -3,36 +3,33 @@
  * 収益化フェーズ1の運営者ブロッカー状況を一覧表示する。
  * HTTPサーバー不要。
  */
-import { readFileSync, readdirSync, statSync } from 'fs';
-import { dirname, join, relative } from 'path';
+import { readFileSync, readdirSync } from 'fs';
+import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
+
+const REQUIRED_BOOTH_FILES = [
+  'about.html',
+  'index.html',
+  'tools/tedori.html',
+];
 
 function has(file, pattern) {
   return readFileSync(join(root, file), 'utf8').includes(pattern);
 }
 
-function collectHtmlFiles(dir, acc = []) {
-  for (const name of readdirSync(dir)) {
-    if (name === 'node_modules' || name === '.git') continue;
-    const path = join(dir, name);
-    if (statSync(path).isDirectory()) {
-      collectHtmlFiles(path, acc);
-      continue;
-    }
-    if (path.endsWith('.html')) acc.push(path);
-  }
-  return acc;
+function boothStructureMissing() {
+  return REQUIRED_BOOTH_FILES.filter((file) => !has(file, 'data-booth-url='));
 }
 
 function boothUrlPending() {
   const pending = [];
-  for (const file of collectHtmlFiles(root)) {
-    const html = readFileSync(file, 'utf8');
+  for (const file of REQUIRED_BOOTH_FILES) {
+    const html = readFileSync(join(root, file), 'utf8');
     const matches = [...html.matchAll(/data-booth-url="([^"]*)"/g)];
-    if (matches.some((m) => !m[1].trim())) {
-      pending.push(relative(root, file));
+    if (matches.length === 0 || matches.some((m) => !m[1].trim())) {
+      pending.push(file);
     }
   }
   return pending;
@@ -48,6 +45,7 @@ function affPending() {
   return n;
 }
 
+const boothStructureMissingList = boothStructureMissing();
 const boothPending = boothUrlPending();
 
 const checks = [
@@ -78,12 +76,18 @@ const checks = [
     block: 'ドメイン取得後 replace-site-url.mjs で一括置換',
   },
   {
+    label: 'BOOTH 導線構造（必須3ファイル）',
+    done: boothStructureMissingList.length === 0,
+    action: `揃い: ${REQUIRED_BOOTH_FILES.join(', ')}`,
+    block: `data-booth-url 不足: ${boothStructureMissingList.join(', ')}`,
+  },
+  {
     label: 'BOOTH 商品URL（data-booth-url）',
     done: boothPending.length === 0,
-    action: '全導線にURL設定済み',
+    action: `全導線にURL設定済み（${REQUIRED_BOOTH_FILES.join(', ')}）`,
     block:
       boothPending.length > 0
-        ? `未設定 ${boothPending.length} ファイル: ${boothPending.join(', ')} — set-booth-url.mjs --url <商品URL>`
+        ? `URL未設定 ${boothPending.length} ファイル: ${boothPending.join(', ')} — set-booth-url.mjs --url <商品URL>`
         : 'BOOTH出品後 node scripts/set-booth-url.mjs --url <商品URL>',
   },
 ];
