@@ -38,6 +38,14 @@ function htmlWithoutBoothAttr() {
   return '<!DOCTYPE html><html><body><a href="#">BOOTH</a></body></html>';
 }
 
+function htmlWithMultipleEmptyBoothAttrs(count = 2) {
+  const links = Array.from(
+    { length: count },
+    () => '<a data-booth-url="">BOOTH</a>',
+  ).join('');
+  return `<!DOCTYPE html><html><body>${links}</body></html>`;
+}
+
 describe('isRequiredBoothFile', () => {
   it('必須3ファイルを true と判定する', () => {
     for (const file of REQUIRED_BOOTH_FILES) {
@@ -178,6 +186,20 @@ describe('scanBoothLinks extraPending（一時ディレクトリ）', () => {
 
       const { extraPending } = scanBoothLinks(fixtureRoot);
       assert.deepEqual(extraPending, ['tools/tsumitate.html']);
+    });
+  });
+
+  it('同一 HTML 内の空 data-booth-url が複数あっても extraPending は重複なく1件', () => {
+    withTempFixture((fixtureRoot) => {
+      writeHtmlFixture(
+        fixtureRoot,
+        'privacy.html',
+        htmlWithMultipleEmptyBoothAttrs(3),
+      );
+
+      const { extraPending } = scanBoothLinks(fixtureRoot);
+      assert.deepEqual(extraPending, ['privacy.html']);
+      assert.equal(extraPending.length, 1);
     });
   });
 
