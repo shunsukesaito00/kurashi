@@ -10,11 +10,14 @@
 import { readFileSync, writeFileSync, readdirSync, statSync } from 'fs';
 import { dirname, join, relative } from 'path';
 import { fileURLToPath } from 'url';
+import {
+  BOOTH_URL_ATTR_PATTERN,
+  REQUIRED_BOOTH_FILES,
+  boothStructureMissing,
+} from './booth-config.mjs';
 
 const scriptsDir = dirname(fileURLToPath(import.meta.url));
 const root = join(scriptsDir, '..');
-
-const ATTR_PATTERN = /data-booth-url="[^"]*"/g;
 
 function parseArgs(argv) {
   const opts = { url: '', clear: false, dryRun: false };
@@ -43,6 +46,18 @@ function collectHtmlFiles(dir, acc = []) {
   return acc;
 }
 
+function findExtraBoothFiles() {
+  const extras = [];
+  for (const file of collectHtmlFiles(root)) {
+    const rel = relative(root, file);
+    if (REQUIRED_BOOTH_FILES.includes(rel)) continue;
+    if (readFileSync(file, 'utf8').includes('data-booth-url=')) {
+      extras.push(rel);
+    }
+  }
+  return extras.sort();
+}
+
 function escapeAttr(value) {
   return value.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
 }
@@ -58,7 +73,8 @@ function usage() {
 例（本番更新）:
   node set-booth-url.mjs --url https://kurashi.booth.pm/items/123456
 
-対象: data-booth-url 属性を持つ全 .html ファイル
+対象: ${REQUIRED_BOOTH_FILES.join(', ')}
+必須外の data-booth-url は更新せず WARN のみ表示します。
 `);
 }
 
@@ -78,22 +94,29 @@ if (opts.help || (!opts.url && !opts.clear)) {
 const newUrl = opts.clear ? '' : opts.url.trim();
 if (!opts.clear) validateUrl(newUrl);
 
+const missingRequired = boothStructureMissing(root);
+if (missingRequired.length > 0) {
+  console.error(
+    `FAIL: 必須ファイルに data-booth-url がありません: ${missingRequired.join(', ')}`,
+  );
+  console.error(`       期待: ${REQUIRED_BOOTH_FILES.join(', ')}`);
+  process.exit(1);
+}
+
 const replacement = `data-booth-url="${escapeAttr(newUrl)}"`;
-const files = collectHtmlFiles(root).sort();
 const changed = [];
 
-for (const file of files) {
+for (const rel of REQUIRED_BOOTH_FILES) {
+  const file = join(root, rel);
   const before = readFileSync(file, 'utf8');
-  if (!before.includes('data-booth-url=')) continue;
-
-  const matches = before.match(ATTR_PATTERN);
+  const matches = before.match(BOOTH_URL_ATTR_PATTERN);
   if (!matches) continue;
 
-  const after = before.replace(ATTR_PATTERN, replacement);
+  const after = before.replace(BOOTH_URL_ATTR_PATTERN, replacement);
   if (after === before) continue;
 
   changed.push({
-    file: relative(root, file),
+    file: rel,
     hits: matches.length,
     before: matches[0],
     after: replacement,
@@ -104,17 +127,27 @@ for (const file of files) {
   }
 }
 
+const extras = findExtraBoothFiles();
+
 if (changed.length === 0) {
-  console.log('変更なし: data-booth-url を含むHTMLがありません。');
+  console.log('変更なし: 必須ファイルの data-booth-url は既に同じ値です。');
+  if (extras.length > 0) {
+    console.log(`WARN: 必須外の data-booth-url は更新していません: ${extras.join(', ')}`);
+  }
   process.exit(0);
 }
 
 const label = opts.clear ? '(クリア)' : newUrl;
 console.log(`${opts.dryRun ? '[dry-run] ' : ''}data-booth-url → ${label || '""'}`);
+console.log(`対象（必須）: ${REQUIRED_BOOTH_FILES.join(', ')}`);
 for (const { file, hits, before, after } of changed) {
   console.log(`  ${file} (${hits} 箇所)`);
   console.log(`    ${before}`);
   console.log(`    ${after}`);
+}
+
+if (extras.length > 0) {
+  console.log(`WARN: 必須外の data-booth-url は更新していません: ${extras.join(', ')}`);
 }
 
 if (opts.dryRun) {

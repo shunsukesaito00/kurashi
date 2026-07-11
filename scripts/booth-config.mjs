@@ -10,6 +10,9 @@ export const REQUIRED_BOOTH_FILES = [
 
 export const BOOTH_URL_PATTERN = /data-booth-url="([^"]*)"/g;
 
+/** 一括置換用（キャプチャなし） */
+export const BOOTH_URL_ATTR_PATTERN = /data-booth-url="[^"]*"/g;
+
 export function readBoothUrlMatches(html) {
   return [...html.matchAll(BOOTH_URL_PATTERN)];
 }
