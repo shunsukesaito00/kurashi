@@ -27,7 +27,7 @@ python3 scripts/generate-spreadsheet-template.py
 python3 scripts/build-booth-package.py
 ```
 
-`products/tedori-kakei-booth.zip` に xlsx と `manual.pdf`（READMEシート内容ベース）が同梱されます。要: `pip install -r products/requirements-booth.txt`
+`products/tedori-kakei-booth.zip` に xlsx・`manual.pdf`・`booth-thumbnail.png`（出品用サムネイル）が同梱されます。BOOTH のダウンロード商品として購入者に渡すのは xlsx と manual.pdf のみで、サムネイルは出品ページへの画像アップロード用です。要: `pip install -r products/requirements-booth.txt`
 
 BOOTH出品後は `node scripts/set-booth-url.mjs --url <商品URL>` でサイトの導線を有効化できます。
 

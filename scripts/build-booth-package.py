@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""BOOTH納品用 ZIP（xlsx + PDFマニュアル）を生成する。
+"""BOOTH運営者向け素材 ZIP（xlsx + PDFマニュアル + サムネイル）を生成する。
 
 要: pip install openpyxl fpdf2
+サムネイル PNG 生成には node + playwright（scripts/）が必要。
 """
 from __future__ import annotations
 
@@ -17,8 +18,10 @@ ROOT = Path(__file__).resolve().parent.parent
 PRODUCTS = ROOT / "products"
 XLSX = PRODUCTS / "tedori-kakei-template.xlsx"
 PDF = PRODUCTS / "manual.pdf"
+THUMBNAIL = PRODUCTS / "booth-thumbnail.png"
 ZIP_OUT = PRODUCTS / "tedori-kakei-booth.zip"
 GENERATE_SCRIPT = ROOT / "scripts" / "generate-spreadsheet-template.py"
+THUMBNAIL_SCRIPT = ROOT / "scripts" / "generate-booth-thumbnail.mjs"
 
 FONT_CANDIDATES = [
     "/System/Library/Fonts/ヒラギノ角ゴシック W3.ttc",
@@ -43,6 +46,17 @@ def find_japanese_font() -> Path:
 
 def generate_xlsx() -> None:
     subprocess.run([sys.executable, str(GENERATE_SCRIPT)], check=True)
+
+
+def ensure_thumbnail() -> Path:
+    if not THUMBNAIL.exists():
+        subprocess.run(["node", str(THUMBNAIL_SCRIPT)], check=True, cwd=THUMBNAIL_SCRIPT.parent)
+    if not THUMBNAIL.exists():
+        raise SystemExit(
+            f"サムネイルが見つかりません: {THUMBNAIL}\n"
+            " node scripts/generate-booth-thumbnail.mjs を実行してください。"
+        )
+    return THUMBNAIL
 
 
 def _text(value) -> str:
@@ -146,6 +160,7 @@ def build_manual_pdf(content: dict, out_path: Path, font_path: Path) -> None:
     pdf.section("同梱ファイル")
     pdf.bullet("tedori-kakei-template.xlsx — 手取り試算・家計サマリ等の6シート入りテンプレート")
     pdf.bullet("manual.pdf — 本マニュアル")
+    pdf.body("※ booth-thumbnail.png はBOOTH出品用サムネイル（運営者向け）です。購入者への配布物には含めません。", size=9)
 
     pdf.section("免責事項")
     for item in content["disclaimers"]:
@@ -187,10 +202,10 @@ def build_manual_pdf(content: dict, out_path: Path, font_path: Path) -> None:
     pdf.output(str(out_path))
 
 
-def create_zip(xlsx_path: Path, pdf_path: Path, zip_path: Path) -> None:
+def create_zip(paths: list[Path], zip_path: Path) -> None:
     with zipfile.ZipFile(zip_path, "w", compression=zipfile.ZIP_DEFLATED) as zf:
-        zf.write(xlsx_path, arcname=xlsx_path.name)
-        zf.write(pdf_path, arcname=pdf_path.name)
+        for path in paths:
+            zf.write(path, arcname=path.name)
 
 
 def main() -> None:
@@ -199,13 +214,14 @@ def main() -> None:
     if not XLSX.exists():
         raise SystemExit(f"xlsx が見つかりません: {XLSX}")
 
+    thumbnail = ensure_thumbnail()
     content = extract_readme_content(XLSX)
     build_manual_pdf(content, PDF, font_path)
-    create_zip(XLSX, PDF, ZIP_OUT)
+    create_zip([XLSX, PDF, thumbnail], ZIP_OUT)
 
     print(f"OK: {ZIP_OUT.relative_to(ROOT)}")
-    print(f"  - {XLSX.name}")
-    print(f"  - {PDF.name}")
+    for path in (XLSX, PDF, thumbnail):
+        print(f"  - {path.name}")
 
 
 if __name__ == "__main__":
