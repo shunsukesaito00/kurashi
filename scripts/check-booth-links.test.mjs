@@ -332,6 +332,32 @@ describe('scanBoothLinks extraPending（一時ディレクトリ）', () => {
   });
 });
 
+describe('BOOTH 導線 完全設定（一時ディレクトリ）', () => {
+  const boothUrl = 'https://example.booth.pm/items/123456';
+
+  it('必須3ファイルすべてに URL 設定済みなら boothUrlPending は空で configured は3件', () => {
+    withTempFixture((fixtureRoot) => {
+      for (const file of REQUIRED_BOOTH_FILES) {
+        writeHtmlFixture(fixtureRoot, file, htmlWithBoothAttr(boothUrl));
+      }
+
+      assert.deepEqual(boothStructureMissing(fixtureRoot), []);
+      assert.deepEqual(boothUrlPending(fixtureRoot), []);
+
+      const { configured, extraPending, withAttr } = scanBoothLinks(fixtureRoot);
+      assert.deepEqual(extraPending, []);
+      assert.equal(configured.length, 3);
+      for (const file of REQUIRED_BOOTH_FILES) {
+        assert.equal(withAttr.has(file), true);
+        assert.deepEqual(
+          configured.find((entry) => entry.file === file),
+          { file, url: boothUrl, required: true },
+        );
+      }
+    });
+  });
+});
+
 describe('scanBoothLinks（本番リポジトリ）', () => {
   it('必須3ファイルすべてに data-booth-url がある', () => {
     const { withAttr } = scanBoothLinks(root);
