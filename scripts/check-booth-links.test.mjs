@@ -463,6 +463,15 @@ describe('scanBoothLinks（本番リポジトリ）', () => {
     assert.deepEqual(boothStructureMissing(root), []);
   });
 
+  it('configured は空で boothUrlPending は必須3ファイルすべて（出品前）', () => {
+    const { configured } = scanBoothLinks(root);
+    assert.deepEqual(configured, []);
+    assert.deepEqual(
+      boothUrlPending(root).sort(),
+      [...REQUIRED_BOOTH_FILES].sort(),
+    );
+  });
+
   it('boothUrlPending は必須3ファイルのみを返す', () => {
     const pending = boothUrlPending(root);
     assert.deepEqual(pending.sort(), [...REQUIRED_BOOTH_FILES].sort());
