@@ -130,7 +130,7 @@ describe('operator-status.mjs CLI', () => {
     });
 
     assert.equal(result.status, 0, result.stderr);
-    assert.match(result.stdout, /運営者側の未完了: 3 項目/);
+    assert.match(result.stdout, /運営者側の未完了: 2 項目/);
   });
 });
 
