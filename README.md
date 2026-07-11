@@ -450,6 +450,33 @@ BOOTH URL は出品後に、まず `node scripts/set-booth-url.mjs --url <商品
 - [ ] 本番反映前に置換内容を確認 → `cd scripts && node set-booth-url.mjs --url <商品URL> --dry-run`（必須3ファイルの差分表示のみ。書き込まない）
 - [x] サイトにBOOTH導線を設置（出品URL確定後）→ `--dry-run` 確認後に `set-booth-url.mjs --url <商品URL>` で必須3ファイルを一括設定 → `BOOTH_URL_STRICT=1 npm test` で導線チェックを厳格化
 
+**チャットへの貼付例**（`cd scripts && npm run status` の「次に貼り付けてほしいもの」3・4番と同型）
+
+**3. 出品前**（`npm run status` 3番は主に運営者が BOOTH 管理画面で行う作業。ZIP の同梱をエージェントへ再確認したいとき）:
+
+```
+BOOTH出品用ZIPの同梱3ファイルを確認して
+
+products/tedori-kakei-booth.zip（同梱3ファイル確認済み）
+```
+
+運営者が BOOTH で行うこと（`npm run status` 3番と同内容）:
+
+1. BOOTH アカウント開設・本人確認
+2. 価格 **980円**・**ダウンロード販売**で出品
+3. 納品ファイルに [`products/tedori-kakei-booth.zip`](products/tedori-kakei-booth.zip) をアップロード（同梱: `tedori-kakei-template.xlsx` / `manual.pdf` / `booth-thumbnail.png`）
+4. 掲載文案は上記「BOOTH 掲載文案（コピペ用）」を利用
+
+**4. 出品後**（商品URLをサイト導線へ反映する依頼。`npm run status` 4番と同型）:
+
+```
+BOOTH商品URLをサイトに設置して
+
+商品URL: https://yourshop.booth.pm/items/xxxxxxxx
+```
+
+エージェントは `cd scripts && node set-booth-url.mjs --url <商品URL> --dry-run` で `about.html`・`index.html`・`tools/tedori.html` の置換内容を確認し、`--dry-run` を外して一括更新・デプロイする。設置後は `cd scripts && BOOTH_URL_STRICT=1 npm test`（または `npm run test:booth-strict`）で導線未設定が解消されたか確認できる。
+
 **KDP との役割分担**
 
 | チャネル | 向く内容 |
