@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * アフィリエイト導線の横断確認 — 積立・時給・手取りの3ページで
+ * アフィリエイト導線の横断確認 — 積立・時給・手取り・育休・退職金の5ページで
  * PR表記・step-list・比較表・aff-slot 2枠・免責文が揃っているか確認する。
  * HTTPサーバー不要。
  */
@@ -28,6 +28,17 @@ const PAGES = [
     compareHeading: '転職サービス選びの比較ポイント',
     disclaimerAction: 'サービス登録等',
     sectionClass: 'article no-print',
+  },
+  {
+    file: 'tools/ikukyu.html',
+    compareHeading: '転職サービス選びの比較ポイント',
+    disclaimerAction: 'サービス登録等',
+  },
+  {
+    file: 'tools/taishoku.html',
+    compareHeading: '関連サービス選びの比較ポイント',
+    disclaimerAction: 'サービス登録・口座開設等',
+    extraDisclaimer: '特定の金融商品の勧誘',
   },
 ];
 
@@ -71,4 +82,4 @@ if (failed) {
   process.exit(1);
 }
 
-console.log('OK: アフィリエイト導線（積立・時給・手取り）の横断確認に合格しました。');
+console.log('OK: アフィリエイト導線（積立・時給・手取り・育休・退職金）の横断確認に合格しました。');

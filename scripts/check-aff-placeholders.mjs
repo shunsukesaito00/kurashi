@@ -15,6 +15,8 @@ const PAGES = [
   { file: 'tools/tsumitate.html', label: '積立（証券口座）' },
   { file: 'tools/jikyu.html', label: '時給（転職）' },
   { file: 'tools/tedori.html', label: '手取り（転職）' },
+  { file: 'tools/ikukyu.html', label: '育休（転職）' },
+  { file: 'tools/taishoku.html', label: '退職金（転職・証券）' },
 ];
 
 const PLACEHOLDER = '広告コードをここに貼り付け';
@@ -41,7 +43,7 @@ for (const page of PAGES) {
   }
 }
 
-console.log(`\n合計: 設置済 ${placed} / 未設置 ${pending}（全6枠）`);
+console.log(`\n合計: 設置済 ${placed} / 未設置 ${pending}（全${placed + pending}枠）`);
 
 if (pending === 6) {
   console.log('OK: 全枠プレースホルダ — A8.net 承認後に広告コードを貼り付けてください。');
@@ -53,5 +55,5 @@ if (pending === 0) {
   process.exit(0);
 }
 
-console.log('一部のみ設置済み。残りの aff-slot も貼り付けてください。');
+console.log(`OK: 一部設置済み（${placed}/${placed + pending} 枠）。残りはプレースホルダまたは承認待ち。`);
 process.exit(0);
