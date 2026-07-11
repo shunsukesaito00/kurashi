@@ -14,6 +14,7 @@ import {
   BOOTH_URL_ATTR_PATTERN,
   REQUIRED_BOOTH_FILES,
   boothStructureMissing,
+  isRequiredBoothFile,
 } from './booth-config.mjs';
 
 const scriptsDir = dirname(fileURLToPath(import.meta.url));
@@ -50,7 +51,7 @@ function findExtraBoothFiles() {
   const extras = [];
   for (const file of collectHtmlFiles(root)) {
     const rel = relative(root, file);
-    if (REQUIRED_BOOTH_FILES.includes(rel)) continue;
+    if (isRequiredBoothFile(rel)) continue;
     if (readFileSync(file, 'utf8').includes('data-booth-url=')) {
       extras.push(rel);
     }
@@ -106,7 +107,7 @@ if (missingRequired.length > 0) {
 const replacement = `data-booth-url="${escapeAttr(newUrl)}"`;
 const changed = [];
 
-for (const rel of REQUIRED_BOOTH_FILES) {
+for (const rel of REQUIRED_BOOTH_FILES.filter(isRequiredBoothFile)) {
   const file = join(root, rel);
   const before = readFileSync(file, 'utf8');
   const matches = before.match(BOOTH_URL_ATTR_PATTERN);

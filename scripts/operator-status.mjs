@@ -10,6 +10,7 @@ import {
   REQUIRED_BOOTH_FILES,
   boothStructureMissing,
   boothUrlPending,
+  isRequiredBoothFile,
 } from './booth-config.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -29,7 +30,8 @@ function affPending() {
 }
 
 const boothStructureMissingList = boothStructureMissing(root);
-const boothPending = boothUrlPending(root);
+const boothPending = boothUrlPending(root).filter(isRequiredBoothFile);
+const requiredBoothLabel = REQUIRED_BOOTH_FILES.filter(isRequiredBoothFile).join(', ');
 
 const checks = [
   {
@@ -61,13 +63,13 @@ const checks = [
   {
     label: 'BOOTH 導線構造（必須3ファイル）',
     done: boothStructureMissingList.length === 0,
-    action: `揃い: ${REQUIRED_BOOTH_FILES.join(', ')}`,
+    action: `揃い: ${requiredBoothLabel}`,
     block: `data-booth-url 不足: ${boothStructureMissingList.join(', ')}`,
   },
   {
     label: 'BOOTH 商品URL（data-booth-url）',
     done: boothPending.length === 0,
-    action: `全導線にURL設定済み（${REQUIRED_BOOTH_FILES.join(', ')}）`,
+    action: `全導線にURL設定済み（${requiredBoothLabel}）`,
     block:
       boothPending.length > 0
         ? `URL未設定 ${boothPending.length} ファイル: ${boothPending.join(', ')} — set-booth-url.mjs --url <商品URL>`

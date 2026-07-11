@@ -12,6 +12,7 @@ import {
   BOOTH_URL_PATTERN,
   REQUIRED_BOOTH_FILES,
   boothUrlPending,
+  isRequiredBoothFile,
 } from './booth-config.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -43,7 +44,7 @@ function scanBoothLinks() {
     if (matches.length === 0) continue;
 
     withAttr.add(rel);
-    const isRequired = REQUIRED_BOOTH_FILES.includes(rel);
+    const isRequired = isRequiredBoothFile(rel);
     for (const match of matches) {
       const url = match[1].trim();
       if (url) {
@@ -64,7 +65,9 @@ function scanBoothLinks() {
 const { configured, extraPending, withAttr } = scanBoothLinks();
 const pending = boothUrlPending(root);
 
-const missingRequired = REQUIRED_BOOTH_FILES.filter((file) => !withAttr.has(file));
+const missingRequired = REQUIRED_BOOTH_FILES.filter(
+  (file) => isRequiredBoothFile(file) && !withAttr.has(file),
+);
 if (missingRequired.length > 0) {
   console.error(
     `FAIL: BOOTH 導線の必須ファイルに data-booth-url がありません: ${missingRequired.join(', ')}`,
