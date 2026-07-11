@@ -332,7 +332,7 @@ describe('scanBoothLinks extraPending（一時ディレクトリ）', () => {
   });
 });
 
-describe('BOOTH 導線 完全設定（一時ディレクトリ）', () => {
+describe('BOOTH 導線 設定状態（一時ディレクトリ）', () => {
   const boothUrl = 'https://example.booth.pm/items/123456';
 
   it('必須3ファイルすべてに URL 設定済みなら boothUrlPending は空で configured は3件', () => {
