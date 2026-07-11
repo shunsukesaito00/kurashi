@@ -235,4 +235,29 @@ describe('set-booth-url.mjs CLI', () => {
       );
     });
   });
+
+  it('無効な URL を --url に渡すと exit code 1 を返す', () => {
+    withTempFixture((fixtureRoot) => {
+      const beforeByFile = new Map();
+      for (const file of REQUIRED_BOOTH_FILES) {
+        const html = htmlWithBoothAttr();
+        writeHtmlFixture(fixtureRoot, file, html);
+        beforeByFile.set(file, html);
+      }
+
+      const result = runSetBoothUrl(fixtureRoot, [
+        '--url',
+        'example.booth.pm/items/123',
+      ]);
+      assert.equal(result.status, 1);
+      assert.match(
+        result.stderr,
+        /URL は https:\/\/ で始まる有効なURLを指定してください。/,
+      );
+
+      for (const file of REQUIRED_BOOTH_FILES) {
+        assert.equal(readFixtureHtml(fixtureRoot, file), beforeByFile.get(file));
+      }
+    });
+  });
 });
