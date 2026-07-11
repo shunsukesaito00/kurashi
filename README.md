@@ -392,6 +392,7 @@ BOOTH URL は出品後に `node scripts/set-booth-url.mjs --url <商品URL>` で
 - [x] BOOTH導線・検証スクリプト整備完了 → `js/booth.js`、必須3ファイル、`test:booth` 57件、`set-booth-url.mjs` / `check-booth-links.mjs` / `operator-status.mjs`
 - [ ] BOOTHアカウント開設・本人確認
 - [ ] 価格 980円・ダウンロード販売で出品
+- [ ] 本番反映前に置換内容を確認 → `cd scripts && node set-booth-url.mjs --url <商品URL> --dry-run`（必須3ファイルの差分表示のみ。書き込まない）
 - [x] サイトにBOOTH導線を設置（出品URL確定後）→ `set-booth-url.mjs --url <商品URL>` で必須3ファイルを一括設定 → `BOOTH_URL_STRICT=1 npm test` で導線チェックを厳格化
 
 **KDP との役割分担**
