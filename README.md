@@ -390,7 +390,7 @@ BOOTH URL は出品後に、まず `node scripts/set-booth-url.mjs --url <商品
 - [x] `tedori-kakei-booth.zip` の同梱3ファイル確認済み → `tedori-kakei-template.xlsx`（6シート）/ `manual.pdf`（2ページ）/ `booth-thumbnail.png`（1280×1280）
 - [x] 免責・概算である旨をREADMEシートに記載 → `products/tedori-kakei-template.xlsx` の README シート
 - [x] サムネイル（1280×1280、比較表のスクショ＋タイトル）→ `node scripts/generate-booth-thumbnail.mjs` で `products/booth-thumbnail.png` を生成
-- [x] BOOTH導線・検証スクリプト整備完了 → `js/booth.js`、必須3ファイル、`test:booth` 69件、`set-booth-url.mjs` / `check-booth-links.mjs`（`npm test` で出品ZIP同梱3ファイルも確認）/ `operator-status.mjs` / `test:booth-strict`（出品前は exit 1 だが ZIP 同梱は `OK` のまま）
+- [x] BOOTH導線・検証スクリプト整備完了 → `js/booth.js`、必須3ファイル、`test:booth` 69件（運営者情報チェック含む）、`set-booth-url.mjs` / `check-booth-links.mjs`（`npm test` で出品ZIP同梱3ファイルも確認）/ `operator-checks.mjs`（運営者情報の誤判定防止）/ `operator-status.mjs` / `test:booth-strict`（出品前は exit 1 だが ZIP 同梱は `OK` のまま）
 - [ ] BOOTHアカウント開設・本人確認
 - [ ] 価格 980円・ダウンロード販売で出品
 - [ ] 本番反映前に置換内容を確認 → `cd scripts && node set-booth-url.mjs --url <商品URL> --dry-run`（必須3ファイルの差分表示のみ。書き込まない）
