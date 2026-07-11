@@ -121,7 +121,10 @@ if (pending > 0) {
   console.log('  1. Search Console: google-site-verification: googlexxx.html');
   console.log('  2. A8.net: 承認済み案件の広告HTML');
   if (boothPending.length > 0) {
-    console.log('  3. BOOTH: 出品後 set-booth-url.mjs --url <商品URL>');
+    console.log('  3. BOOTH: アカウント開設・980円ダウンロード販売で出品（products/tedori-kakei-booth.zip）');
+    console.log(
+      '  4. BOOTH出品後: 商品URLをチャットに貼付 → cd scripts && node set-booth-url.mjs --url <商品URL> で about/index/tedori の data-booth-url を一括更新・デプロイ',
+    );
   }
   process.exit(0);
 }
