@@ -129,4 +129,26 @@ describe('set-booth-url.mjs CLI', () => {
       assert.match(result.stdout, /実行するには --dry-run を外してください。/);
     });
   });
+
+  it('--clear で必須3ファイルの data-booth-url を空に戻し boothUrlPending が3件になる', () => {
+    withTempFixture((fixtureRoot) => {
+      for (const file of REQUIRED_BOOTH_FILES) {
+        writeHtmlFixture(fixtureRoot, file, htmlWithBoothAttr(boothUrl));
+      }
+
+      const result = runSetBoothUrl(fixtureRoot, ['--clear']);
+      assert.equal(result.status, 0);
+      assert.doesNotMatch(result.stdout, /\[dry-run\]/);
+
+      for (const file of REQUIRED_BOOTH_FILES) {
+        assert.match(readFixtureHtml(fixtureRoot, file), /data-booth-url=""/);
+      }
+
+      assert.deepEqual(
+        boothUrlPending(fixtureRoot).sort(),
+        [...REQUIRED_BOOTH_FILES].sort(),
+      );
+      assert.deepEqual(scanBoothLinks(fixtureRoot).configured, []);
+    });
+  });
 });
