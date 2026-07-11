@@ -14,7 +14,10 @@ function initBoothLinks() {
       link.rel = 'noopener noreferrer';
       link.classList.remove('is-pending');
       if (pending) pending.hidden = true;
-      if (!block.matches('a')) block.classList.remove('is-pending');
+      if (!block.matches('a')) {
+        block.classList.remove('is-pending');
+        block.hidden = false;
+      }
     } else {
       link.addEventListener('click', (e) => e.preventDefault());
       link.classList.add('is-pending');

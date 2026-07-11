@@ -61,7 +61,7 @@ describe('js/booth.js', () => {
   it('tedori 構造で URL 設定時に booth-cta-pending を hidden にする', () => {
     const boothUrl = 'https://example.booth.pm/items/123456';
     const window = initBoothInDom(`
-      <div class="booth-cta" id="booth-cta" data-booth-url="${boothUrl}">
+      <div class="booth-cta" id="booth-cta" data-booth-url="${boothUrl}" hidden>
         <p><a class="btn booth-cta-link" id="booth-cta-link" href="#">BOOTHでテンプレートを見る</a></p>
         <p class="note booth-cta-pending">※ 出品URL確定後、上のブロックの data-booth-url にBOOTHの商品URLを設定してください。</p>
       </div>
@@ -76,6 +76,7 @@ describe('js/booth.js', () => {
     assert.equal(link.rel, 'noopener noreferrer');
     assert.equal(link.classList.contains('is-pending'), false);
     assert.equal(block.classList.contains('is-pending'), false);
+    assert.equal(block.hidden, false);
     assert.equal(pending.hidden, true);
   });
 

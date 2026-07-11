@@ -130,24 +130,29 @@ describe('operator-status.mjs CLI', () => {
     });
 
     assert.equal(result.status, 0, result.stderr);
-    assert.match(result.stdout, /運営者側の未完了: 2 項目/);
+    assert.match(result.stdout, /運営者側の未完了: 1 項目/);
   });
 });
 
 describe('npm run test:booth-strict（本番リポジトリ）', () => {
   it(
-    '出品前は exit 1 で ZIP は OK・商品URL は FAIL',
+    '出品後は check:booth-links が strict でも exit 0',
     { skip: shouldSkipBoothStrictIntegrationTest() },
     () => {
-      const result = spawnSync('npm', ['run', 'test:booth-strict'], {
+      const checkScript = join(scriptsDir, 'check-booth-links.mjs');
+      const result = spawnSync(process.execPath, [checkScript], {
         encoding: 'utf8',
         cwd: scriptsDir,
+        env: { ...process.env, BOOTH_URL_STRICT: '1' },
       });
 
       const output = `${result.stdout}\n${result.stderr}`;
-      assert.equal(result.status, 1, output);
+      assert.equal(result.status, 0, output);
       assert.match(output, /OK: BOOTH 出品ZIP/);
-      assert.match(output, /FAIL: BOOTH 商品URL/);
+      assert.match(
+        output,
+        /OK: BOOTH 導線 — 必須ファイルの data-booth-url はすべて設定済みです。/,
+      );
     },
   );
 });

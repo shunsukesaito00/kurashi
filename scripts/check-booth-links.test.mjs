@@ -510,21 +510,21 @@ describe('scanBoothLinks（本番リポジトリ）', () => {
     assert.deepEqual(boothStructureMissing(root), []);
   });
 
-  it('configured は空で boothUrlPending は必須3ファイルすべて（出品前）', () => {
+  it('configured は必須3ファイルすべてに URL 設定済み', () => {
     const { configured } = scanBoothLinks(root);
-    assert.deepEqual(configured, []);
+    assert.equal(configured.length, REQUIRED_BOOTH_FILES.length);
     assert.deepEqual(
-      boothUrlPending(root).sort(),
+      configured.map((entry) => entry.file).sort(),
       [...REQUIRED_BOOTH_FILES].sort(),
     );
+    for (const entry of configured) {
+      assert.equal(entry.required, true);
+      assert.match(entry.url, /^https:\/\//);
+    }
   });
 
-  it('boothUrlPending は必須3ファイルのみを返す', () => {
-    const pending = boothUrlPending(root);
-    assert.deepEqual(pending.sort(), [...REQUIRED_BOOTH_FILES].sort());
-    for (const file of pending) {
-      assert.equal(isRequiredBoothFile(file), true);
-    }
+  it('boothUrlPending は空である', () => {
+    assert.deepEqual(boothUrlPending(root), []);
   });
 
   it('findExtraBoothHtmlFiles は必須ファイルを含まない', () => {
