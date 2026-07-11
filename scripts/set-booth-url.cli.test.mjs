@@ -21,6 +21,10 @@ function htmlWithBoothAttr(url = '') {
   return `<!DOCTYPE html><html><body><a data-booth-url="${url}">BOOTH</a></body></html>`;
 }
 
+function htmlWithoutBoothAttr() {
+  return '<!DOCTYPE html><html><body><a href="#">BOOTH</a></body></html>';
+}
+
 function withTempFixture(fn) {
   const fixtureRoot = mkdtempSync(join(tmpdir(), 'set-booth-url-cli-test-'));
   try {
@@ -207,6 +211,28 @@ describe('set-booth-url.mjs CLI', () => {
         assert.equal(readFixtureHtml(fixtureRoot, file), beforeByFile.get(file));
       }
       assert.deepEqual(boothUrlPending(fixtureRoot), []);
+    });
+  });
+
+  it('必須ファイルに data-booth-url が無いとき --url 実行は exit code 1 を返す', () => {
+    withTempFixture((fixtureRoot) => {
+      for (const file of REQUIRED_BOOTH_FILES) {
+        writeHtmlFixture(fixtureRoot, file, htmlWithoutBoothAttr());
+      }
+
+      const result = runSetBoothUrl(fixtureRoot, ['--url', boothUrl]);
+      assert.equal(result.status, 1);
+      assert.match(
+        result.stderr,
+        /FAIL: 必須ファイルに data-booth-url がありません/,
+      );
+      for (const file of REQUIRED_BOOTH_FILES) {
+        assert.match(result.stderr, new RegExp(file.replace('.', '\\.')));
+      }
+      assert.match(
+        result.stderr,
+        new RegExp(`期待: ${REQUIRED_BOOTH_FILES.join(', ').replace(/\./g, '\\.')}`),
+      );
     });
   });
 });
