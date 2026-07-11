@@ -220,6 +220,35 @@ PR表記・アフィリエイト免責は各セクションおよび /about.html
 4. コミット → `git push origin main` → `git push origin main:gh-pages` で本番反映
 5. 本番URLで広告が表示されるか確認（ローカル `file://` ではアフィリエイトタグは動かないことが多い）
 
+**チャットへの貼付例**（`cd scripts && npm run status` の「次に貼り付けてほしいもの」2番と同型。承認後にエージェントへそのまま貼付可）:
+
+```
+A8.net の広告HTMLを設置して
+
+枠: tools/jikyu.html の aff-slot ①
+案件名: （例）リクナビNEXT
+広告HTML:
+（A8.net 管理画面からコピーした HTML をここに貼る）
+```
+
+複数枠を一度に依頼する場合は、枠ごとにブロックを分ける:
+
+```
+A8.net の広告HTMLを設置して
+
+枠: tools/tsumitate.html の aff-slot ①
+案件名: （例）証券口座A
+広告HTML:
+（HTML）
+
+枠: tools/tsumitate.html の aff-slot ②
+案件名: （例）証券口座B
+広告HTML:
+（HTML）
+```
+
+転職系は `tools/jikyu.html`・`tools/tedori.html` の aff-slot ①②（計4枠）も同様。設置後は `cd scripts && npm run check:aff-placeholders` で未設置枠が減っているか確認できる。
+
 **Step 4: 承認が遅い・却下された場合**
 
 - `github.io` 無料ドメインは金融・転職案件で却下されやすい。**独自ドメイン取得**（フェーズ1の項目5）を先に進める
@@ -266,6 +295,31 @@ PR表記・アフィリエイト免責は各セクションおよび /about.html
 | DNSレコード | ドメインのTXTレコードを追加 | **独自ドメイン取得後**に使う。現状の `github.io` では不可 |
 
 5. 確認が成功すると「所有権を確認しました」と表示される
+
+**チャットへの貼付例**（`cd scripts && npm run status` の「次に貼り付けてほしいもの」1番と同型）:
+
+HTMLファイル方式（推奨）:
+
+```
+Search Console の確認用HTMLを配置して
+
+googlexxxxxxxxxxxxxxxxx.html
+（ダウンロードした HTML ファイルの内容をそのまま貼っても可）
+```
+
+HTMLタグ方式:
+
+```
+Search Console の確認用 meta タグを index.html に追加して
+
+google-site-verification: （Search Console に表示された content 値）
+```
+
+または meta タグ1行をそのまま貼付:
+
+```html
+<meta name="google-site-verification" content="（content 値）" />
+```
 
 **確認用ファイルを置く場合のデプロイ手順（エージェント向けメモ）**
 
