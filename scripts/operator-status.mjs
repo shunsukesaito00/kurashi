@@ -14,6 +14,7 @@ import {
 } from './booth-config.mjs';
 import {
   BOOTH_STRICT_RECURSION_REFERENCE_LINE,
+  formatOperatorPrioritySection,
   isOperatorInfoReady,
   PASTE_TEMPLATE_REFERENCE_LINE,
 } from './operator-checks.mjs';
@@ -127,28 +128,39 @@ if (boothPending.length > 0) {
 console.log(`\nエージェント側の準備: 完了（ツール・導線・テスト・手順書）`);
 console.log(`運営者側の未完了: ${pending} 項目`);
 console.log(
-  '参考: npm run test:booth — BOOTH導線・運営者情報チェック（operator-checks.mjs）のユニット・CLI・クライアント（JSDOM）テスト 77件（cd scripts && npm run test:booth）',
+  '参考: npm run test:booth — BOOTH導線・運営者情報チェック（operator-checks.mjs）のユニット・CLI・クライアント（JSDOM）テスト 78件（cd scripts && npm run test:booth）',
 );
 console.log(
   '参考: npm run check:booth-links — BOOTH 導線（data-booth-url）と出品ZIP同梱3ファイルを確認（npm test に含まれる）',
 );
 console.log(BOOTH_STRICT_RECURSION_REFERENCE_LINE);
 
-if (pending > 0) {
-  console.log('\n次に貼り付けてほしいもの（どちらか先に）:');
-  console.log('  1. Search Console: google-site-verification: googlexxx.html');
-  console.log('  2. A8.net: 承認済み案件の広告HTML');
-  if (boothPending.length > 0) {
-    const zipNote = boothZip.ok ? ' — 同梱3ファイル確認済み' : '';
-    console.log(
-      `  3. BOOTH: アカウント開設・980円ダウンロード販売で出品（products/tedori-kakei-booth.zip${zipNote}）`,
-    );
-    console.log(
-      '  4. BOOTH出品後: 商品URLをチャットに貼付 → まず cd scripts && node set-booth-url.mjs --url <商品URL> --dry-run で置換内容を確認 → --dry-run を外して about/index/tedori を一括更新・デプロイ',
-    );
-  }
-  console.log(PASTE_TEMPLATE_REFERENCE_LINE);
-  process.exit(0);
+const pasteItems = [];
+if (!checks[1].done) {
+  pasteItems.push('  1. Search Console: google-site-verification: googlexxx.html');
+}
+if (!checks[2].done) {
+  pasteItems.push('  2. A8.net: 承認済み案件の広告HTML');
+}
+if (boothPending.length > 0) {
+  const zipNote = boothZip.ok ? ' — 同梱3ファイル確認済み' : '';
+  const n = pasteItems.length + 1;
+  pasteItems.push(
+    `  ${n}. BOOTH: アカウント開設・980円ダウンロード販売で出品（products/tedori-kakei-booth.zip${zipNote}）`,
+  );
+  pasteItems.push(
+    `  ${n + 1}. BOOTH出品後: 商品URLをチャットに貼付 → cd scripts && node set-booth-url.mjs --url <商品URL> --dry-run で確認後に本実行`,
+  );
 }
 
-console.log('\n全ブロッカー解消済み。収益発生は流入・成約次第。');
+if (pasteItems.length > 0) {
+  console.log('\n次に貼り付けてほしいもの（どちらか先に）:');
+  for (const line of pasteItems) console.log(line);
+  console.log(PASTE_TEMPLATE_REFERENCE_LINE);
+}
+
+console.log(`\n${formatOperatorPrioritySection()}`);
+
+if (pending === 0) {
+  console.log('\n技術ブロッカーはすべて解消済み。収益発生は流入・成約次第。');
+}

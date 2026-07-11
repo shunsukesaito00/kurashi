@@ -32,6 +32,15 @@ function writeAboutFixture(fixtureRoot, html) {
   writeFileSync(join(fixtureRoot, 'about.html'), html, 'utf8');
 }
 
+describe('OPERATOR_PRIORITY_LINES', () => {
+  it('formatOperatorPrioritySection が優先作業見出しを含む', async () => {
+    const { formatOperatorPrioritySection } = await import('./operator-checks.mjs');
+    const text = formatOperatorPrioritySection();
+    assert.match(text, /運営者の次の優先作業（優先順）/);
+    assert.match(text, /BOOTH: https:\/\/kurashi-tool\.booth\.pm\/items\/8606263/);
+  });
+});
+
 describe('isOperatorInfoReady', () => {
   it('運営者名と連絡先メールがあれば true', () => {
     withTempFixture((fixtureRoot) => {
@@ -105,18 +114,15 @@ describe('BOOTH_STRICT_RECURSION_REFERENCE_LINE', () => {
 });
 
 describe('operator-status.mjs CLI', () => {
-  it('未完了ブロッカーがあるとき出力にチャット貼付テンプレート参照行を含む', () => {
+  it('出力に運営者優先作業リストを含む', () => {
     const result = spawnSync(process.execPath, [statusScript], {
       encoding: 'utf8',
       cwd: scriptsDir,
     });
 
     assert.equal(result.status, 0, result.stderr);
-    assert.match(result.stdout, /次に貼り付けてほしいもの/);
-    assert.ok(
-      result.stdout.includes(PASTE_TEMPLATE_REFERENCE_LINE),
-      '貼付テンプレート参照行が出力に含まれる',
-    );
+    assert.match(result.stdout, /運営者の次の優先作業（優先順）/);
+    assert.match(result.stdout, /Search Console: sitemap\.xml 送信済みか確認/);
     assert.ok(
       result.stdout.includes(BOOTH_STRICT_RECURSION_REFERENCE_LINE),
       'test:booth-strict 再帰回避参考行が出力に含まれる',

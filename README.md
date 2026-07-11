@@ -42,7 +42,7 @@ Google AdSense は副次的な収益源として位置づけています。
 | `tools/taishoku.html` | `a`, `y` | 退職金額(円)、勤続年数 | `?a=10000000&y=20` |
 | `tools/moji.html` | `t` | カウント対象テキスト(最大300文字) | `?t=%E3%81%8F%E3%82%89%E3%81%97%E3%81%AE%E8%A8%88%E7%AE%97%E5%AE%A4` |
 
-代表例を変えるときは、この表と `index.html` のデモリンク、`scripts/verify-share-urls.mjs` の各ケース `path` を同時に更新すること。更新後は `cd scripts && npm test` で代表例の同期確認・`test:booth`（BOOTH導線・運営者情報チェック（`operator-checks.mjs`）のユニット・CLI・クライアント（JSDOM）テスト、77件）・BOOTH導線確認・アフィリエイト構造確認と共有URLの往復テストをまとめて検証できる（`test:share-urls` 用に別ターミナルで HTTP サーバーを起動したまま）。
+代表例を変えるときは、この表と `index.html` のデモリンク、`scripts/verify-share-urls.mjs` の各ケース `path` を同時に更新すること。更新後は `cd scripts && npm test` で代表例の同期確認・`test:booth`（BOOTH導線・運営者情報チェック（`operator-checks.mjs`）のユニット・CLI・クライアント（JSDOM）テスト、78件）・BOOTH導線確認・アフィリエイト構造確認と共有URLの往復テストをまとめて検証できる（`test:share-urls` 用に別ターミナルで HTTP サーバーを起動したまま）。
 
 フレームワーク・ビルド不要の静的HTML/CSS/JSのみ。サーバーサイド処理はありません。
 静的アセットは `css/`(共通スタイル)、`js/`(共有URL用の `share.js` など)、`tools/`(各計算ページ)、`scripts/`(代表例の同期確認・共有URLの往復テスト用の `check-demo-sync.mjs`・`verify-share-urls.mjs` と `npm test`)に分かれています。
@@ -57,7 +57,7 @@ python3 -m http.server 8000
 
 `index.html` を `file://` で直接開くと、一部ブラウザで共有URLの `history` API が動作しない場合があります。ローカル確認は上記の HTTP サーバー経由を推奨します。
 
-代表例の同期確認と共有URLの往復テスト(`scripts/` 配下)は次のとおりです。`npm test` は `check:demo-sync` → `test:booth`（BOOTH導線・運営者情報チェック（`operator-checks.mjs`）のユニット・CLI・クライアント（JSDOM）テスト、77件） → `check:booth-links` → `check:affiliate-sections` → `check:aff-placeholders` → `test:share-urls` の順で実行します（前者5つは HTTP サーバー不要、`test:share-urls` は別ターミナルで HTTP サーバーを起動したまま）。BOOTH 導線だけ先に検証したい場合は `cd scripts && npm run test:booth` でも可です。`test:booth` には `boothCliChildEnv()`（`booth-cli-test-helpers.mjs`）のユニットテストも含まれます。
+代表例の同期確認と共有URLの往復テスト(`scripts/` 配下)は次のとおりです。`npm test` は `check:demo-sync` → `test:booth`（BOOTH導線・運営者情報チェック（`operator-checks.mjs`）のユニット・CLI・クライアント（JSDOM）テスト、78件） → `check:booth-links` → `check:affiliate-sections` → `check:aff-placeholders` → `test:share-urls` の順で実行します（前者5つは HTTP サーバー不要、`test:share-urls` は別ターミナルで HTTP サーバーを起動したまま）。BOOTH 導線だけ先に検証したい場合は `cd scripts && npm run test:booth` でも可です。`test:booth` には `boothCliChildEnv()`（`booth-cli-test-helpers.mjs`）のユニットテストも含まれます。
 
 ```bash
 # 初回のみ
@@ -106,18 +106,33 @@ cd scripts && npm run test:booth-strict
 - ロングテール記事のAI量産はスパムポリシーリスクがあるため**撤回**。
 - 商用クエリ(証券口座・転職等)と検索非依存チャネル(KDP・BOOTH)には余地がある。
 
-### 現状(2026年7月)
+### 現状(2026年7月12日)
 
 | 区分 | 状態 |
 |---|---|
 | 公開基盤 | **完了** — GitHub Pages 配信中([本番URL](https://shunsukesaito00.github.io/kurashi/))。11ツール・sitemap・robots・canonical・共有URL |
-| 差別化機能 | **一部完了** — 手取り比較・印刷・全ツール共有URL。育休・退職金ツール追加済み |
-| アフィリエイト導線(UI) | **一部完了** — 積立・時給・手取りページにPR表記付き比較セクションと広告枠(証券3枠設置済み・転職7枠は承認待ち) |
-| BOOTH導線・検証 | **完了** — 必須3ファイルの `data-booth-url` 導線・`test:booth` 77件（BOOTH導線・運営者情報チェック（`operator-checks.mjs`））・`set-booth-url.mjs` / `check-booth-links.mjs`（`npm test` で出品ZIP同梱3ファイルも確認。出品URLは未設定）・`operator-status.mjs`・`test:booth-strict`（出品前は exit 1 だが ZIP 同梱は `OK` のまま。`shouldSkipBoothStrictIntegrationTest()` で `test:booth-strict` → `npm test` → `test:booth` の再帰を回避） |
-| 収益 | **0円** — ASP未登録・広告コード未設置・AdSense未申請 |
-| 運営者作業(律速) | **一部完了** — about 実名義済み・A8/Search Console 手順・コピペ文済み・BOOTH（ZIP同梱3ファイル・導線・検証スクリプト済み）。ブロッカー確認: `cd scripts && npm run status`（[scripts/README.md の operator-status.mjs](scripts/README.md)）。**チャット貼付例**（`status` の「次に貼り付けてほしいもの」1〜4番と対応）: [Search Console](#search-console-登録sitemap送信運営者作業)・[A8.net](#a8net-登録広告設置運営者作業)・[BOOTH](#booth販売案-手取り家計シミュレーション用スプレッドシート)（各節の**チャットへの貼付例**）。**未完了**: Search Console（確認コード取得）・A8.net（承認済み案件の広告HTML、`aff-slot` 6枠）・独自ドメイン取得・BOOTH出品（アカウント開設・980円出品・`set-booth-url.mjs --url <商品URL>`） |
+| 差別化機能 | **完了** — 手取り比較・印刷・全ツール共有URL。育休・退職金ツール追加済み |
+| アフィリエイト導線 | **完了** — aff-slot 10枠設置済み（証券2・転職系8。転職2社目は承認後に差し替え可） |
+| Search Console | **完了** — 所有権確認コード設置済み。sitemap 送信は運営者が管理画面で確認 |
+| BOOTH | **出品・導線完了** — [商品ページ](https://kurashi-tool.booth.pm/items/8606263) 公開・サイト3箇所からリンク済み |
+| 収益 | **0円（想定内）** — 流入・成約待ち。A8・BOOTH の管理画面を定期確認 |
+| 独自ドメイン | **保留** — `github.io` 継続。AdSense・金融系A8却下が続く段階で検討 |
+| 技術ブロッカー | **解消済み**（独自ドメイン除く）— `cd scripts && npm run status` で確認 |
 
-月5万円の目安は依然として**月5〜10成約**(アフィリエイト単価3,000〜15,000円)。PVではなく成約で勝負する。
+**フェーズ位置**: フェーズ1（初収益化）の**技術設置は完了**。フェーズ2（BOOTH販売）**着手済み**。律速は運営者の集客・成約確認。
+
+#### 運営者の次の優先作業（優先順）
+
+`npm run status` でも同内容を表示。
+
+1. **Search Console**: [sitemap.xml](https://shunsukesaito00.github.io/kurashi/sitemap.xml) を送信済みか確認。未なら送信し、数週間後にインデックス状況を見る
+2. **A8.net**: 成約・クリックを週1確認。転職2社目が承認されたら専用広告HTMLをチャットに貼付（現状は渡済み3本で全枠埋め）
+3. **BOOTH**: [商品ページ](https://kurashi-tool.booth.pm/items/8606263) の露出（SNS・タグ・無料ツールからの導線）
+4. **収益**: A8・BOOTH の売上を月初に確認
+5. **AdSense**: 独自ドメイン取得後に申請（**後回し可**）
+6. **独自ドメイン**: 金融系A8却下が続く段階で `replace-site-url.mjs` を検討（**後回し可**）
+
+月5万円の目安は依然として**月5〜10成約**(アフィリエイト単価3,000〜15,000円)＋BOOTH月10件程度。PVではなく成約で勝負する。
 
 ### フェーズ0: 公開基盤 — 完了
 
@@ -127,15 +142,15 @@ cd scripts && npm run test:booth-strict
 - [x] 全ツール共有URL(`js/share.js`)、代表例デモ、`npm test` による検証
 - [x] 積立・時給・手取りページのアフィリエイト導線セクション(枠のみ)
 
-### フェーズ1: 初収益化(〜1か月) — **いまここ**
+### フェーズ1: 初収益化(〜1か月) — **技術設置完了・集客フェーズ**
 
-収益化の律速はすべて**運営者本人の作業**。エージェント側でできる準備は済んでいる。未完了の一覧は `cd scripts && npm run status` で確認できる（チャットに貼付してほしいものも表示される）。
+エージェント側の設置作業は完了。未完了は**独自ドメインのみ**（運営者判断で後回し可）。`cd scripts && npm run status` でブロッカーと[運営者の次の優先作業](#運営者の次の優先作業優先順)を確認できる。
 
-1. **ASP登録・提携申請**(A8.net / もしもアフィリエイト等) — 手順は下記「A8.net 登録〜広告設置」
-2. **広告コード設置** — 証券は `tsumitate.html` 済み。転職は `affiliates/job-slot1.html`・`job-slot2.html` にHTMLを貼り付け → `cd scripts && npm run apply-job-affiliates`
-3. **`about.html` を実名義で埋める** — 完了（運営者: 斎藤 俊介、連絡先メール設置済み）
-4. **Google Search Console 登録** + `sitemap.xml` 送信 — 手順は下記「Search Console 登録〜sitemap送信」
-5. **独自ドメイン取得**(強く推奨) — `github.io` のままでは AdSense 審査が不利。取得後は `cd scripts && npm run replace-site-url -- --to https://YOUR-DOMAIN --dry-run` で確認してから本実行 → `main` / `gh-pages` にデプロイ
+1. [x] **ASP登録・提携申請**(A8.net) — 登録・広告設置済み
+2. [x] **広告コード設置** — aff-slot 全枠設置済み（転職2社目は承認後に差し替え可）
+3. [x] **`about.html` を実名義で埋める** — 運営者: 斎藤 俊介、連絡先メール設置済み
+4. [x] **Google Search Console 所有権確認** — meta タグ設置済み。sitemap 送信は運営者が管理画面で確認
+5. [ ] **独自ドメイン取得**（強く推奨・**現状は後回し**） — 取得後は `cd scripts && npm run replace-site-url -- --to https://YOUR-DOMAIN --dry-run`
 
 **AdSense**: 申請はするが主軸にしない。独自ドメイン + 運営者情報充実後に申請。全ページの `ad-slot` はプレースホルダのまま。
 
@@ -362,13 +377,13 @@ git push origin main && git push origin main:gh-pages
 - **確認ファイルが404** — `gh-pages` への push を忘れている、またはファイルがリポジトリ直下ではない
 - **sitemap が「取得できませんでした」** — デプロイ直後は数分待つ。URLの typo（`/kurashi` の有無）を確認
 
-### フェーズ2: 検索非依存の販売チャネル(2〜4か月)
+### フェーズ2: 検索非依存の販売チャネル(2〜4か月) — **BOOTH着手済み**
 
 - **Kindle出版(KDP)**: 実用系(計算・手続き・テンプレート集)を月2〜4冊。AI生成は申告必須だが規約上可。Amazon内検索が集客源。
 - **デジタル商品(BOOTH・note)**: 家計・転職・育休向けスプレッドシート等を500〜1,500円で販売。
 - 本サイトのツールは「無料の入口」、有料版はテンプレート・詳細解説として販売チャネルへ誘導。
 
-- [x] **BOOTH導線・検証スクリプト整備完了** — `js/booth.js` と必須3ファイル（`about.html`・`index.html`・`tools/tedori.html`）の `data-booth-url` 導線、`set-booth-url.mjs` / `check-booth-links.mjs`（`npm test` で出品ZIP同梱3ファイルも確認）、`operator-checks.mjs`（運営者情報の誤判定防止）/ `operator-status.mjs`、`test:booth`（77件: BOOTH導線・運営者情報チェック（`operator-checks.mjs`）・ユニット・CLI・クライアント（JSDOM））、`test:booth-strict` / `BOOTH_URL_STRICT=1` 対応（出品前は exit 1 だが ZIP 同梱は `OK` のまま。`shouldSkipBoothStrictIntegrationTest()` で `test:booth-strict` → `npm test` → `test:booth` の再帰を回避）。出品URL確定後は `set-booth-url.mjs --url <商品URL>` のみ運営者作業
+- [x] **BOOTH導線・検証スクリプト整備完了** — `js/booth.js` と必須3ファイル（`about.html`・`index.html`・`tools/tedori.html`）の `data-booth-url` 導線、`set-booth-url.mjs` / `check-booth-links.mjs`（`npm test` で出品ZIP同梱3ファイルも確認）、`operator-checks.mjs`（運営者情報の誤判定防止）/ `operator-status.mjs`、`test:booth`（78件: BOOTH導線・運営者情報チェック（`operator-checks.mjs`）・ユニット・CLI・クライアント（JSDOM））、`test:booth-strict` / `BOOTH_URL_STRICT=1` 対応（出品前は exit 1 だが ZIP 同梱は `OK` のまま。`shouldSkipBoothStrictIntegrationTest()` で `test:booth-strict` → `npm test` → `test:booth` の再帰を回避）。出品URL確定後は `set-booth-url.mjs --url <商品URL>` のみ運営者作業
 
 #### BOOTH販売案: 手取り・家計シミュレーション用スプレッドシート
 
@@ -444,11 +459,9 @@ BOOTH URL は出品後に、まず `node scripts/set-booth-url.mjs --url <商品
 - [x] `tedori-kakei-booth.zip` の同梱3ファイル確認済み → `tedori-kakei-template.xlsx`（6シート）/ `manual.pdf`（2ページ）/ `booth-thumbnail.png`（1280×1280）
 - [x] 免責・概算である旨をREADMEシートに記載 → `products/tedori-kakei-template.xlsx` の README シート
 - [x] サムネイル（1280×1280、比較表のスクショ＋タイトル）→ `node scripts/generate-booth-thumbnail.mjs` で `products/booth-thumbnail.png` を生成
-- [x] BOOTH導線・検証スクリプト整備完了 → `js/booth.js`、必須3ファイル、`test:booth` 77件（BOOTH導線・運営者情報チェック（`operator-checks.mjs`））、`set-booth-url.mjs` / `check-booth-links.mjs`（`npm test` で出品ZIP同梱3ファイルも確認）/ `operator-checks.mjs`（運営者情報の誤判定防止）/ `operator-status.mjs` / `test:booth-strict`（出品前は exit 1 だが ZIP 同梱は `OK` のまま。`shouldSkipBoothStrictIntegrationTest()` で `test:booth-strict` → `npm test` → `test:booth` の再帰を回避）
-- [ ] BOOTHアカウント開設・本人確認
-- [ ] 価格 980円・ダウンロード販売で出品
-- [ ] 本番反映前に置換内容を確認 → `cd scripts && node set-booth-url.mjs --url <商品URL> --dry-run`（必須3ファイルの差分表示のみ。書き込まない）
-- [x] サイトにBOOTH導線を設置（出品URL確定後）→ `--dry-run` 確認後に `set-booth-url.mjs --url <商品URL>` で必須3ファイルを一括設定 → `BOOTH_URL_STRICT=1 npm test` で導線チェックを厳格化
+- [x] BOOTH導線・検証スクリプト整備完了 → `js/booth.js`、必須3ファイル、`test:booth` 78件（BOOTH導線・運営者情報チェック（`operator-checks.mjs`））、`set-booth-url.mjs` / `check-booth-links.mjs`（`npm test` で出品ZIP同梱3ファイルも確認）/ `operator-checks.mjs`（運営者情報の誤判定防止）/ `operator-status.mjs` / `test:booth-strict`（出品前は exit 1 だが ZIP 同梱は `OK` のまま。`shouldSkipBoothStrictIntegrationTest()` で `test:booth-strict` → `npm test` → `test:booth` の再帰を回避）
+- [x] BOOTHアカウント開設・本人確認・出品 — [kurashi-tool.booth.pm](https://kurashi-tool.booth.pm/)
+- [x] サイトにBOOTH導線を設置 — `set-booth-url.mjs` 済み（about / index / tedori）
 
 **チャットへの貼付例**（`cd scripts && npm run status` の「次に貼り付けてほしいもの」3・4番と同型）
 
