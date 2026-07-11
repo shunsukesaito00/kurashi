@@ -34,10 +34,14 @@ function withTempFixture(fn) {
 }
 
 function runCheckBoothLinks(fixtureRoot, extraArgs = []) {
+  const env = { ...process.env };
+  if (!extraArgs.includes('--strict')) {
+    delete env.BOOTH_URL_STRICT;
+  }
   return spawnSync(
     process.execPath,
     [checkScript, '--root', fixtureRoot, ...extraArgs],
-    { encoding: 'utf8', cwd: scriptsDir },
+    { encoding: 'utf8', cwd: scriptsDir, env },
   );
 }
 
