@@ -106,8 +106,9 @@ def build_readme_sheet(wb):
         ("1. 手取り試算シート", "B3（月収）・B4（年間ボーナス）を入力すると、社保・税の内訳と毎月の手取り（B17）が自動計算されます。"),
         ("2. 手取り比較シート", "パターンA〜Cの月収・ボーナスを入力し、手取りとAとの差額（月・年）を横並びで比較できます。転職・昇給の検討に使えます。"),
         ("3. 家計サマリシート", "手取り試算の手取りを参照し、固定費・変動費を入力すると「自由に使える額」と貯蓄率がわかります。各費目は自由に書き換えてください。"),
-        ("4. 保存・編集", "数値は自由に書き換えてください。別名で保存すれば、複数シナリオをファイルごとに残せます。"),
-        ("5. 推奨環境", "編集はPC版 Excel または Google スプレッドシート（xlsxインポート）を推奨します。スマホは閲覧のみ想定です。"),
+        ("4. 積立メモシート", "家計サマリの余剰額を積立額の初期値に、想定利回り・期間から将来の資産額を複利で試算します（tsumitate.html と同一ロジック）。"),
+        ("5. 保存・編集", "数値は自由に書き換えてください。別名で保存すれば、複数シナリオをファイルごとに残せます。"),
+        ("6. 推奨環境", "編集はPC版 Excel または Google スプレッドシート（xlsxインポート）を推奨します。スマホは閲覧のみ想定です。"),
     ]
     for title, detail in usage:
         row += 1
@@ -358,6 +359,91 @@ def build_budget_summary_sheet(wb):
     ws["A28"].alignment = Alignment(wrap_text=True, vertical="top")
 
 
+def tsumitate_total_formula(monthly_cell: str, rate_cell: str, years_cell: str) -> str:
+    """月次複利の積立終価（tsumitate.html の calc と同一）。"""
+    r = f"{rate_cell}/100/12"
+    n = f"({years_cell}*12)"
+    return (
+        f"=IF({years_cell}<=0,0,"
+        f"IF({rate_cell}=0,ROUND({monthly_cell}*{n},0),"
+        f"ROUND({monthly_cell}*(((1+{r})^{n}-1)/{r}),0)))"
+    )
+
+
+def build_savings_sheet(wb):
+    ws = wb.create_sheet("積立メモ")
+    style_header(ws, "積立メモ — くらしの計算室")
+
+    section_font = Font(bold=True, size=11, color="333333")
+    label_font = Font(size=10)
+    result_fill = PatternFill("solid", fgColor="E8F4EA")
+    thin = Side(style="thin", color="CCCCCC")
+    table_border = Border(left=thin, right=thin, top=thin, bottom=thin)
+    header_fill = PatternFill("solid", fgColor="F0F4F8")
+
+    ws["A3"] = "毎月の積立額（円）"
+    ws["B3"] = "=MAX(0,'家計サマリ'!B23)"
+    ws["A4"] = "想定利回り（年率%）"
+    ws["B4"] = 5
+    ws["A5"] = "積立期間（年）"
+    ws["B5"] = 20
+    for row in (3, 4, 5):
+        ws[f"A{row}"].font = label_font
+    ws["B3"].number_format = "#,##0"
+    ws["B4"].number_format = "0.0"
+
+    ws["A7"] = "シミュレーション結果"
+    ws["A7"].font = section_font
+    ws["A8"] = "最終的な資産額（目安）"
+    ws["B8"] = tsumitate_total_formula("B3", "B4", "B5")
+    ws["A9"] = "積立元本"
+    ws["B9"] = "=B3*B5*12"
+    ws["A10"] = "運用益"
+    ws["B10"] = "=B8-B9"
+    ws["A11"] = "元本に対する増加率"
+    ws["B11"] = '=IF(B9=0,"",B10/B9)'
+    ws["B11"].number_format = "0.0%"
+    for row in (8, 9, 10):
+        ws[f"A{row}"].font = label_font
+        ws[f"B{row}"].number_format = "#,##0"
+    ws["B8"].font = Font(bold=True, size=12)
+    ws["B8"].fill = result_fill
+
+    ws["A13"] = "期間別の目安（上記の積立額・利回りで試算）"
+    ws["A13"].font = section_font
+    row = 14
+    for col, header in zip("ABC", ("期間（年）", "積立元本", "資産額（目安）")):
+        cell = ws[f"{col}{row}"]
+        cell.value = header
+        cell.font = Font(bold=True, size=10)
+        cell.fill = header_fill
+        cell.border = table_border
+        cell.alignment = Alignment(horizontal="center")
+    for years in (10, 20, 30):
+        row += 1
+        ws[f"A{row}"] = years
+        ws[f"B{row}"] = f"=$B$3*A{row}*12"
+        ws[f"C{row}"] = tsumitate_total_formula("$B$3", "$B$4", f"A{row}")
+        for col in "ABC":
+            ws[f"{col}{row}"].font = label_font
+            ws[f"{col}{row}"].border = table_border
+        ws[f"B{row}"].number_format = "#,##0"
+        ws[f"C{row}"].number_format = "#,##0"
+
+    ws["A19"] = "無料Webツール"
+    ws["A19"].font = section_font
+    ws["A20"] = "https://shunsukesaito00.github.io/kurashi/tools/tsumitate.html"
+    ws["A20"].font = Font(size=10, color="0563C1", underline="single")
+    ws.merge_cells("A20:B20")
+
+    ws["A22"] = "免責"
+    ws["A22"].font = section_font
+    ws["A23"] = "月次複利・利回り一定を仮定した概算です。実際の運用成果を保証するものではなく、金融商品には価格変動リスクがあります。"
+    ws["A23"].font = Font(size=9, color="666666")
+    ws.merge_cells("A23:B23")
+    ws["A23"].alignment = Alignment(wrap_text=True, vertical="top")
+
+
 def verify_with_tedori_logic():
     """tools/tedori.html の computeNet と代表例が一致するか（Python再実装）。"""
 
@@ -411,14 +497,41 @@ def verify_with_tedori_logic():
             raise SystemExit(f"検証失敗: 月収{salary} → {got} (期待 {expected})")
 
 
+def verify_tsumitate_logic():
+    """tools/tsumitate.html の calc と代表例が一致するか。"""
+
+    def calc_total(monthly, rate, years):
+        if years <= 0:
+            return 0
+        r = rate / 100 / 12
+        n = years * 12
+        if r == 0:
+            return round(monthly * n)
+        return round(monthly * ((1 + r) ** n - 1) / r)
+
+    cases = [
+        (30_000, 5, 10, 4_658_468),
+        (30_000, 5, 20, 12_331_010),
+        (30_000, 5, 30, 24_967_759),
+    ]
+    for monthly, rate, years, expected in cases:
+        got = calc_total(monthly, rate, years)
+        if got != expected:
+            raise SystemExit(
+                f"積立検証失敗: {monthly}円・{rate}%・{years}年 → {got} (期待 {expected})"
+            )
+
+
 def main():
     verify_with_tedori_logic()
+    verify_tsumitate_logic()
     OUT.parent.mkdir(parents=True, exist_ok=True)
     wb = Workbook()
     build_readme_sheet(wb)
     build_single_sheet(wb)
     build_compare_sheet(wb)
     build_budget_summary_sheet(wb)
+    build_savings_sheet(wb)
     wb.save(OUT)
     print(f"OK: {OUT.relative_to(ROOT)}")
 
