@@ -387,6 +387,7 @@ BOOTH URL は出品後に、まず `node scripts/set-booth-url.mjs --url <商品
 
 - [x] 計算式仕様を [`docs/spreadsheet-spec.md`](docs/spreadsheet-spec.md) に沿ってシート化 → [`products/tedori-kakei-template.xlsx`](products/tedori-kakei-template.xlsx)（6シート。`python3 scripts/generate-spreadsheet-template.py` で再生成可）
 - [x] ZIP納品物（xlsx + PDFマニュアル + サムネイル）→ [`products/tedori-kakei-booth.zip`](products/tedori-kakei-booth.zip)（`python3 scripts/build-booth-package.py` で再生成可）
+- [x] `tedori-kakei-booth.zip` の同梱3ファイル確認済み → `tedori-kakei-template.xlsx`（6シート）/ `manual.pdf`（2ページ）/ `booth-thumbnail.png`（1280×1280）
 - [x] 免責・概算である旨をREADMEシートに記載 → `products/tedori-kakei-template.xlsx` の README シート
 - [x] サムネイル（1280×1280、比較表のスクショ＋タイトル）→ `node scripts/generate-booth-thumbnail.mjs` で `products/booth-thumbnail.png` を生成
 - [x] BOOTH導線・検証スクリプト整備完了 → `js/booth.js`、必須3ファイル、`test:booth` 57件、`set-booth-url.mjs` / `check-booth-links.mjs` / `operator-status.mjs`
