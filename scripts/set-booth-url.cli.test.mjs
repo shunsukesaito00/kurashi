@@ -185,4 +185,28 @@ describe('set-booth-url.mjs CLI', () => {
       assert.deepEqual(extraPending, ['privacy.html']);
     });
   });
+
+  it('必須3ファイルが既に同じ URL のとき --url 実行は変更なしでファイルを書き換えない', () => {
+    withTempFixture((fixtureRoot) => {
+      const beforeByFile = new Map();
+      for (const file of REQUIRED_BOOTH_FILES) {
+        const html = htmlWithBoothAttr(boothUrl);
+        writeHtmlFixture(fixtureRoot, file, html);
+        beforeByFile.set(file, html);
+      }
+
+      const result = runSetBoothUrl(fixtureRoot, ['--url', boothUrl]);
+      assert.equal(result.status, 0);
+      assert.match(
+        result.stdout,
+        /変更なし: 必須ファイルの data-booth-url は既に同じ値です。/,
+      );
+      assert.doesNotMatch(result.stdout, /data-booth-url →/);
+
+      for (const file of REQUIRED_BOOTH_FILES) {
+        assert.equal(readFixtureHtml(fixtureRoot, file), beforeByFile.get(file));
+      }
+      assert.deepEqual(boothUrlPending(fixtureRoot), []);
+    });
+  });
 });
