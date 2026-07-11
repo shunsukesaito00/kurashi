@@ -8,6 +8,9 @@ BOOTH出品後に導線未設定をテスト失敗にする場合は `BOOTH_URL_
 - `booth-config.mjs` — BOOTH 導線の必須ファイル一覧・`isRequiredBoothFile()`・`scanBoothLinks()`・`findExtraBoothHtmlFiles()` 等の共通ヘルパー
 - `check-booth-links.mjs` — BOOTH 導線（`data-booth-url`）の設定状況。必須3ファイルの構造・URL チェック。必須外の空属性は WARN のみ（`--strict` / `BOOTH_URL_STRICT=1` は必須のみ FAIL）。`--root <dir>` または `BOOTH_CHECK_ROOT` で対象ルートを上書き可能
 - `check-booth-links.test.mjs` / `check-booth-links.cli.test.mjs` / `set-booth-url.cli.test.mjs` / `booth.client.test.mjs` — BOOTH 導線のユニット・CLI・クライアントテスト（`npm run test:booth`）
+
+`booth.client.test.mjs` は `js/booth.js` を JSDOM で検証し、必須3ファイルの HTML 構造と対応する3パターンをカバーします。`index.html` は `footer-booth-link` 単一アンカー、`about.html` は `booth-cta-link` に `data-booth-url` を直付けした単一アンカー、`tools/tedori.html` は `div[data-booth-url]` 内の `booth-cta-link` と `.booth-cta-pending` ラップ構造です。空 URL 時の無効化と URL 設定時の `href` 更新（tedori は pending 非表示）をそれぞれ検証します。
+
 - `check-affiliate-sections.mjs` — アフィリエイト導線の横断確認（積立・時給・手取りの PR 表記・aff-slot 2枠・免責文）
 - `check-aff-placeholders.mjs` — aff-slot に広告コードが貼られたか確認（未設置/設置済）
 - `operator-status.mjs` — 収益化フェーズ1の運営者ブロッカー一覧（`npm run status`）。BOOTH は構造3ファイルと URL 設定を分けて表示
