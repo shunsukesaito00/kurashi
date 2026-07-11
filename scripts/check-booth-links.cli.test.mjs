@@ -6,6 +6,7 @@ import { describe, it } from 'node:test';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { REQUIRED_BOOTH_FILES } from './booth-config.mjs';
+import { boothCliChildEnv } from './booth-cli-test-helpers.mjs';
 
 const scriptsDir = dirname(fileURLToPath(import.meta.url));
 const checkScript = join(scriptsDir, 'check-booth-links.mjs');
@@ -34,14 +35,14 @@ function withTempFixture(fn) {
 }
 
 function runCheckBoothLinks(fixtureRoot, extraArgs = []) {
-  const env = { ...process.env };
-  if (!extraArgs.includes('--strict')) {
-    delete env.BOOTH_URL_STRICT;
-  }
   return spawnSync(
     process.execPath,
     [checkScript, '--root', fixtureRoot, ...extraArgs],
-    { encoding: 'utf8', cwd: scriptsDir, env },
+    {
+      encoding: 'utf8',
+      cwd: scriptsDir,
+      env: boothCliChildEnv({ keepStrictEnv: extraArgs.includes('--strict') }),
+    },
   );
 }
 

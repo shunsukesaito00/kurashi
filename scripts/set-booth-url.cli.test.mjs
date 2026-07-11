@@ -6,6 +6,7 @@ import { describe, it } from 'node:test';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { REQUIRED_BOOTH_FILES, boothUrlPending, escapeBoothUrlAttr, readFirstBoothUrl, scanBoothLinks } from './booth-config.mjs';
+import { boothCliChildEnv } from './booth-cli-test-helpers.mjs';
 
 const scriptsDir = dirname(fileURLToPath(import.meta.url));
 const setBoothUrlScript = join(scriptsDir, 'set-booth-url.mjs');
@@ -35,12 +36,10 @@ function withTempFixture(fn) {
 }
 
 function runSetBoothUrl(fixtureRoot, extraArgs = []) {
-  const env = { ...process.env };
-  delete env.BOOTH_URL_STRICT;
   return spawnSync(
     process.execPath,
     [setBoothUrlScript, '--root', fixtureRoot, ...extraArgs],
-    { encoding: 'utf8', cwd: scriptsDir, env },
+    { encoding: 'utf8', cwd: scriptsDir, env: boothCliChildEnv() },
   );
 }
 
