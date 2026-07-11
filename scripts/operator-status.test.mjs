@@ -6,6 +6,7 @@ import { describe, it } from 'node:test';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
+  BOOTH_STRICT_RECURSION_REFERENCE_LINE,
   isOperatorInfoReady,
   PASTE_TEMPLATE_REFERENCE_LINE,
   README_ANCHOR_A8_NET,
@@ -104,6 +105,10 @@ describe('operator-status.mjs CLI', () => {
     assert.ok(
       result.stdout.includes(PASTE_TEMPLATE_REFERENCE_LINE),
       '貼付テンプレート参照行が出力に含まれる',
+    );
+    assert.ok(
+      result.stdout.includes(BOOTH_STRICT_RECURSION_REFERENCE_LINE),
+      'test:booth-strict 再帰回避参考行が出力に含まれる',
     );
   });
 });

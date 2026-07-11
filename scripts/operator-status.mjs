@@ -12,7 +12,11 @@ import {
   boothZipStatus,
   scanBoothLinks,
 } from './booth-config.mjs';
-import { isOperatorInfoReady, PASTE_TEMPLATE_REFERENCE_LINE } from './operator-checks.mjs';
+import {
+  BOOTH_STRICT_RECURSION_REFERENCE_LINE,
+  isOperatorInfoReady,
+  PASTE_TEMPLATE_REFERENCE_LINE,
+} from './operator-checks.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const { configured, extraPending, withAttr } = scanBoothLinks(root);
@@ -128,9 +132,7 @@ console.log(
 console.log(
   '参考: npm run check:booth-links — BOOTH 導線（data-booth-url）と出品ZIP同梱3ファイルを確認（npm test に含まれる）',
 );
-console.log(
-  '参考: npm run test:booth-strict — BOOTH_URL_STRICT=1 で npm test（出品前は exit 1 だが ZIP 同梱3ファイルは OK のまま、cd scripts && npm run test:booth-strict）。shouldSkipBoothStrictIntegrationTest() で test:booth 内の統合テストを skip し、test:booth-strict → npm test → test:booth の再帰を回避',
-);
+console.log(BOOTH_STRICT_RECURSION_REFERENCE_LINE);
 
 if (pending > 0) {
   console.log('\n次に貼り付けてほしいもの（どちらか先に）:');
