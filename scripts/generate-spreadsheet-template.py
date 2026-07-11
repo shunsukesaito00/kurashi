@@ -3,8 +3,7 @@
 from pathlib import Path
 
 from openpyxl import Workbook
-from openpyxl.styles import Font, PatternFill, Alignment
-from openpyxl.utils import get_column_letter
+from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "products" / "tedori-kakei-template.xlsx"
@@ -64,9 +63,106 @@ def style_yen(ws, cells):
         ws[ref].number_format = "#,##0"
 
 
-def build_single_sheet(wb):
+def build_readme_sheet(wb):
     ws = wb.active
-    ws.title = "手取り試算"
+    ws.title = "README"
+    ws.column_dimensions["A"].width = 18
+    ws.column_dimensions["B"].width = 16
+    ws.column_dimensions["C"].width = 18
+    ws.column_dimensions["D"].width = 40
+
+    title_font = Font(bold=True, size=14)
+    section_font = Font(bold=True, size=11)
+    body_font = Font(size=10)
+    muted_font = Font(size=9, color="666666")
+    wrap = Alignment(wrap_text=True, vertical="top")
+    thin = Side(style="thin", color="CCCCCC")
+    table_border = Border(left=thin, right=thin, top=thin, bottom=thin)
+    header_fill = PatternFill("solid", fgColor="F0F4F8")
+
+    ws["A1"] = "くらしの計算室 — 手取り試算スプレッドシート（2026年版）"
+    ws["A1"].font = title_font
+    ws.merge_cells("A1:D1")
+
+    ws["A3"] = "免責事項"
+    ws["A3"].font = section_font
+    disclaimers = [
+        "本テンプレートの計算結果はすべて概算です。最終的な手取り額は給与明細・勤務先の人事・税理士等でご確認ください。",
+        "健康保険は協会けんぽの標準料率（本人4.95%）を目安にしています。健保組合・扶養家族・標準報酬月額の等級差は反映しません。",
+        "住民税の天引き開始時期（新卒1年目の非課税期間など）や、各種控除（配偶者・住宅ローン等）は未対応です。",
+        "ボーナスにも社会保険料率（合計14.65%）を適用します。サイトの無料ツール tools/tedori.html と同一ロジックです。",
+        "税制・社保料率は改正により変わります。毎年8月頃は料率の見直しを推奨します。",
+    ]
+    for i, text in enumerate(disclaimers, start=4):
+        ws[f"A{i}"] = f"・{text}"
+        ws[f"A{i}"].font = body_font
+        ws[f"A{i}"].alignment = wrap
+        ws.merge_cells(f"A{i}:D{i}")
+
+    row = 10
+    ws[f"A{row}"] = "使い方"
+    ws[f"A{row}"].font = section_font
+    usage = [
+        ("1. 手取り試算シート", "B3（月収）・B4（年間ボーナス）を入力すると、社保・税の内訳と毎月の手取り（B17）が自動計算されます。"),
+        ("2. 手取り比較シート", "パターンA〜Cの月収・ボーナスを入力し、手取りとAとの差額（月・年）を横並びで比較できます。転職・昇給の検討に使えます。"),
+        ("3. 保存・編集", "数値は自由に書き換えてください。別名で保存すれば、複数シナリオをファイルごとに残せます。"),
+        ("4. 推奨環境", "編集はPC版 Excel または Google スプレッドシート（xlsxインポート）を推奨します。スマホは閲覧のみ想定です。"),
+    ]
+    for title, detail in usage:
+        row += 1
+        ws[f"A{row}"] = title
+        ws[f"A{row}"].font = Font(bold=True, size=10)
+        ws[f"B{row}"] = detail
+        ws[f"B{row}"].font = body_font
+        ws[f"B{row}"].alignment = wrap
+        ws.merge_cells(f"B{row}:D{row}")
+
+    row += 2
+    ws[f"A{row}"] = "検証用テストケース"
+    ws[f"A{row}"].font = section_font
+    row += 1
+    headers = ("月収（額面）", "年間ボーナス", "毎月手取り（目安）", "確認方法")
+    for col, header in zip("ABCD", headers):
+        cell = ws[f"{col}{row}"]
+        cell.value = header
+        cell.font = Font(bold=True, size=10)
+        cell.fill = header_fill
+        cell.border = table_border
+        cell.alignment = Alignment(horizontal="center")
+    cases = [
+        (300_000, 0, 237_184, "手取り比較シートのパターンA初期値"),
+        (330_000, 0, 259_827, "手取り比較シートのパターンB初期値"),
+        (360_000, 0, 282_471, "手取り比較シートのパターンC初期値"),
+    ]
+    for salary, bonus, net, note in cases:
+        row += 1
+        ws[f"A{row}"] = salary
+        ws[f"B{row}"] = bonus
+        ws[f"C{row}"] = net
+        ws[f"D{row}"] = note
+        ws[f"A{row}"].number_format = "#,##0"
+        ws[f"B{row}"].number_format = "#,##0"
+        ws[f"C{row}"].number_format = "#,##0"
+        for col in "ABCD":
+            ws[f"{col}{row}"].font = body_font
+            ws[f"{col}{row}"].border = table_border
+        ws[f"D{row}"].alignment = wrap
+
+    row += 2
+    ws[f"A{row}"] = "無料Webツール"
+    ws[f"A{row}"].font = section_font
+    row += 1
+    ws[f"A{row}"] = "https://shunsukesaito00.github.io/kurashi/tools/tedori.html"
+    ws[f"A{row}"].font = Font(size=10, color="0563C1", underline="single")
+    ws.merge_cells(f"A{row}:D{row}")
+    row += 1
+    ws[f"A{row}"] = "ブラウザで同じ条件を試算できます。共有URLで条件を保存・共有することも可能です。"
+    ws[f"A{row}"].font = muted_font
+    ws.merge_cells(f"A{row}:D{row}")
+
+
+def build_single_sheet(wb):
+    ws = wb.create_sheet("手取り試算")
     style_header(ws, "手取り試算 — くらしの計算室（2026年版）")
 
     labels = {
@@ -231,6 +327,7 @@ def main():
     verify_with_tedori_logic()
     OUT.parent.mkdir(parents=True, exist_ok=True)
     wb = Workbook()
+    build_readme_sheet(wb)
     build_single_sheet(wb)
     build_compare_sheet(wb)
     wb.save(OUT)
