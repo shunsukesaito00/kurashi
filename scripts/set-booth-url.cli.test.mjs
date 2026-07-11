@@ -104,4 +104,29 @@ describe('set-booth-url.mjs CLI', () => {
       }
     });
   });
+
+  it('--clear --dry-run は空 URL への置換を表示しファイルを書き込まない', () => {
+    withTempFixture((fixtureRoot) => {
+      const beforeByFile = new Map();
+      for (const file of REQUIRED_BOOTH_FILES) {
+        const html = htmlWithBoothAttr(boothUrl);
+        writeHtmlFixture(fixtureRoot, file, html);
+        beforeByFile.set(file, html);
+      }
+
+      const result = runSetBoothUrl(fixtureRoot, ['--clear', '--dry-run']);
+      assert.equal(result.status, 0);
+      assert.match(result.stdout, /\[dry-run\] data-booth-url → \(クリア\)/);
+      for (const file of REQUIRED_BOOTH_FILES) {
+        assert.match(result.stdout, new RegExp(file.replace('.', '\\.')));
+        assert.match(result.stdout, /data-booth-url=""/);
+        assert.equal(readFixtureHtml(fixtureRoot, file), beforeByFile.get(file));
+        assert.match(
+          readFixtureHtml(fixtureRoot, file),
+          new RegExp(`data-booth-url="${boothUrl.replace(/\./g, '\\.')}"`),
+        );
+      }
+      assert.match(result.stdout, /実行するには --dry-run を外してください。/);
+    });
+  });
 });
