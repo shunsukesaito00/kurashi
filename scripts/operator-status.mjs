@@ -8,12 +8,18 @@ import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import {
   REQUIRED_BOOTH_FILES,
-  boothStructureMissing,
   boothUrlPending,
-  isRequiredBoothFile,
+  scanBoothLinks,
 } from './booth-config.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
+const { configured, extraPending, withAttr } = scanBoothLinks(root);
+const boothStructureMissingList = REQUIRED_BOOTH_FILES.filter(
+  (file) => !withAttr.has(file),
+);
+const boothPending = boothUrlPending(root);
+const boothConfiguredRequired = configured.filter((entry) => entry.required);
+const requiredBoothLabel = REQUIRED_BOOTH_FILES.join(', ');
 
 function has(file, pattern) {
   return readFileSync(join(root, file), 'utf8').includes(pattern);
@@ -28,10 +34,6 @@ function affPending() {
   }
   return n;
 }
-
-const boothStructureMissingList = boothStructureMissing(root);
-const boothPending = boothUrlPending(root).filter(isRequiredBoothFile);
-const requiredBoothLabel = REQUIRED_BOOTH_FILES.filter(isRequiredBoothFile).join(', ');
 
 const checks = [
   {
@@ -68,8 +70,13 @@ const checks = [
   },
   {
     label: 'BOOTH 商品URL（data-booth-url）',
-    done: boothPending.length === 0,
-    action: `全導線にURL設定済み（${requiredBoothLabel}）`,
+    done:
+      boothPending.length === 0 &&
+      boothConfiguredRequired.length === REQUIRED_BOOTH_FILES.length,
+    action:
+      boothConfiguredRequired.length > 0
+        ? `設定済み ${boothConfiguredRequired.length} ファイル: ${boothConfiguredRequired.map((entry) => entry.file).join(', ')}`
+        : `全導線にURL設定済み（${requiredBoothLabel}）`,
     block:
       boothPending.length > 0
         ? `URL未設定 ${boothPending.length} ファイル: ${boothPending.join(', ')} — set-booth-url.mjs --url <商品URL>`
@@ -89,6 +96,12 @@ for (const c of checks) {
   } else if (c.action) {
     console.log(`       ${c.action}`);
   }
+}
+
+if (extraPending.length > 0) {
+  console.log(
+    `\n参考: 必須外の空 data-booth-url ${extraPending.length} ファイル（WARN のみ）: ${extraPending.join(', ')}`,
+  );
 }
 
 console.log(`\nエージェント側の準備: 完了（ツール・導線・テスト・手順書）`);
