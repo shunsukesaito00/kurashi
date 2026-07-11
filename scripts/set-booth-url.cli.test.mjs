@@ -295,4 +295,37 @@ describe('set-booth-url.mjs CLI', () => {
       assert.deepEqual(boothUrlPending(fixtureRoot), []);
     });
   });
+
+  it('URL に & を含む場合でも data-booth-url は &amp; にエスケープして書き込む', () => {
+    const ampersandUrl = 'https://example.booth.pm/items/123?a=1&b=2';
+    const escapedUrl = escapeBoothUrlAttr(ampersandUrl);
+
+    withTempFixture((fixtureRoot) => {
+      for (const file of REQUIRED_BOOTH_FILES) {
+        writeHtmlFixture(fixtureRoot, file, htmlWithBoothAttr());
+      }
+
+      const result = runSetBoothUrl(fixtureRoot, ['--url', ampersandUrl]);
+      assert.equal(result.status, 0);
+
+      for (const file of REQUIRED_BOOTH_FILES) {
+        const html = readFixtureHtml(fixtureRoot, file);
+        assert.equal(
+          html,
+          `<!DOCTYPE html><html><body><a data-booth-url="${escapedUrl}">BOOTH</a></body></html>`,
+        );
+        assert.equal(readFirstBoothUrl(html), escapedUrl);
+      }
+
+      const { configured } = scanBoothLinks(fixtureRoot);
+      assert.equal(configured.length, 3);
+      for (const file of REQUIRED_BOOTH_FILES) {
+        assert.deepEqual(
+          configured.find((entry) => entry.file === file),
+          { file, url: escapedUrl, required: true },
+        );
+      }
+      assert.deepEqual(boothUrlPending(fixtureRoot), []);
+    });
+  });
 });
