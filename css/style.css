@@ -324,6 +324,11 @@ h1 {
   height: auto;
 }
 
+.aff-slot img[width="300"] {
+  max-width: 100%;
+  height: auto;
+}
+
 .step-list {
   counter-reset: step;
   list-style: none;
