@@ -103,4 +103,41 @@ describe('js/booth.js', () => {
     link.dispatchEvent(event);
     assert.equal(event.defaultPrevented, true);
   });
+
+  it('about 構造で data-booth-url が空のときリンクを無効化する', () => {
+    const window = initBoothInDom(
+      '<a class="booth-cta-link" href="#" data-booth-url="">BOOTHで有料テンプレートを見る</a>',
+    );
+    const link = window.document.querySelector('.booth-cta-link');
+
+    assert.equal(link.getAttribute('href'), '#');
+    assert.equal(link.classList.contains('is-pending'), true);
+
+    const event = new window.MouseEvent('click', {
+      bubbles: true,
+      cancelable: true,
+    });
+    link.dispatchEvent(event);
+    assert.equal(event.defaultPrevented, true);
+  });
+
+  it('about 構造で data-booth-url が設定済みのとき href をその URL にする', () => {
+    const boothUrl = 'https://example.booth.pm/items/123456';
+    const window = initBoothInDom(
+      `<a class="booth-cta-link" href="#" data-booth-url="${boothUrl}">BOOTHで有料テンプレートを見る</a>`,
+    );
+    const link = window.document.querySelector('.booth-cta-link');
+
+    assert.equal(link.href, boothUrl);
+    assert.equal(link.target, '_blank');
+    assert.equal(link.rel, 'noopener noreferrer');
+    assert.equal(link.classList.contains('is-pending'), false);
+
+    const event = new window.MouseEvent('click', {
+      bubbles: true,
+      cancelable: true,
+    });
+    link.dispatchEvent(event);
+    assert.equal(event.defaultPrevented, false);
+  });
 });
