@@ -10,6 +10,7 @@ import {
   boothUrlPending,
   findExtraBoothHtmlFiles,
   isRequiredBoothFile,
+  readFirstBoothUrl,
   scanBoothLinks,
 } from './booth-config.mjs';
 
@@ -57,6 +58,26 @@ function htmlWithMultipleBoothAttrs(url, count = 2) {
 function htmlWithLeadingEmptyThenBoothUrl(url) {
   return `<!DOCTYPE html><html><body><a data-booth-url="">BOOTH</a><a data-booth-url="${url}">BOOTH</a></body></html>`;
 }
+
+describe('readFirstBoothUrl', () => {
+  const boothUrl = 'https://example.booth.pm/items/123456';
+
+  it('空の data-booth-url のみなら null を返す', () => {
+    assert.equal(readFirstBoothUrl(htmlWithBoothAttr()), null);
+    assert.equal(readFirstBoothUrl(htmlWithMultipleEmptyBoothAttrs(2)), null);
+  });
+
+  it('先頭が空でも後続に URL があればその URL を返す', () => {
+    assert.equal(
+      readFirstBoothUrl(htmlWithLeadingEmptyThenBoothUrl(boothUrl)),
+      boothUrl,
+    );
+  });
+
+  it('data-booth-url が無ければ null を返す', () => {
+    assert.equal(readFirstBoothUrl(htmlWithoutBoothAttr()), null);
+  });
+});
 
 describe('isRequiredBoothFile', () => {
   it('必須3ファイルを true と判定する', () => {
