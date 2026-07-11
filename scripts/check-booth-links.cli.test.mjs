@@ -93,6 +93,33 @@ describe('check-booth-links.mjs CLI', () => {
     });
   });
 
+  it('親に BOOTH_URL_STRICT=1 があっても --strict なし実行は exit code 0 を返す', () => {
+    const previous = process.env.BOOTH_URL_STRICT;
+    process.env.BOOTH_URL_STRICT = '1';
+    try {
+      withTempFixture((fixtureRoot) => {
+        for (const file of REQUIRED_BOOTH_FILES) {
+          writeHtmlFixture(fixtureRoot, file, htmlWithBoothAttr());
+        }
+
+        const result = runCheckBoothLinks(fixtureRoot);
+        assert.equal(result.status, 0);
+        assert.match(result.stdout, /OK: BOOTH 導線構造/);
+        assert.match(result.stdout, /WARN: BOOTH 商品URL 未設定（必須）/);
+        assert.doesNotMatch(result.stderr, /FAIL: BOOTH 商品URL 未設定（必須）/);
+        for (const file of REQUIRED_BOOTH_FILES) {
+          assert.match(result.stdout, new RegExp(file.replace('.', '\\.')));
+        }
+      });
+    } finally {
+      if (previous === undefined) {
+        delete process.env.BOOTH_URL_STRICT;
+      } else {
+        process.env.BOOTH_URL_STRICT = previous;
+      }
+    }
+  });
+
   it('必須3ファイルすべてに URL 設定済みなら exit code 0 で完了メッセージを出す', () => {
     const boothUrl = 'https://example.booth.pm/items/123456';
 
