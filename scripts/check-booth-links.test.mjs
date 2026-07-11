@@ -165,6 +165,70 @@ describe('scanBoothLinks configured（一時ディレクトリ）', () => {
   });
 });
 
+describe('scanBoothLinks extraPending（一時ディレクトリ）', () => {
+  const boothUrl = 'https://example.booth.pm/items/123456';
+
+  it('必須外 HTML に空の data-booth-url があれば extraPending に含まれる', () => {
+    withTempFixture((fixtureRoot) => {
+      writeHtmlFixture(
+        fixtureRoot,
+        'tools/tsumitate.html',
+        htmlWithBoothAttr(),
+      );
+
+      const { extraPending } = scanBoothLinks(fixtureRoot);
+      assert.deepEqual(extraPending, ['tools/tsumitate.html']);
+    });
+  });
+
+  it('必須外 HTML に URL が設定されていれば configured に含め extraPending には含めない', () => {
+    withTempFixture((fixtureRoot) => {
+      writeHtmlFixture(
+        fixtureRoot,
+        'privacy.html',
+        htmlWithBoothAttr(boothUrl),
+      );
+
+      const { configured, extraPending } = scanBoothLinks(fixtureRoot);
+      assert.deepEqual(extraPending, []);
+      assert.deepEqual(configured, [
+        { file: 'privacy.html', url: boothUrl, required: false },
+      ]);
+    });
+  });
+
+  it('必須外の空 URL は findExtraBoothHtmlFiles にも含まれる', () => {
+    withTempFixture((fixtureRoot) => {
+      writeHtmlFixture(fixtureRoot, 'privacy.html', htmlWithBoothAttr());
+
+      const { extraPending } = scanBoothLinks(fixtureRoot);
+      assert.deepEqual(extraPending, ['privacy.html']);
+      assert.deepEqual(findExtraBoothHtmlFiles(fixtureRoot), ['privacy.html']);
+    });
+  });
+
+  it('必須ファイルの空 URL は extraPending ではなく boothUrlPending に入る', () => {
+    withTempFixture((fixtureRoot) => {
+      for (const file of REQUIRED_BOOTH_FILES) {
+        const html =
+          file === 'index.html'
+            ? htmlWithBoothAttr()
+            : htmlWithBoothAttr(boothUrl);
+        writeHtmlFixture(fixtureRoot, file, html);
+      }
+      writeHtmlFixture(
+        fixtureRoot,
+        'tools/tsumitate.html',
+        htmlWithBoothAttr(),
+      );
+
+      const { extraPending } = scanBoothLinks(fixtureRoot);
+      assert.deepEqual(extraPending, ['tools/tsumitate.html']);
+      assert.deepEqual(boothUrlPending(fixtureRoot), ['index.html']);
+    });
+  });
+});
+
 describe('scanBoothLinks（本番リポジトリ）', () => {
   it('必須3ファイルすべてに data-booth-url がある', () => {
     const { withAttr } = scanBoothLinks(root);
