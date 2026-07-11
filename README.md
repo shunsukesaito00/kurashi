@@ -115,7 +115,7 @@ cd scripts && npm run test:booth-strict
 | アフィリエイト導線(UI) | **一部完了** — 積立・時給・手取りページにPR表記付き比較セクションと広告枠(証券3枠設置済み・転職7枠は承認待ち) |
 | BOOTH導線・検証 | **完了** — 必須3ファイルの `data-booth-url` 導線・`test:booth` 57件・`set-booth-url.mjs` / `check-booth-links.mjs`（出品URLは未設定） |
 | 収益 | **0円** — ASP未登録・広告コード未設置・AdSense未申請 |
-| 運営者作業(律速) | **一部完了** — about 実名義済み・A8/Search Console 手順・コピペ文済み。**未完了: A8.net登録・広告コード6枠・Search Console確認** |
+| 運営者作業(律速) | **一部完了** — about 実名義済み・A8/Search Console 手順・コピペ文済み・BOOTH導線・検証スクリプト済み。**未完了: A8.net登録・広告コード6枠・Search Console確認・BOOTH出品（アカウント開設・980円出品・`set-booth-url.mjs --url <商品URL>`）** |
 
 月5万円の目安は依然として**月5〜10成約**(アフィリエイト単価3,000〜15,000円)。PVではなく成約で勝負する。
 
