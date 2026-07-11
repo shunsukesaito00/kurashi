@@ -217,6 +217,20 @@ describe('scanBoothLinks configured（一時ディレクトリ）', () => {
       ]);
     });
   });
+
+  it('最初の data-booth-url が空でも後続に URL があれば boothUrlPending は空', () => {
+    withTempFixture((fixtureRoot) => {
+      for (const file of REQUIRED_BOOTH_FILES) {
+        const html =
+          file === 'index.html'
+            ? htmlWithLeadingEmptyThenBoothUrl(boothUrl)
+            : htmlWithBoothAttr(boothUrl);
+        writeHtmlFixture(fixtureRoot, file, html);
+      }
+
+      assert.deepEqual(boothUrlPending(fixtureRoot), []);
+    });
+  });
 });
 
 describe('scanBoothLinks extraPending（一時ディレクトリ）', () => {

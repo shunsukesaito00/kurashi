@@ -94,7 +94,8 @@ export function boothUrlPending(root) {
     if (!isRequiredBoothFile(file)) continue;
     const html = readFileSync(join(root, file), 'utf8');
     const matches = readBoothUrlMatches(html);
-    if (matches.length === 0 || matches.some((m) => !m[1].trim())) {
+    const hasUrl = matches.some((m) => m[1].trim());
+    if (matches.length === 0 || !hasUrl) {
       pending.push(file);
     }
   }
