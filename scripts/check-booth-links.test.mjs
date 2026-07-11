@@ -414,6 +414,31 @@ describe('BOOTH 導線 設定状態（一時ディレクトリ）', () => {
       }
     });
   });
+
+  it('必須3ファイルは URL 設定済み・必須外に空属性があれば configured は3件で extraPending は1件', () => {
+    withTempFixture((fixtureRoot) => {
+      for (const file of REQUIRED_BOOTH_FILES) {
+        writeHtmlFixture(fixtureRoot, file, htmlWithBoothAttr(boothUrl));
+      }
+      writeHtmlFixture(fixtureRoot, 'privacy.html', htmlWithBoothAttr());
+
+      assert.deepEqual(boothStructureMissing(fixtureRoot), []);
+      assert.deepEqual(boothUrlPending(fixtureRoot), []);
+
+      const { configured, extraPending, withAttr } = scanBoothLinks(fixtureRoot);
+      assert.equal(configured.length, 3);
+      for (const file of REQUIRED_BOOTH_FILES) {
+        assert.equal(withAttr.has(file), true);
+        assert.deepEqual(
+          configured.find((entry) => entry.file === file),
+          { file, url: boothUrl, required: true },
+        );
+      }
+      assert.deepEqual(extraPending, ['privacy.html']);
+      assert.equal(withAttr.has('privacy.html'), true);
+      assert.deepEqual(findExtraBoothHtmlFiles(fixtureRoot), ['privacy.html']);
+    });
+  });
 });
 
 describe('scanBoothLinks（本番リポジトリ）', () => {
