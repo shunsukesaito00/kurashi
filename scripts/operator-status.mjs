@@ -123,7 +123,7 @@ if (pending > 0) {
   if (boothPending.length > 0) {
     console.log('  3. BOOTH: アカウント開設・980円ダウンロード販売で出品（products/tedori-kakei-booth.zip）');
     console.log(
-      '  4. BOOTH出品後: 商品URLをチャットに貼付 → cd scripts && node set-booth-url.mjs --url <商品URL> で about/index/tedori の data-booth-url を一括更新・デプロイ',
+      '  4. BOOTH出品後: 商品URLをチャットに貼付 → まず cd scripts && node set-booth-url.mjs --url <商品URL> --dry-run で置換内容を確認 → --dry-run を外して about/index/tedori を一括更新・デプロイ',
     );
   }
   process.exit(0);
