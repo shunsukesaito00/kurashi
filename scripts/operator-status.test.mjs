@@ -106,3 +106,21 @@ describe('operator-status.mjs CLI', () => {
     );
   });
 });
+
+describe('npm run test:booth-strict（本番リポジトリ）', () => {
+  it(
+    '出品前は exit 1 で ZIP は OK・商品URL は FAIL',
+    { skip: process.env.BOOTH_URL_STRICT === '1' },
+    () => {
+      const result = spawnSync('npm', ['run', 'test:booth-strict'], {
+        encoding: 'utf8',
+        cwd: scriptsDir,
+      });
+
+      const output = `${result.stdout}\n${result.stderr}`;
+      assert.equal(result.status, 1, output);
+      assert.match(output, /OK: BOOTH 出品ZIP/);
+      assert.match(output, /FAIL: BOOTH 商品URL/);
+    },
+  );
+});
