@@ -23,4 +23,8 @@ python3 scripts/generate-spreadsheet-template.py
 
 ### BOOTH出品時
 
-ZIP に本 xlsx と簡易PDFマニュアルを同梱して BOOTH 出品する想定。
+```bash
+python3 scripts/build-booth-package.py
+```
+
+`products/tedori-kakei-booth.zip` に xlsx と `manual.pdf`（READMEシート内容ベース）が同梱されます。要: `pip install -r products/requirements-booth.txt`
