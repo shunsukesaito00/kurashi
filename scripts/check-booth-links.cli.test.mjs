@@ -72,4 +72,20 @@ describe('check-booth-links.mjs CLI', () => {
       }
     });
   });
+
+  it('必須3ファイルの URL 未設定かつ --strict なしのときは exit code 0 を返す', () => {
+    withTempFixture((fixtureRoot) => {
+      for (const file of REQUIRED_BOOTH_FILES) {
+        writeHtmlFixture(fixtureRoot, file, htmlWithBoothAttr());
+      }
+
+      const result = runCheckBoothLinks(fixtureRoot);
+      assert.equal(result.status, 0);
+      assert.match(result.stdout, /OK: BOOTH 導線構造/);
+      assert.match(result.stdout, /WARN: BOOTH 商品URL 未設定（必須）/);
+      for (const file of REQUIRED_BOOTH_FILES) {
+        assert.match(result.stdout, new RegExp(file.replace('.', '\\.')));
+      }
+    });
+  });
 });
