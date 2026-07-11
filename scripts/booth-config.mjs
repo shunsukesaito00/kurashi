@@ -34,6 +34,15 @@ export function readBoothUrlMatches(html) {
   return [...html.matchAll(BOOTH_URL_PATTERN)];
 }
 
+/** HTML 内の最初の非空 data-booth-url を返す。無ければ null */
+export function readFirstBoothUrl(html) {
+  for (const match of readBoothUrlMatches(html)) {
+    const url = match[1].trim();
+    if (url) return url;
+  }
+  return null;
+}
+
 export function hasBoothUrlAttr(file, root) {
   return readFileSync(join(root, file), 'utf8').includes('data-booth-url=');
 }
@@ -61,15 +70,12 @@ export function scanBoothLinks(root) {
 
     withAttr.add(rel);
     const required = isRequiredBoothFile(rel);
-    let configuredForFile = false;
+    const url = readFirstBoothUrl(html);
+    if (url) {
+      configured.push({ file: rel, url, required });
+    }
     for (const match of matches) {
-      const url = match[1].trim();
-      if (url) {
-        if (!configuredForFile) {
-          configured.push({ file: rel, url, required });
-          configuredForFile = true;
-        }
-      } else if (!required) {
+      if (!match[1].trim() && !required) {
         extraPending.push(rel);
       }
     }
@@ -93,9 +99,7 @@ export function boothUrlPending(root) {
   for (const file of REQUIRED_BOOTH_FILES) {
     if (!isRequiredBoothFile(file)) continue;
     const html = readFileSync(join(root, file), 'utf8');
-    const matches = readBoothUrlMatches(html);
-    const hasUrl = matches.some((m) => m[1].trim());
-    if (matches.length === 0 || !hasUrl) {
+    if (!readFirstBoothUrl(html)) {
       pending.push(file);
     }
   }
