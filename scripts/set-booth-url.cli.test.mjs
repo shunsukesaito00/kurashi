@@ -151,4 +151,38 @@ describe('set-booth-url.mjs CLI', () => {
       assert.deepEqual(scanBoothLinks(fixtureRoot).configured, []);
     });
   });
+
+  it('必須外の空 data-booth-url は --url 実行でも更新せず WARN のみ出す', () => {
+    withTempFixture((fixtureRoot) => {
+      const extraHtml = htmlWithBoothAttr();
+      for (const file of REQUIRED_BOOTH_FILES) {
+        writeHtmlFixture(fixtureRoot, file, htmlWithBoothAttr());
+      }
+      writeHtmlFixture(fixtureRoot, 'privacy.html', extraHtml);
+
+      const result = runSetBoothUrl(fixtureRoot, ['--url', boothUrl]);
+      assert.equal(result.status, 0);
+      assert.match(
+        result.stdout,
+        /WARN: 必須外の data-booth-url は更新していません: privacy\.html/,
+      );
+
+      for (const file of REQUIRED_BOOTH_FILES) {
+        assert.match(
+          readFixtureHtml(fixtureRoot, file),
+          new RegExp(`data-booth-url="${boothUrl.replace(/\./g, '\\.')}"`),
+        );
+      }
+      assert.equal(readFixtureHtml(fixtureRoot, 'privacy.html'), extraHtml);
+      assert.match(readFixtureHtml(fixtureRoot, 'privacy.html'), /data-booth-url=""/);
+      assert.doesNotMatch(
+        readFixtureHtml(fixtureRoot, 'privacy.html'),
+        new RegExp(`data-booth-url="${boothUrl.replace(/\./g, '\\.')}"`),
+      );
+
+      const { configured, extraPending } = scanBoothLinks(fixtureRoot);
+      assert.equal(configured.length, 3);
+      assert.deepEqual(extraPending, ['privacy.html']);
+    });
+  });
 });
