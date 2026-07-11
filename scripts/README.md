@@ -1,13 +1,13 @@
 # scripts/
 
-代表例の同期確認と共有URLの往復テストを行うスクリプト群です。初回のみ `cd scripts && npm install && npx playwright install chromium` で依存を入れます。2回目以降は代表例を変更したときなどに `cd scripts && npm test` を実行します。`npm test` は先に `check:demo-sync`（代表例の同期確認。HTTP サーバー不要）、`check:booth-links`（BOOTH 導線の `data-booth-url` 確認。未設定は WARN のみ）、`check:affiliate-sections`（アフィリエイト導線の横断確認。HTTP サーバー不要）、`check:aff-placeholders`（aff-slot の広告コード設置状況。HTTP サーバー不要）を走らせ、続けて `test:share-urls`（共有URLの往復テスト。HTTP サーバー必須。別ターミナルで `python3 -m http.server 8000` を起動したまま）を実行します。
+代表例の同期確認と共有URLの往復テストを行うスクリプト群です。初回のみ `cd scripts && npm install && npx playwright install chromium` で依存を入れます。2回目以降は代表例を変更したときなどに `cd scripts && npm test` を実行します。`npm test` は先に `check:demo-sync`（代表例の同期確認。HTTP サーバー不要）、`test:booth`（BOOTH 導線のユニット・CLI テスト。HTTP サーバー不要）、`check:booth-links`（BOOTH 導線の `data-booth-url` 確認。未設定は WARN のみ）、`check:affiliate-sections`（アフィリエイト導線の横断確認。HTTP サーバー不要）、`check:aff-placeholders`（aff-slot の広告コード設置状況。HTTP サーバー不要）を走らせ、続けて `test:share-urls`（共有URLの往復テスト。HTTP サーバー必須。別ターミナルで `python3 -m http.server 8000` を起動したまま）を実行します。
 
 BOOTH出品後に導線未設定をテスト失敗にする場合は `BOOTH_URL_STRICT=1 npm test` または `npm run test:booth-strict` を使います。
 
 - `check-demo-sync.mjs` — 代表例の同期確認（README・`index.html`・`verify-share-urls.mjs` のクエリパス一致）
 - `booth-config.mjs` — BOOTH 導線の必須ファイル一覧・`isRequiredBoothFile()`・`scanBoothLinks()`・`findExtraBoothHtmlFiles()` 等の共通ヘルパー
 - `check-booth-links.mjs` — BOOTH 導線（`data-booth-url`）の設定状況。必須3ファイルの構造・URL チェック。必須外の空属性は WARN のみ（`--strict` / `BOOTH_URL_STRICT=1` は必須のみ FAIL）。`--root <dir>` または `BOOTH_CHECK_ROOT` で対象ルートを上書き可能
-- `check-booth-links.test.mjs` / `check-booth-links.cli.test.mjs` — BOOTH 導線のユニット・CLI 統合テスト（`npm run test:booth-links` = `node --test check-booth-links*.test.mjs`）
+- `check-booth-links.test.mjs` / `check-booth-links.cli.test.mjs` — BOOTH 導線のユニット・CLI 統合テスト（`npm run test:booth` = `node --test check-booth-links*.test.mjs`）
 - `check-affiliate-sections.mjs` — アフィリエイト導線の横断確認（積立・時給・手取りの PR 表記・aff-slot 2枠・免責文）
 - `check-aff-placeholders.mjs` — aff-slot に広告コードが貼られたか確認（未設置/設置済）
 - `operator-status.mjs` — 収益化フェーズ1の運営者ブロッカー一覧（`npm run status`）。BOOTH は構造3ファイルと URL 設定を分けて表示
@@ -15,5 +15,5 @@ BOOTH出品後に導線未設定をテスト失敗にする場合は `BOOTH_URL_
 - `apply-job-affiliates.mjs` — 転職バナーを jikyu/tedori/ikukyu/taishoku に一括設置（`affiliates/job-slot*.html` 要）
 - `replace-site-url.mjs` — 独自ドメイン取得後の URL 一括置換（`sitemap.xml`・`robots.txt`・全HTML・README 等）
 - `verify-share-urls.mjs` — 共有URLの往復テスト（Playwright で11ツール。再読み込み後も同じ結果になるか検証）
-- `package.json` — `check:demo-sync`・`check:booth-links`・`check:affiliate-sections`・`test:booth-strict`・`test:share-urls`・`test` の npm スクリプト定義
+- `package.json` — `check:demo-sync`・`test:booth`・`check:booth-links`・`check:affiliate-sections`・`test:booth-strict`・`test:share-urls`・`test` の npm スクリプト定義
 - `README.md` — 本ファイル。初回セットアップ・`npm test` の手順
