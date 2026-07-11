@@ -123,7 +123,7 @@ if (boothPending.length > 0) {
 console.log(`\nエージェント側の準備: 完了（ツール・導線・テスト・手順書）`);
 console.log(`運営者側の未完了: ${pending} 項目`);
 console.log(
-  '参考: npm run test:booth — BOOTH導線・運営者情報チェック（operator-checks.mjs）のユニット・CLI・クライアント（JSDOM）テスト 70件（cd scripts && npm run test:booth）',
+  '参考: npm run test:booth — BOOTH導線・運営者情報チェック（operator-checks.mjs）のユニット・CLI・クライアント（JSDOM）テスト 71件（cd scripts && npm run test:booth）',
 );
 console.log(
   '参考: npm run check:booth-links — BOOTH 導線（data-booth-url）と出品ZIP同梱3ファイルを確認（npm test に含まれる）',

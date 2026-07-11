@@ -5,7 +5,13 @@ import { tmpdir } from 'node:os';
 import { describe, it } from 'node:test';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { isOperatorInfoReady, PASTE_TEMPLATE_REFERENCE_LINE } from './operator-checks.mjs';
+import {
+  isOperatorInfoReady,
+  PASTE_TEMPLATE_REFERENCE_LINE,
+  README_ANCHOR_A8_NET,
+  README_ANCHOR_BOOTH,
+  README_ANCHOR_SEARCH_CONSOLE,
+} from './operator-checks.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const scriptsDir = dirname(fileURLToPath(import.meta.url));
@@ -67,6 +73,21 @@ describe('isOperatorInfoReady', () => {
 describe('isOperatorInfoReady（本番リポジトリ）', () => {
   it('about.html は運営者情報が設定済み', () => {
     assert.equal(isOperatorInfoReady(root), true);
+  });
+});
+
+describe('PASTE_TEMPLATE_REFERENCE_LINE', () => {
+  it('README アンカー3件を含む', () => {
+    for (const anchor of [
+      README_ANCHOR_SEARCH_CONSOLE,
+      README_ANCHOR_A8_NET,
+      README_ANCHOR_BOOTH,
+    ]) {
+      assert.ok(
+        PASTE_TEMPLATE_REFERENCE_LINE.includes(anchor),
+        `貼付参照行に ${anchor} が含まれる`,
+      );
+    }
   });
 });
 
