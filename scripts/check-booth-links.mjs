@@ -12,6 +12,13 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const strict =
   process.argv.includes('--strict') || process.env.BOOTH_URL_STRICT === '1';
 
+/** BOOTH 導線を置く必須 HTML（data-booth-url 属性の有無を構造チェック） */
+const REQUIRED_BOOTH_FILES = [
+  'about.html',
+  'index.html',
+  'tools/tedori.html',
+];
+
 function collectHtmlFiles(dir, acc = []) {
   for (const name of readdirSync(dir)) {
     if (name === 'node_modules' || name === '.git') continue;
@@ -28,6 +35,7 @@ function collectHtmlFiles(dir, acc = []) {
 function scanBoothLinks() {
   const configured = [];
   const pending = [];
+  const withAttr = new Set();
 
   for (const file of collectHtmlFiles(root)) {
     const html = readFileSync(file, 'utf8');
@@ -35,6 +43,7 @@ function scanBoothLinks() {
     const matches = [...html.matchAll(/data-booth-url="([^"]*)"/g)];
     if (matches.length === 0) continue;
 
+    withAttr.add(rel);
     for (const match of matches) {
       const url = match[1].trim();
       if (url) configured.push({ file: rel, url });
@@ -45,10 +54,24 @@ function scanBoothLinks() {
   return {
     configured,
     pending: [...new Set(pending)],
+    withAttr,
   };
 }
 
-const { configured, pending } = scanBoothLinks();
+const { configured, pending, withAttr } = scanBoothLinks();
+
+const missingRequired = REQUIRED_BOOTH_FILES.filter((file) => !withAttr.has(file));
+if (missingRequired.length > 0) {
+  console.error(
+    `FAIL: BOOTH 導線の必須ファイルに data-booth-url がありません: ${missingRequired.join(', ')}`,
+  );
+  console.error(`       期待: ${REQUIRED_BOOTH_FILES.join(', ')}`);
+  process.exit(1);
+}
+
+console.log(
+  `OK: BOOTH 導線構造 — 必須 ${REQUIRED_BOOTH_FILES.length} ファイル揃い (${REQUIRED_BOOTH_FILES.join(', ')})`,
+);
 
 if (configured.length === 0 && pending.length === 0) {
   console.error('FAIL: data-booth-url 属性を持つ HTML がありません。');
