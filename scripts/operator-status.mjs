@@ -12,6 +12,7 @@ import {
   boothZipStatus,
   scanBoothLinks,
 } from './booth-config.mjs';
+import { isOperatorInfoReady } from './operator-checks.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const { configured, extraPending, withAttr } = scanBoothLinks(root);
@@ -40,9 +41,7 @@ function affPending() {
 const checks = [
   {
     label: '運営者情報（実名義）',
-    done:
-      has('about.html', '斎藤 俊介') &&
-      has('about.html', 'infomationshunsuke@gmail.com'),
+    done: isOperatorInfoReady(root),
     action: 'about.html 済み',
     block: 'about.html に運営者名・連絡先を記載',
   },
@@ -124,7 +123,7 @@ if (boothPending.length > 0) {
 console.log(`\nエージェント側の準備: 完了（ツール・導線・テスト・手順書）`);
 console.log(`運営者側の未完了: ${pending} 項目`);
 console.log(
-  '参考: npm run test:booth — BOOTH導線のユニット・CLI・クライアント（JSDOM）テスト 64件（cd scripts && npm run test:booth）',
+  '参考: npm run test:booth — BOOTH導線のユニット・CLI・クライアント（JSDOM）テスト 69件（cd scripts && npm run test:booth）',
 );
 console.log(
   '参考: npm run check:booth-links — BOOTH 導線（data-booth-url）と出品ZIP同梱3ファイルを確認（npm test に含まれる）',

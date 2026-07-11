@@ -6,7 +6,7 @@
     "check:affiliate-sections": "node check-affiliate-sections.mjs",
     "check:aff-placeholders": "node check-aff-placeholders.mjs",
     "check:booth-links": "node check-booth-links.mjs",
-    "test:booth": "node --test check-booth-links*.test.mjs set-booth-url*.test.mjs booth*.test.mjs",
+    "test:booth": "node --test check-booth-links*.test.mjs set-booth-url*.test.mjs booth*.test.mjs operator-status*.test.mjs",
     "test:booth-strict": "BOOTH_URL_STRICT=1 npm test",
     "apply-job-affiliates": "node apply-job-affiliates.mjs",
     "status": "node operator-status.mjs",
