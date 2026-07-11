@@ -2,7 +2,7 @@
 
 代表例の同期確認と共有URLの往復テストを行うスクリプト群です。初回のみ `cd scripts && npm install && npx playwright install chromium` で依存を入れます。2回目以降は代表例を変更したときなどに `cd scripts && npm test` を実行します。`npm test` は先に `check:demo-sync`（代表例の同期確認。HTTP サーバー不要）、`test:booth`（BOOTH導線のユニット・CLI・クライアント（JSDOM）テスト、64件。HTTP サーバー不要）、`check:booth-links`（BOOTH 導線の `data-booth-url` と出品ZIP同梱3ファイル確認。URL 未設定は WARN のみ）、`check:affiliate-sections`（アフィリエイト導線の横断確認。HTTP サーバー不要）、`check:aff-placeholders`（aff-slot の広告コード設置状況。HTTP サーバー不要）を走らせ、続けて `test:share-urls`（共有URLの往復テスト。HTTP サーバー必須。別ターミナルで `python3 -m http.server 8000` を起動したまま）を実行します。`test:booth` には `boothCliChildEnv()`（`booth-cli-test-helpers.mjs`）のユニットテストも含まれます。
 
-BOOTH出品後に導線未設定をテスト失敗にする場合は `BOOTH_URL_STRICT=1 npm test` または `npm run test:booth-strict` を使います。`npm run test:booth-strict` を出品前の状態で実行すると `check:booth-links` で exit 1 になりますが、必須3ファイルの `data-booth-url` が空の間は正常な挙動です。
+BOOTH出品後に導線未設定をテスト失敗にする場合は `BOOTH_URL_STRICT=1 npm test` または `npm run test:booth-strict` を使います。`npm run test:booth-strict` を出品前の状態で実行すると `check:booth-links` で exit 1 になりますが、必須3ファイルの `data-booth-url` が空の間は正常な挙動です。厳格モードでも出品ZIP同梱3ファイルは `OK` のまま、exit 1 になるのは商品URL（`data-booth-url`）未設定のみです。
 
 - `check-demo-sync.mjs` — 代表例の同期確認（README・`index.html`・`verify-share-urls.mjs` のクエリパス一致）
 - `booth-config.mjs` — BOOTH 導線の必須ファイル一覧・`isRequiredBoothFile()`・`scanBoothLinks()`・`boothZipStatus()`・`findExtraBoothHtmlFiles()` 等の共通ヘルパー
