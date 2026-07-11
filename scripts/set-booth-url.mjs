@@ -14,6 +14,7 @@ import {
   BOOTH_URL_ATTR_PATTERN,
   REQUIRED_BOOTH_FILES,
   boothStructureMissing,
+  escapeBoothUrlAttr,
   findExtraBoothHtmlFiles,
   isRequiredBoothFile,
 } from './booth-config.mjs';
@@ -46,10 +47,6 @@ function parseArgs(argv) {
     else if (!opts.url && !opts.clear) opts.url = arg;
   }
   return opts;
-}
-
-function escapeAttr(value) {
-  return value.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
 }
 
 function usage() {
@@ -94,7 +91,7 @@ if (missingRequired.length > 0) {
   process.exit(1);
 }
 
-const replacement = `data-booth-url="${escapeAttr(newUrl)}"`;
+const replacement = `data-booth-url="${escapeBoothUrlAttr(newUrl)}"`;
 const changed = [];
 
 for (const rel of REQUIRED_BOOTH_FILES.filter(isRequiredBoothFile)) {

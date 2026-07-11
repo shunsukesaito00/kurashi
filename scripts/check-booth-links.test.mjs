@@ -8,6 +8,7 @@ import {
   REQUIRED_BOOTH_FILES,
   boothStructureMissing,
   boothUrlPending,
+  escapeBoothUrlAttr,
   findExtraBoothHtmlFiles,
   isRequiredBoothFile,
   readFirstBoothUrl,
@@ -58,6 +59,16 @@ function htmlWithMultipleBoothAttrs(url, count = 2) {
 function htmlWithLeadingEmptyThenBoothUrl(url) {
   return `<!DOCTYPE html><html><body><a data-booth-url="">BOOTH</a><a data-booth-url="${url}">BOOTH</a></body></html>`;
 }
+
+describe('escapeBoothUrlAttr', () => {
+  it('URL 内の " を &quot; にエスケープする', () => {
+    assert.equal(escapeBoothUrlAttr('a"b'), 'a&quot;b');
+  });
+
+  it('URL 内の & を &amp; にエスケープする', () => {
+    assert.equal(escapeBoothUrlAttr('a&b=c'), 'a&amp;b=c');
+  });
+});
 
 describe('readFirstBoothUrl', () => {
   const boothUrl = 'https://example.booth.pm/items/123456';

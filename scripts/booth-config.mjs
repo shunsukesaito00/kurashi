@@ -17,6 +17,11 @@ export const BOOTH_URL_PATTERN = /data-booth-url="([^"]*)"/g;
 /** 一括置換用（キャプチャなし） */
 export const BOOTH_URL_ATTR_PATTERN = /data-booth-url="[^"]*"/g;
 
+/** data-booth-url 属性値用の HTML エスケープ */
+export function escapeBoothUrlAttr(url) {
+  return url.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+}
+
 export function collectHtmlFiles(root, dir = root, acc = []) {
   for (const name of readdirSync(dir)) {
     if (name === 'node_modules' || name === '.git') continue;
