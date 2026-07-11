@@ -115,7 +115,7 @@ if (extraPending.length > 0) {
 
 if (boothPending.length > 0) {
   console.log(
-    '\n参考: npm run test:booth-strict は出品前では check:booth-links で exit 1 になりますが、必須3ファイルの data-booth-url が空の間は正常です。',
+    '\n参考: npm run test:booth-strict は出品前では check:booth-links で exit 1 になりますが、必須3ファイルの data-booth-url が空の間は正常です。厳格モードでも出品ZIP同梱3ファイルは OK のまま、exit 1 になるのは商品URL（data-booth-url）未設定のみです。',
   );
 }
 
