@@ -7,8 +7,7 @@ BOOTH出品後に導線未設定をテスト失敗にする場合は `BOOTH_URL_
 - `check-demo-sync.mjs` — 代表例の同期確認（README・`index.html`・`verify-share-urls.mjs` のクエリパス一致）
 - `booth-config.mjs` — BOOTH 導線の必須ファイル一覧・`isRequiredBoothFile()`・`scanBoothLinks()`・`findExtraBoothHtmlFiles()` 等の共通ヘルパー
 - `check-booth-links.mjs` — BOOTH 導線（`data-booth-url`）の設定状況。必須3ファイルの構造・URL チェック。必須外の空属性は WARN のみ（`--strict` / `BOOTH_URL_STRICT=1` は必須のみ FAIL）。`--root <dir>` または `BOOTH_CHECK_ROOT` で対象ルートを上書き可能
-- `check-booth-links.test.mjs` — `scanBoothLinks` のユニットテスト（`npm run test:booth-links` / `node --test`）
-- `check-booth-links.cli.test.mjs` — `check-booth-links.mjs` の CLI 統合テスト（`npm run test:booth-links-cli`）
+- `check-booth-links.test.mjs` / `check-booth-links.cli.test.mjs` — BOOTH 導線のユニット・CLI 統合テスト（`npm run test:booth-links` = `node --test check-booth-links*.test.mjs`）
 - `check-affiliate-sections.mjs` — アフィリエイト導線の横断確認（積立・時給・手取りの PR 表記・aff-slot 2枠・免責文）
 - `check-aff-placeholders.mjs` — aff-slot に広告コードが貼られたか確認（未設置/設置済）
 - `operator-status.mjs` — 収益化フェーズ1の運営者ブロッカー一覧（`npm run status`）。BOOTH は構造3ファイルと URL 設定を分けて表示
