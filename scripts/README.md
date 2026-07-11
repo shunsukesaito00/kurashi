@@ -1,14 +1,14 @@
 # scripts/
 
-代表例の同期確認と共有URLの往復テストを行うスクリプト群です。初回のみ `cd scripts && npm install && npx playwright install chromium` で依存を入れます。2回目以降は代表例を変更したときなどに `cd scripts && npm test` を実行します。`npm test` は先に `check:demo-sync`（代表例の同期確認。HTTP サーバー不要）、`test:booth`（BOOTH導線のユニット・CLI・クライアント（JSDOM）テスト、57件。HTTP サーバー不要）、`check:booth-links`（BOOTH 導線の `data-booth-url` 確認。未設定は WARN のみ）、`check:affiliate-sections`（アフィリエイト導線の横断確認。HTTP サーバー不要）、`check:aff-placeholders`（aff-slot の広告コード設置状況。HTTP サーバー不要）を走らせ、続けて `test:share-urls`（共有URLの往復テスト。HTTP サーバー必須。別ターミナルで `python3 -m http.server 8000` を起動したまま）を実行します。`test:booth` には `boothCliChildEnv()`（`booth-cli-test-helpers.mjs`）のユニットテストも含まれます。
+代表例の同期確認と共有URLの往復テストを行うスクリプト群です。初回のみ `cd scripts && npm install && npx playwright install chromium` で依存を入れます。2回目以降は代表例を変更したときなどに `cd scripts && npm test` を実行します。`npm test` は先に `check:demo-sync`（代表例の同期確認。HTTP サーバー不要）、`test:booth`（BOOTH導線のユニット・CLI・クライアント（JSDOM）テスト、62件。HTTP サーバー不要）、`check:booth-links`（BOOTH 導線の `data-booth-url` 確認。未設定は WARN のみ）、`check:affiliate-sections`（アフィリエイト導線の横断確認。HTTP サーバー不要）、`check:aff-placeholders`（aff-slot の広告コード設置状況。HTTP サーバー不要）を走らせ、続けて `test:share-urls`（共有URLの往復テスト。HTTP サーバー必須。別ターミナルで `python3 -m http.server 8000` を起動したまま）を実行します。`test:booth` には `boothCliChildEnv()`（`booth-cli-test-helpers.mjs`）のユニットテストも含まれます。
 
 BOOTH出品後に導線未設定をテスト失敗にする場合は `BOOTH_URL_STRICT=1 npm test` または `npm run test:booth-strict` を使います。`npm run test:booth-strict` を出品前の状態で実行すると `check:booth-links` で exit 1 になりますが、必須3ファイルの `data-booth-url` が空の間は正常な挙動です。
 
 - `check-demo-sync.mjs` — 代表例の同期確認（README・`index.html`・`verify-share-urls.mjs` のクエリパス一致）
-- `booth-config.mjs` — BOOTH 導線の必須ファイル一覧・`isRequiredBoothFile()`・`scanBoothLinks()`・`findExtraBoothHtmlFiles()` 等の共通ヘルパー
+- `booth-config.mjs` — BOOTH 導線の必須ファイル一覧・`isRequiredBoothFile()`・`scanBoothLinks()`・`boothZipStatus()`・`findExtraBoothHtmlFiles()` 等の共通ヘルパー
 - `booth-cli-test-helpers.mjs` — BOOTH CLI テスト用の子プロセス env ヘルパー（`boothCliChildEnv()`。`check-booth-links.cli.test.mjs` / `set-booth-url.cli.test.mjs` が `test:booth-strict` 実行時に親の `BOOTH_URL_STRICT` を子へ渡さない）。`boothCliChildEnv` のユニットテストは `check-booth-links.test.mjs` にある
 - `check-booth-links.mjs` — BOOTH 導線（`data-booth-url`）の設定状況。必須3ファイルの構造・URL チェック。必須外の空属性は WARN のみ（`--strict` / `BOOTH_URL_STRICT=1` は必須のみ FAIL）。`--root <dir>` または `BOOTH_CHECK_ROOT` で対象ルートを上書き可能
-- `check-booth-links.test.mjs` / `check-booth-links.cli.test.mjs` / `set-booth-url.cli.test.mjs` / `booth.client.test.mjs` — BOOTH導線のユニット・CLI・クライアント（JSDOM）テスト（`npm run test:booth`、57件）
+- `check-booth-links.test.mjs` / `check-booth-links.cli.test.mjs` / `set-booth-url.cli.test.mjs` / `booth.client.test.mjs` — BOOTH導線のユニット・CLI・クライアント（JSDOM）テスト（`npm run test:booth`、62件）
 
 `booth.client.test.mjs` は `js/booth.js` を JSDOM で検証し、必須3ファイルの HTML 構造と対応する3パターンをカバーします。`index.html` は `footer-booth-link` 単一アンカー、`about.html` は `booth-cta-link` に `data-booth-url` を直付けした単一アンカー、`tools/tedori.html` は `div[data-booth-url]` 内の `booth-cta-link` と `.booth-cta-pending` ラップ構造です。空 URL 時の無効化と URL 設定時の `href` 更新（tedori は pending 非表示）をそれぞれ検証します。
 

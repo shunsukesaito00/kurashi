@@ -1,11 +1,20 @@
 /** BOOTH 導線の共通設定・ヘルパー */
-import { readFileSync, readdirSync, statSync } from 'fs';
+import { execSync } from 'child_process';
+import { existsSync, readFileSync, readdirSync, statSync } from 'fs';
 import { join, relative } from 'path';
 
 export const REQUIRED_BOOTH_FILES = [
   'about.html',
   'index.html',
   'tools/tedori.html',
+];
+
+export const BOOTH_ZIP_REL = 'products/tedori-kakei-booth.zip';
+
+export const BOOTH_ZIP_ENTRIES = [
+  'tedori-kakei-template.xlsx',
+  'manual.pdf',
+  'booth-thumbnail.png',
 ];
 
 export function isRequiredBoothFile(filePath) {
@@ -109,4 +118,47 @@ export function boothUrlPending(root) {
     }
   }
   return pending;
+}
+
+export function parseBoothZipEntryNames(listing) {
+  return listing.trim().split('\n').filter(Boolean);
+}
+
+export function boothZipMissingEntries(names) {
+  return BOOTH_ZIP_ENTRIES.filter((name) => !names.includes(name));
+}
+
+function listBoothZipEntries(zipPath) {
+  const listing = execSync(`unzip -Z1 "${zipPath}"`, { encoding: 'utf8' });
+  return parseBoothZipEntryNames(listing);
+}
+
+export function boothZipStatus(root, deps = {}) {
+  const exists = deps.exists ?? existsSync;
+  const listEntries = deps.listEntries ?? listBoothZipEntries;
+  const zipRel = deps.zipRel ?? BOOTH_ZIP_REL;
+  const zipPath = join(root, zipRel);
+
+  if (!exists(zipPath)) {
+    return {
+      ok: false,
+      block: `${zipRel} なし — python3 scripts/build-booth-package.py で生成`,
+    };
+  }
+  try {
+    const names = listEntries(zipPath);
+    const missing = boothZipMissingEntries(names);
+    if (missing.length > 0) {
+      return {
+        ok: false,
+        block: `${zipRel} に不足: ${missing.join(', ')} — python3 scripts/build-booth-package.py で再生成`,
+      };
+    }
+    return { ok: true };
+  } catch {
+    return {
+      ok: false,
+      block: `${zipRel} の一覧取得に失敗 — unzip コマンドを確認`,
+    };
+  }
 }

@@ -3,13 +3,13 @@
  * 収益化フェーズ1の運営者ブロッカー状況を一覧表示する。
  * HTTPサーバー不要。
  */
-import { existsSync, readFileSync, readdirSync } from 'fs';
-import { execSync } from 'child_process';
+import { readFileSync, readdirSync } from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import {
   REQUIRED_BOOTH_FILES,
   boothUrlPending,
+  boothZipStatus,
   scanBoothLinks,
 } from './booth-config.mjs';
 
@@ -21,41 +21,7 @@ const boothStructureMissingList = REQUIRED_BOOTH_FILES.filter(
 const boothPending = boothUrlPending(root);
 const boothConfiguredRequired = configured.filter((entry) => entry.required);
 const requiredBoothLabel = REQUIRED_BOOTH_FILES.join(', ');
-const BOOTH_ZIP = 'products/tedori-kakei-booth.zip';
-const BOOTH_ZIP_ENTRIES = [
-  'tedori-kakei-template.xlsx',
-  'manual.pdf',
-  'booth-thumbnail.png',
-];
-
-function boothZipStatus() {
-  const zipPath = join(root, BOOTH_ZIP);
-  if (!existsSync(zipPath)) {
-    return {
-      ok: false,
-      block: `${BOOTH_ZIP} なし — python3 scripts/build-booth-package.py で生成`,
-    };
-  }
-  try {
-    const listing = execSync(`unzip -Z1 "${zipPath}"`, { encoding: 'utf8' });
-    const names = listing.trim().split('\n').filter(Boolean);
-    const missing = BOOTH_ZIP_ENTRIES.filter((name) => !names.includes(name));
-    if (missing.length > 0) {
-      return {
-        ok: false,
-        block: `${BOOTH_ZIP} に不足: ${missing.join(', ')} — python3 scripts/build-booth-package.py で再生成`,
-      };
-    }
-    return { ok: true };
-  } catch {
-    return {
-      ok: false,
-      block: `${BOOTH_ZIP} の一覧取得に失敗 — unzip コマンドを確認`,
-    };
-  }
-}
-
-const boothZip = boothZipStatus();
+const boothZip = boothZipStatus(root);
 
 function has(file, pattern) {
   return readFileSync(join(root, file), 'utf8').includes(pattern);
@@ -156,7 +122,7 @@ if (boothPending.length > 0) {
 console.log(`\nエージェント側の準備: 完了（ツール・導線・テスト・手順書）`);
 console.log(`運営者側の未完了: ${pending} 項目`);
 console.log(
-  '参考: npm run test:booth — BOOTH導線のユニット・CLI・クライアント（JSDOM）テスト 57件（cd scripts && npm run test:booth）',
+  '参考: npm run test:booth — BOOTH導線のユニット・CLI・クライアント（JSDOM）テスト 62件（cd scripts && npm run test:booth）',
 );
 
 if (pending > 0) {

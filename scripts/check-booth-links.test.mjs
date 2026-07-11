@@ -5,9 +5,11 @@ import { describe, it } from 'node:test';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
+  BOOTH_ZIP_ENTRIES,
   REQUIRED_BOOTH_FILES,
   boothStructureMissing,
   boothUrlPending,
+  boothZipStatus,
   escapeBoothUrlAttr,
   findExtraBoothHtmlFiles,
   isRequiredBoothFile,
@@ -530,5 +532,57 @@ describe('scanBoothLinks（本番リポジトリ）', () => {
     for (const file of extras) {
       assert.equal(isRequiredBoothFile(file), false);
     }
+  });
+});
+
+describe('boothZipStatus（一時ディレクトリ）', () => {
+  it('ZIP が無いとき ok: false を返す', () => {
+    withTempFixture((fixtureRoot) => {
+      const result = boothZipStatus(fixtureRoot);
+      assert.equal(result.ok, false);
+      assert.match(result.block, /なし/);
+    });
+  });
+
+  it('同梱3ファイルが揃っていれば ok: true', () => {
+    withTempFixture((fixtureRoot) => {
+      const result = boothZipStatus(fixtureRoot, {
+        exists: () => true,
+        listEntries: () => [...BOOTH_ZIP_ENTRIES],
+      });
+      assert.equal(result.ok, true);
+    });
+  });
+
+  it('同梱ファイルが不足していれば不足名を block に含める', () => {
+    withTempFixture((fixtureRoot) => {
+      const result = boothZipStatus(fixtureRoot, {
+        exists: () => true,
+        listEntries: () => ['tedori-kakei-template.xlsx'],
+      });
+      assert.equal(result.ok, false);
+      assert.match(result.block, /manual\.pdf/);
+      assert.match(result.block, /booth-thumbnail\.png/);
+    });
+  });
+
+  it('listEntries が失敗したとき一覧取得失敗メッセージを返す', () => {
+    withTempFixture((fixtureRoot) => {
+      const result = boothZipStatus(fixtureRoot, {
+        exists: () => true,
+        listEntries: () => {
+          throw new Error('fail');
+        },
+      });
+      assert.equal(result.ok, false);
+      assert.match(result.block, /一覧取得に失敗/);
+    });
+  });
+});
+
+describe('boothZipStatus（本番リポジトリ）', () => {
+  it('tedori-kakei-booth.zip に同梱3ファイルが揃っている', () => {
+    const result = boothZipStatus(root);
+    assert.equal(result.ok, true);
   });
 });
