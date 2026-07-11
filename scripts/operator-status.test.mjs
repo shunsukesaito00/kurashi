@@ -93,6 +93,17 @@ describe('PASTE_TEMPLATE_REFERENCE_LINE', () => {
   });
 });
 
+describe('BOOTH_STRICT_RECURSION_REFERENCE_LINE', () => {
+  it('shouldSkipBoothStrictIntegrationTest を含む', () => {
+    assert.ok(
+      BOOTH_STRICT_RECURSION_REFERENCE_LINE.includes(
+        'shouldSkipBoothStrictIntegrationTest',
+      ),
+      '再帰回避参考行に shouldSkipBoothStrictIntegrationTest が含まれる',
+    );
+  });
+});
+
 describe('operator-status.mjs CLI', () => {
   it('未完了ブロッカーがあるとき出力にチャット貼付テンプレート参照行を含む', () => {
     const result = spawnSync(process.execPath, [statusScript], {
