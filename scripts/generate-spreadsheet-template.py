@@ -105,8 +105,9 @@ def build_readme_sheet(wb):
     usage = [
         ("1. 手取り試算シート", "B3（月収）・B4（年間ボーナス）を入力すると、社保・税の内訳と毎月の手取り（B17）が自動計算されます。"),
         ("2. 手取り比較シート", "パターンA〜Cの月収・ボーナスを入力し、手取りとAとの差額（月・年）を横並びで比較できます。転職・昇給の検討に使えます。"),
-        ("3. 保存・編集", "数値は自由に書き換えてください。別名で保存すれば、複数シナリオをファイルごとに残せます。"),
-        ("4. 推奨環境", "編集はPC版 Excel または Google スプレッドシート（xlsxインポート）を推奨します。スマホは閲覧のみ想定です。"),
+        ("3. 家計サマリシート", "手取り試算の手取りを参照し、固定費・変動費を入力すると「自由に使える額」と貯蓄率がわかります。各費目は自由に書き換えてください。"),
+        ("4. 保存・編集", "数値は自由に書き換えてください。別名で保存すれば、複数シナリオをファイルごとに残せます。"),
+        ("5. 推奨環境", "編集はPC版 Excel または Google スプレッドシート（xlsxインポート）を推奨します。スマホは閲覧のみ想定です。"),
     ]
     for title, detail in usage:
         row += 1
@@ -270,6 +271,93 @@ def build_compare_sheet(wb):
     ws["D20"].number_format = "#,##0"
 
 
+def build_budget_summary_sheet(wb):
+    ws = wb.create_sheet("家計サマリ")
+    style_header(ws, "家計サマリ — くらしの計算室")
+
+    section_font = Font(bold=True, size=11, color="333333")
+    label_font = Font(size=10)
+    result_fill = PatternFill("solid", fgColor="E8F4EA")
+
+    ws["A3"] = "毎月の手取り（手取り試算より）"
+    ws["B3"] = "='手取り試算'!B17"
+    ws["A3"].font = label_font
+    ws["B3"].font = Font(bold=True, size=11)
+    ws["B3"].number_format = "#,##0"
+
+    ws["A5"] = "固定費（毎月）"
+    ws["A5"].font = section_font
+    fixed_items = [
+        (6, "家賃・住宅ローン", 80_000),
+        (7, "水道光熱費", 12_000),
+        (8, "通信費（携帯・ネット）", 8_000),
+        (9, "保険（生命・医療等）", 5_000),
+        (10, "ローン返済（住宅以外）", 0),
+        (11, "その他固定費", 5_000),
+    ]
+    for row, label, value in fixed_items:
+        ws[f"A{row}"] = label
+        ws[f"A{row}"].font = label_font
+        ws[f"B{row}"] = value
+        ws[f"B{row}"].number_format = "#,##0"
+
+    ws["A12"] = "固定費合計"
+    ws["A12"].font = Font(bold=True)
+    ws["B12"] = "=SUM(B6:B11)"
+    ws["B12"].font = Font(bold=True)
+    ws["B12"].number_format = "#,##0"
+
+    ws["A14"] = "変動費（毎月）"
+    ws["A14"].font = section_font
+    variable_items = [
+        (15, "食費", 40_000),
+        (16, "交通費", 8_000),
+        (17, "日用品・消耗品", 5_000),
+        (18, "交際費・娯楽", 15_000),
+        (19, "その他変動費", 5_000),
+    ]
+    for row, label, value in variable_items:
+        ws[f"A{row}"] = label
+        ws[f"A{row}"].font = label_font
+        ws[f"B{row}"] = value
+        ws[f"B{row}"].number_format = "#,##0"
+
+    ws["A20"] = "変動費合計"
+    ws["A20"].font = Font(bold=True)
+    ws["B20"] = "=SUM(B15:B19)"
+    ws["B20"].font = Font(bold=True)
+    ws["B20"].number_format = "#,##0"
+
+    ws["A22"] = "支出合計（固定費＋変動費）"
+    ws["A22"].font = label_font
+    ws["B22"] = "=B12+B20"
+    ws["B22"].number_format = "#,##0"
+
+    ws["A23"] = "自由に使える額（余剰）"
+    ws["A23"].font = Font(bold=True, size=11)
+    ws["B23"] = "=B3-B22"
+    ws["B23"].font = Font(bold=True, size=12)
+    ws["B23"].fill = result_fill
+    ws["B23"].number_format = "#,##0"
+
+    ws["A24"] = "貯蓄に回せる割合（手取り比）"
+    ws["A24"].font = label_font
+    ws["B24"] = '=IF(B3=0,"",B23/B3)'
+    ws["B24"].number_format = "0.0%"
+
+    ws["A25"] = "支出率（手取り比）"
+    ws["A25"].font = label_font
+    ws["B25"] = '=IF(B3=0,"",B22/B3)'
+    ws["B25"].number_format = "0.0%"
+
+    ws["A27"] = "メモ"
+    ws["A27"].font = section_font
+    ws["A28"] = "自由に使える額は、手取りから固定費・変動費を引いた残りです。実際の貯蓄額は積立・投資の振替額で調整してください。"
+    ws["A28"].font = Font(size=9, color="666666")
+    ws.merge_cells("A28:B28")
+    ws["A28"].alignment = Alignment(wrap_text=True, vertical="top")
+
+
 def verify_with_tedori_logic():
     """tools/tedori.html の computeNet と代表例が一致するか（Python再実装）。"""
 
@@ -330,6 +418,7 @@ def main():
     build_readme_sheet(wb)
     build_single_sheet(wb)
     build_compare_sheet(wb)
+    build_budget_summary_sheet(wb)
     wb.save(OUT)
     print(f"OK: {OUT.relative_to(ROOT)}")
 
