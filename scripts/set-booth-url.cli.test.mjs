@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { describe, it } from 'node:test';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { REQUIRED_BOOTH_FILES } from './booth-config.mjs';
+import { REQUIRED_BOOTH_FILES, boothUrlPending, scanBoothLinks } from './booth-config.mjs';
 
 const scriptsDir = dirname(fileURLToPath(import.meta.url));
 const setBoothUrlScript = join(scriptsDir, 'set-booth-url.mjs');
@@ -73,6 +73,35 @@ describe('set-booth-url.mjs CLI', () => {
         assert.equal(readFixtureHtml(fixtureRoot, file), beforeByFile.get(file));
       }
       assert.match(result.stdout, /実行するには --dry-run を外してください。/);
+    });
+  });
+
+  it('--dry-run なしで必須3ファイルの data-booth-url を指定 URL に更新する', () => {
+    withTempFixture((fixtureRoot) => {
+      for (const file of REQUIRED_BOOTH_FILES) {
+        writeHtmlFixture(fixtureRoot, file, htmlWithBoothAttr());
+      }
+
+      const result = runSetBoothUrl(fixtureRoot, ['--url', boothUrl]);
+      assert.equal(result.status, 0);
+      assert.doesNotMatch(result.stdout, /\[dry-run\]/);
+
+      for (const file of REQUIRED_BOOTH_FILES) {
+        assert.match(
+          readFixtureHtml(fixtureRoot, file),
+          new RegExp(`data-booth-url="${boothUrl.replace(/\./g, '\\.')}"`),
+        );
+      }
+
+      assert.deepEqual(boothUrlPending(fixtureRoot), []);
+      const { configured } = scanBoothLinks(fixtureRoot);
+      assert.equal(configured.length, 3);
+      for (const file of REQUIRED_BOOTH_FILES) {
+        assert.deepEqual(
+          configured.find((entry) => entry.file === file),
+          { file, url: boothUrl, required: true },
+        );
+      }
     });
   });
 });
