@@ -8,6 +8,7 @@
     "apply-job-affiliates": "node apply-job-affiliates.mjs",
     "status": "node operator-status.mjs",
     "replace-site-url": "node replace-site-url.mjs",
+    "generate:spreadsheet-template": "python3 ../scripts/generate-spreadsheet-template.py",
     "test:share-urls": "node verify-share-urls.mjs",
     "test": "npm run check:demo-sync && npm run check:affiliate-sections && npm run check:aff-placeholders && npm run test:share-urls"
   },
