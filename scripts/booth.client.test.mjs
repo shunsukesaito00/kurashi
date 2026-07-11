@@ -141,4 +141,30 @@ describe('js/booth.js', () => {
     link.dispatchEvent(event);
     assert.equal(event.defaultPrevented, false);
   });
+
+  it('index 構造で URL 設定時に隣接する footer-booth-pending を hidden にする', () => {
+    const boothUrl = 'https://example.booth.pm/items/123456';
+    const window = initBoothInDom(`
+      <a class="footer-booth-link" href="#" data-booth-url="${boothUrl}">有料テンプレート（BOOTH）</a>
+      <span class="footer-booth-pending">準備中</span>
+    `);
+    const { document } = window;
+    const link = document.querySelector('.footer-booth-link');
+    const pending = document.querySelector('.footer-booth-pending');
+
+    assert.equal(link.href, boothUrl);
+    assert.equal(pending.hidden, true);
+  });
+
+  it('about 構造で URL 設定時に隣接する footer-booth-pending を hidden にする', () => {
+    const boothUrl = 'https://example.booth.pm/items/123456';
+    const window = initBoothInDom(`
+      <a class="booth-cta-link" href="#" data-booth-url="${boothUrl}">BOOTHで有料テンプレートを見る</a>
+      <span class="footer-booth-pending">（出品準備中）</span>
+    `);
+    const { document } = window;
+    const pending = document.querySelector('.footer-booth-pending');
+
+    assert.equal(pending.hidden, true);
+  });
 });

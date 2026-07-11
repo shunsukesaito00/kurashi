@@ -7,13 +7,22 @@ function initBoothLinks() {
       : block.querySelector('a.booth-cta-link, a.footer-booth-link');
     if (!link) return;
 
-    const pending = block.querySelector('.booth-cta-pending, .footer-booth-pending');
+    const pending = block.querySelectorAll('.booth-cta-pending, .footer-booth-pending');
+    const pendingSibling =
+      block.matches('a') &&
+      link.nextElementSibling?.matches('.booth-cta-pending, .footer-booth-pending')
+        ? link.nextElementSibling
+        : null;
+
     if (url) {
       link.href = url;
       link.target = '_blank';
       link.rel = 'noopener noreferrer';
       link.classList.remove('is-pending');
-      if (pending) pending.hidden = true;
+      pending.forEach((el) => {
+        el.hidden = true;
+      });
+      if (pendingSibling) pendingSibling.hidden = true;
       if (!block.matches('a')) {
         block.classList.remove('is-pending');
         block.hidden = false;
