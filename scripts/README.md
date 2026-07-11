@@ -14,7 +14,7 @@ BOOTH出品後に導線未設定をテスト失敗にする場合は `BOOTH_URL_
 
 - `check-affiliate-sections.mjs` — アフィリエイト導線の横断確認（積立・時給・手取りの PR 表記・aff-slot 2枠・免責文）
 - `check-aff-placeholders.mjs` — aff-slot に広告コードが貼られたか確認（未設置/設置済）
-- `operator-status.mjs` — 収益化フェーズ1の運営者ブロッカー一覧（`npm run status`）。BOOTH は出品ZIP（`products/tedori-kakei-booth.zip` の同梱3ファイル: xlsx / manual.pdf / booth-thumbnail.png）、導線構造（必須3ファイル）、商品URL（`data-booth-url`）を分けて表示
+- `operator-status.mjs` — 収益化フェーズ1の運営者ブロッカー一覧（`npm run status`）。BOOTH は出品ZIP（`products/tedori-kakei-booth.zip` の同梱3ファイル: xlsx / manual.pdf / booth-thumbnail.png）、導線構造（必須3ファイル）、商品URL（`data-booth-url`）を分けて表示。参考行で `npm run test:booth`（64件）と `npm run check:booth-links`（導線・出品ZIP同梱3ファイル確認、`npm test` に含まれる）を案内
 - `set-booth-url.mjs` — BOOTH 商品URLを `data-booth-url` に一括設定（`booth-config.mjs` の必須3ファイルのみ更新。必須外は WARN）。本番反映前は `node set-booth-url.mjs --url <商品URL> --dry-run` で置換内容を確認してから `--dry-run` を外す。`--root <dir>` / `BOOTH_CHECK_ROOT` 対応
 - `apply-job-affiliates.mjs` — 転職バナーを jikyu/tedori/ikukyu/taishoku に一括設置（`affiliates/job-slot*.html` 要）
 - `replace-site-url.mjs` — 独自ドメイン取得後の URL 一括置換（`sitemap.xml`・`robots.txt`・全HTML・README 等）
