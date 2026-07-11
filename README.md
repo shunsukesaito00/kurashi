@@ -75,7 +75,7 @@ cd scripts && BOOTH_URL_STRICT=1 npm test
 cd scripts && npm run test:booth-strict
 ```
 
-`check:booth-links` は `test:booth` の直後に `npm test` で実行され、出品ZIPの同梱3ファイルを確認し、URL 未設定時は **WARN のみ**（exit 0）。`BOOTH_URL_STRICT=1` を付けると未設定の `data-booth-url` があると FAIL します。`npm run test:booth-strict` を出品前の状態で実行すると `check:booth-links` で exit 1 になりますが、必須3ファイルの `data-booth-url` が空の間は正常な挙動です（ZIP 同梱は OK のまま）。
+`check:booth-links` は `test:booth` の直後に `npm test` で実行され、出品ZIPの同梱3ファイルを確認し、URL 未設定時は **WARN のみ**（exit 0）。`BOOTH_URL_STRICT=1` を付けると未設定の `data-booth-url` があると FAIL します。`npm run test:booth-strict` を出品前の状態で実行すると `check:booth-links` で exit 1 になりますが、必須3ファイルの `data-booth-url` が空の間は正常な挙動です。厳格モードでも出品ZIP同梱3ファイルは `OK` のまま、exit 1 になるのは商品URL（`data-booth-url`）未設定のみです。
 
 各スクリプトの詳細は [scripts/README.md](scripts/README.md) を参照。
 
