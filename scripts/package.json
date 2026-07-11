@@ -6,6 +6,7 @@
     "check:affiliate-sections": "node check-affiliate-sections.mjs",
     "check:aff-placeholders": "node check-aff-placeholders.mjs",
     "check:booth-links": "node check-booth-links.mjs",
+    "test:booth-links": "node --test check-booth-links.test.mjs",
     "test:booth-strict": "BOOTH_URL_STRICT=1 npm test",
     "apply-job-affiliates": "node apply-job-affiliates.mjs",
     "status": "node operator-status.mjs",
@@ -15,7 +16,7 @@
     "generate:booth-thumbnail": "node generate-booth-thumbnail.mjs",
     "set-booth-url": "node set-booth-url.mjs",
     "test:share-urls": "node verify-share-urls.mjs",
-    "test": "npm run check:demo-sync && npm run check:booth-links && npm run check:affiliate-sections && npm run check:aff-placeholders && npm run test:share-urls"
+    "test": "npm run check:demo-sync && npm run test:booth-links && npm run check:booth-links && npm run check:affiliate-sections && npm run check:aff-placeholders && npm run test:share-urls"
   },
   "dependencies": {
     "playwright": "1.61.1"
