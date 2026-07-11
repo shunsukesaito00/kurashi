@@ -19,7 +19,17 @@ import {
 } from './booth-config.mjs';
 
 const scriptsDir = dirname(fileURLToPath(import.meta.url));
-const root = join(scriptsDir, '..');
+
+function resolveRoot(argv) {
+  const rootArgIndex = argv.indexOf('--root');
+  if (rootArgIndex !== -1 && argv[rootArgIndex + 1]) {
+    return argv[rootArgIndex + 1];
+  }
+  if (process.env.BOOTH_CHECK_ROOT) {
+    return process.env.BOOTH_CHECK_ROOT;
+  }
+  return join(scriptsDir, '..');
+}
 
 function parseArgs(argv) {
   const opts = { url: '', clear: false, dryRun: false };
@@ -27,6 +37,10 @@ function parseArgs(argv) {
     const arg = argv[i];
     if (arg === '--dry-run') opts.dryRun = true;
     else if (arg === '--clear') opts.clear = true;
+    else if (arg === '--root') {
+      i++;
+      continue;
+    }
     else if (arg === '--url') opts.url = argv[++i] ?? '';
     else if (arg === '--help' || arg === '-h') opts.help = true;
     else if (!opts.url && !opts.clear) opts.url = arg;
@@ -40,8 +54,8 @@ function escapeAttr(value) {
 
 function usage() {
   console.log(`用法:
-  node set-booth-url.mjs --url <BOOTH商品URL> [--dry-run]
-  node set-booth-url.mjs --clear [--dry-run]
+  node set-booth-url.mjs --url <BOOTH商品URL> [--dry-run] [--root <dir>]
+  node set-booth-url.mjs --clear [--dry-run] [--root <dir>]
 
 例（確認のみ）:
   node set-booth-url.mjs --url https://kurashi.booth.pm/items/123456 --dry-run
@@ -62,6 +76,7 @@ function validateUrl(url) {
 }
 
 const opts = parseArgs(process.argv);
+const root = resolveRoot(process.argv);
 if (opts.help || (!opts.url && !opts.clear)) {
   usage();
   process.exit(opts.url || opts.clear ? 0 : 1);
