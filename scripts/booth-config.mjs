@@ -61,10 +61,14 @@ export function scanBoothLinks(root) {
 
     withAttr.add(rel);
     const required = isRequiredBoothFile(rel);
+    let configuredForFile = false;
     for (const match of matches) {
       const url = match[1].trim();
       if (url) {
-        configured.push({ file: rel, url, required });
+        if (!configuredForFile) {
+          configured.push({ file: rel, url, required });
+          configuredForFile = true;
+        }
       } else if (!required) {
         extraPending.push(rel);
       }

@@ -46,6 +46,14 @@ function htmlWithMultipleEmptyBoothAttrs(count = 2) {
   return `<!DOCTYPE html><html><body>${links}</body></html>`;
 }
 
+function htmlWithMultipleBoothAttrs(url, count = 2) {
+  const links = Array.from(
+    { length: count },
+    () => `<a data-booth-url="${url}">BOOTH</a>`,
+  ).join('');
+  return `<!DOCTYPE html><html><body>${links}</body></html>`;
+}
+
 describe('isRequiredBoothFile', () => {
   it('必須3ファイルを true と判定する', () => {
     for (const file of REQUIRED_BOOTH_FILES) {
@@ -169,6 +177,25 @@ describe('scanBoothLinks configured（一時ディレクトリ）', () => {
         assert.equal(entry.required, true);
       }
       assert.deepEqual(boothUrlPending(fixtureRoot), ['index.html']);
+    });
+  });
+
+  it('同一 HTML 内の URL 設定済み data-booth-url が複数あっても configured は重複なく1件', () => {
+    withTempFixture((fixtureRoot) => {
+      writeHtmlFixture(
+        fixtureRoot,
+        'index.html',
+        htmlWithMultipleBoothAttrs(boothUrl, 3),
+      );
+
+      const { configured } = scanBoothLinks(fixtureRoot);
+      assert.deepEqual(configured, [
+        { file: 'index.html', url: boothUrl, required: true },
+      ]);
+      assert.equal(
+        configured.filter((entry) => entry.file === 'index.html').length,
+        1,
+      );
     });
   });
 });
