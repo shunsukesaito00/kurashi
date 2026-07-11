@@ -105,6 +105,66 @@ describe('boothStructureMissing（一時ディレクトリ）', () => {
   });
 });
 
+describe('scanBoothLinks configured（一時ディレクトリ）', () => {
+  const boothUrl = 'https://example.booth.pm/items/123456';
+
+  it('必須ファイルに URL が設定されていれば configured に含まれる', () => {
+    withTempFixture((fixtureRoot) => {
+      writeHtmlFixture(
+        fixtureRoot,
+        'index.html',
+        htmlWithBoothAttr(boothUrl),
+      );
+
+      const { configured } = scanBoothLinks(fixtureRoot);
+      assert.deepEqual(configured, [
+        { file: 'index.html', url: boothUrl, required: true },
+      ]);
+    });
+  });
+
+  it('必須3ファイルすべてに URL が設定されていれば configured に3件含まれる', () => {
+    withTempFixture((fixtureRoot) => {
+      for (const file of REQUIRED_BOOTH_FILES) {
+        writeHtmlFixture(fixtureRoot, file, htmlWithBoothAttr(boothUrl));
+      }
+
+      const { configured } = scanBoothLinks(fixtureRoot);
+      assert.equal(configured.length, 3);
+      for (const file of REQUIRED_BOOTH_FILES) {
+        assert.deepEqual(
+          configured.find((entry) => entry.file === file),
+          { file, url: boothUrl, required: true },
+        );
+      }
+      assert.deepEqual(boothUrlPending(fixtureRoot), []);
+    });
+  });
+
+  it('URL が空の必須ファイルは configured に含めない', () => {
+    withTempFixture((fixtureRoot) => {
+      writeHtmlFixture(fixtureRoot, 'about.html', htmlWithBoothAttr(boothUrl));
+      writeHtmlFixture(fixtureRoot, 'index.html', htmlWithBoothAttr());
+      writeHtmlFixture(
+        fixtureRoot,
+        'tools/tedori.html',
+        htmlWithBoothAttr(boothUrl),
+      );
+
+      const { configured } = scanBoothLinks(fixtureRoot);
+      assert.deepEqual(
+        configured.map((entry) => entry.file).sort(),
+        ['about.html', 'tools/tedori.html'],
+      );
+      for (const entry of configured) {
+        assert.equal(entry.url, boothUrl);
+        assert.equal(entry.required, true);
+      }
+      assert.deepEqual(boothUrlPending(fixtureRoot), ['index.html']);
+    });
+  });
+});
+
 describe('scanBoothLinks（本番リポジトリ）', () => {
   it('必須3ファイルすべてに data-booth-url がある', () => {
     const { withAttr } = scanBoothLinks(root);
