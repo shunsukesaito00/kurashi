@@ -122,6 +122,16 @@ describe('operator-status.mjs CLI', () => {
       'test:booth-strict 再帰回避参考行が出力に含まれる',
     );
   });
+
+  it('運営者側の未完了ブロッカー件数を表示する', () => {
+    const result = spawnSync(process.execPath, [statusScript], {
+      encoding: 'utf8',
+      cwd: scriptsDir,
+    });
+
+    assert.equal(result.status, 0, result.stderr);
+    assert.match(result.stdout, /運営者側の未完了: 4 項目/);
+  });
 });
 
 describe('npm run test:booth-strict（本番リポジトリ）', () => {
