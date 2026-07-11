@@ -356,6 +356,40 @@ describe('BOOTH 導線 完全設定（一時ディレクトリ）', () => {
       }
     });
   });
+
+  it('必須3ファイルのうち1件だけ URL 未設定なら boothUrlPending は1件で configured は2件', () => {
+    withTempFixture((fixtureRoot) => {
+      for (const file of REQUIRED_BOOTH_FILES) {
+        const html =
+          file === 'index.html'
+            ? htmlWithBoothAttr()
+            : htmlWithBoothAttr(boothUrl);
+        writeHtmlFixture(fixtureRoot, file, html);
+      }
+
+      assert.deepEqual(boothStructureMissing(fixtureRoot), []);
+      assert.deepEqual(boothUrlPending(fixtureRoot), ['index.html']);
+
+      const { configured, extraPending, withAttr } = scanBoothLinks(fixtureRoot);
+      assert.deepEqual(extraPending, []);
+      assert.equal(configured.length, 2);
+      for (const file of REQUIRED_BOOTH_FILES) {
+        assert.equal(withAttr.has(file), true);
+      }
+      assert.deepEqual(
+        configured.map((entry) => entry.file).sort(),
+        ['about.html', 'tools/tedori.html'],
+      );
+      for (const entry of configured) {
+        assert.equal(entry.url, boothUrl);
+        assert.equal(entry.required, true);
+      }
+      assert.equal(
+        configured.find((entry) => entry.file === 'index.html'),
+        undefined,
+      );
+    });
+  });
 });
 
 describe('scanBoothLinks（本番リポジトリ）', () => {
