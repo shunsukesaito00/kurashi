@@ -113,7 +113,7 @@ cd scripts && npm run test:booth-strict
 | 公開基盤 | **完了** — GitHub Pages 配信中([本番URL](https://shunsukesaito00.github.io/kurashi/))。11ツール・sitemap・robots・canonical・共有URL |
 | 差別化機能 | **一部完了** — 手取り比較・印刷・全ツール共有URL。育休・退職金ツール追加済み |
 | アフィリエイト導線(UI) | **一部完了** — 積立・時給・手取りページにPR表記付き比較セクションと広告枠(証券3枠設置済み・転職7枠は承認待ち) |
-| BOOTH導線・検証 | **完了** — 必須3ファイルの `data-booth-url` 導線・`test:booth` 69件（運営者情報チェック含む）・`set-booth-url.mjs` / `check-booth-links.mjs`（`npm test` で出品ZIP同梱3ファイルも確認。出品URLは未設定）・`operator-checks.mjs` / `operator-status.mjs`・`test:booth-strict`（出品前は exit 1 だが ZIP 同梱は `OK` のまま） |
+| BOOTH導線・検証 | **完了** — 必須3ファイルの `data-booth-url` 導線・`test:booth` 69件（BOOTH導線・運営者情報チェック（`operator-checks.mjs`））・`set-booth-url.mjs` / `check-booth-links.mjs`（`npm test` で出品ZIP同梱3ファイルも確認。出品URLは未設定）・`operator-status.mjs`・`test:booth-strict`（出品前は exit 1 だが ZIP 同梱は `OK` のまま） |
 | 収益 | **0円** — ASP未登録・広告コード未設置・AdSense未申請 |
 | 運営者作業(律速) | **一部完了** — about 実名義済み・A8/Search Console 手順・コピペ文済み・BOOTH（ZIP同梱3ファイル・導線・検証スクリプト済み）。ブロッカー確認: `cd scripts && npm run status`。**未完了**: Search Console（`google-site-verification` または `googlexxx.html` をチャットに貼付）・A8.net（承認済み案件の広告HTMLをチャットに貼付、`aff-slot` 6枠）・独自ドメイン取得・BOOTH出品（アカウント開設・980円出品・`set-booth-url.mjs --url <商品URL>`） |
 
@@ -314,7 +314,7 @@ git push origin main && git push origin main:gh-pages
 - **デジタル商品(BOOTH・note)**: 家計・転職・育休向けスプレッドシート等を500〜1,500円で販売。
 - 本サイトのツールは「無料の入口」、有料版はテンプレート・詳細解説として販売チャネルへ誘導。
 
-- [x] **BOOTH導線・検証スクリプト整備完了** — `js/booth.js` と必須3ファイル（`about.html`・`index.html`・`tools/tedori.html`）の `data-booth-url` 導線、`set-booth-url.mjs` / `check-booth-links.mjs`（`npm test` で出品ZIP同梱3ファイルも確認）、`operator-checks.mjs`（運営者情報の誤判定防止）/ `operator-status.mjs`、`test:booth`（69件: ユニット・CLI・クライアント（JSDOM）・運営者情報チェック）、`test:booth-strict` / `BOOTH_URL_STRICT=1` 対応（出品前は exit 1 だが ZIP 同梱は `OK` のまま）。出品URL確定後は `set-booth-url.mjs --url <商品URL>` のみ運営者作業
+- [x] **BOOTH導線・検証スクリプト整備完了** — `js/booth.js` と必須3ファイル（`about.html`・`index.html`・`tools/tedori.html`）の `data-booth-url` 導線、`set-booth-url.mjs` / `check-booth-links.mjs`（`npm test` で出品ZIP同梱3ファイルも確認）、`operator-checks.mjs`（運営者情報の誤判定防止）/ `operator-status.mjs`、`test:booth`（69件: BOOTH導線・運営者情報チェック（`operator-checks.mjs`）・ユニット・CLI・クライアント（JSDOM））、`test:booth-strict` / `BOOTH_URL_STRICT=1` 対応（出品前は exit 1 だが ZIP 同梱は `OK` のまま）。出品URL確定後は `set-booth-url.mjs --url <商品URL>` のみ運営者作業
 
 #### BOOTH販売案: 手取り・家計シミュレーション用スプレッドシート
 
@@ -390,7 +390,7 @@ BOOTH URL は出品後に、まず `node scripts/set-booth-url.mjs --url <商品
 - [x] `tedori-kakei-booth.zip` の同梱3ファイル確認済み → `tedori-kakei-template.xlsx`（6シート）/ `manual.pdf`（2ページ）/ `booth-thumbnail.png`（1280×1280）
 - [x] 免責・概算である旨をREADMEシートに記載 → `products/tedori-kakei-template.xlsx` の README シート
 - [x] サムネイル（1280×1280、比較表のスクショ＋タイトル）→ `node scripts/generate-booth-thumbnail.mjs` で `products/booth-thumbnail.png` を生成
-- [x] BOOTH導線・検証スクリプト整備完了 → `js/booth.js`、必須3ファイル、`test:booth` 69件（運営者情報チェック含む）、`set-booth-url.mjs` / `check-booth-links.mjs`（`npm test` で出品ZIP同梱3ファイルも確認）/ `operator-checks.mjs`（運営者情報の誤判定防止）/ `operator-status.mjs` / `test:booth-strict`（出品前は exit 1 だが ZIP 同梱は `OK` のまま）
+- [x] BOOTH導線・検証スクリプト整備完了 → `js/booth.js`、必須3ファイル、`test:booth` 69件（BOOTH導線・運営者情報チェック（`operator-checks.mjs`））、`set-booth-url.mjs` / `check-booth-links.mjs`（`npm test` で出品ZIP同梱3ファイルも確認）/ `operator-checks.mjs`（運営者情報の誤判定防止）/ `operator-status.mjs` / `test:booth-strict`（出品前は exit 1 だが ZIP 同梱は `OK` のまま）
 - [ ] BOOTHアカウント開設・本人確認
 - [ ] 価格 980円・ダウンロード販売で出品
 - [ ] 本番反映前に置換内容を確認 → `cd scripts && node set-booth-url.mjs --url <商品URL> --dry-run`（必須3ファイルの差分表示のみ。書き込まない）
