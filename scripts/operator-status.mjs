@@ -6,33 +6,16 @@
 import { readFileSync, readdirSync } from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
+import {
+  REQUIRED_BOOTH_FILES,
+  boothStructureMissing,
+  boothUrlPending,
+} from './booth-config.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 
-const REQUIRED_BOOTH_FILES = [
-  'about.html',
-  'index.html',
-  'tools/tedori.html',
-];
-
 function has(file, pattern) {
   return readFileSync(join(root, file), 'utf8').includes(pattern);
-}
-
-function boothStructureMissing() {
-  return REQUIRED_BOOTH_FILES.filter((file) => !has(file, 'data-booth-url='));
-}
-
-function boothUrlPending() {
-  const pending = [];
-  for (const file of REQUIRED_BOOTH_FILES) {
-    const html = readFileSync(join(root, file), 'utf8');
-    const matches = [...html.matchAll(/data-booth-url="([^"]*)"/g)];
-    if (matches.length === 0 || matches.some((m) => !m[1].trim())) {
-      pending.push(file);
-    }
-  }
-  return pending;
 }
 
 function affPending() {
@@ -45,8 +28,8 @@ function affPending() {
   return n;
 }
 
-const boothStructureMissingList = boothStructureMissing();
-const boothPending = boothUrlPending();
+const boothStructureMissingList = boothStructureMissing(root);
+const boothPending = boothUrlPending(root);
 
 const checks = [
   {

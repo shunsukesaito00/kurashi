@@ -7,17 +7,11 @@
 import { readFileSync, readdirSync, statSync } from 'fs';
 import { dirname, join, relative } from 'path';
 import { fileURLToPath } from 'url';
+import { BOOTH_URL_PATTERN, REQUIRED_BOOTH_FILES } from './booth-config.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const strict =
   process.argv.includes('--strict') || process.env.BOOTH_URL_STRICT === '1';
-
-/** BOOTH 導線を置く必須 HTML（data-booth-url 属性の有無を構造チェック） */
-const REQUIRED_BOOTH_FILES = [
-  'about.html',
-  'index.html',
-  'tools/tedori.html',
-];
 
 function collectHtmlFiles(dir, acc = []) {
   for (const name of readdirSync(dir)) {
@@ -40,7 +34,7 @@ function scanBoothLinks() {
   for (const file of collectHtmlFiles(root)) {
     const html = readFileSync(file, 'utf8');
     const rel = relative(root, file);
-    const matches = [...html.matchAll(/data-booth-url="([^"]*)"/g)];
+    const matches = [...html.matchAll(BOOTH_URL_PATTERN)];
     if (matches.length === 0) continue;
 
     withAttr.add(rel);
