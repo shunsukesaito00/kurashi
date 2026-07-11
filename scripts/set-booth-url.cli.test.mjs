@@ -35,10 +35,12 @@ function withTempFixture(fn) {
 }
 
 function runSetBoothUrl(fixtureRoot, extraArgs = []) {
+  const env = { ...process.env };
+  delete env.BOOTH_URL_STRICT;
   return spawnSync(
     process.execPath,
     [setBoothUrlScript, '--root', fixtureRoot, ...extraArgs],
-    { encoding: 'utf8', cwd: scriptsDir },
+    { encoding: 'utf8', cwd: scriptsDir, env },
   );
 }
 
@@ -154,6 +156,36 @@ describe('set-booth-url.mjs CLI', () => {
       );
       assert.deepEqual(scanBoothLinks(fixtureRoot).configured, []);
     });
+  });
+
+  it('親に BOOTH_URL_STRICT=1 があっても --url 実行は通常どおり exit code 0 を返す', () => {
+    const previous = process.env.BOOTH_URL_STRICT;
+    process.env.BOOTH_URL_STRICT = '1';
+    try {
+      withTempFixture((fixtureRoot) => {
+        for (const file of REQUIRED_BOOTH_FILES) {
+          writeHtmlFixture(fixtureRoot, file, htmlWithBoothAttr());
+        }
+
+        const result = runSetBoothUrl(fixtureRoot, ['--url', boothUrl]);
+        assert.equal(result.status, 0);
+        assert.doesNotMatch(result.stdout, /\[dry-run\]/);
+
+        for (const file of REQUIRED_BOOTH_FILES) {
+          assert.match(
+            readFixtureHtml(fixtureRoot, file),
+            new RegExp(`data-booth-url="${boothUrl.replace(/\./g, '\\.')}"`),
+          );
+        }
+        assert.deepEqual(boothUrlPending(fixtureRoot), []);
+      });
+    } finally {
+      if (previous === undefined) {
+        delete process.env.BOOTH_URL_STRICT;
+      } else {
+        process.env.BOOTH_URL_STRICT = previous;
+      }
+    }
   });
 
   it('必須外の空 data-booth-url は --url 実行でも更新せず WARN のみ出す', () => {
