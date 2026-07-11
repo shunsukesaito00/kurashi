@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { describe, it } from 'node:test';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { REQUIRED_BOOTH_FILES, boothUrlPending, scanBoothLinks } from './booth-config.mjs';
+import { REQUIRED_BOOTH_FILES, boothUrlPending, escapeBoothUrlAttr, readFirstBoothUrl, scanBoothLinks } from './booth-config.mjs';
 
 const scriptsDir = dirname(fileURLToPath(import.meta.url));
 const setBoothUrlScript = join(scriptsDir, 'set-booth-url.mjs');
@@ -258,6 +258,41 @@ describe('set-booth-url.mjs CLI', () => {
       for (const file of REQUIRED_BOOTH_FILES) {
         assert.equal(readFixtureHtml(fixtureRoot, file), beforeByFile.get(file));
       }
+    });
+  });
+
+  it('URL に " を含む場合でも data-booth-url は &quot; にエスケープして書き込む', () => {
+    const quotedUrl = 'https://example.booth.pm/items/123?ref="test"';
+    const escapedUrl = escapeBoothUrlAttr(quotedUrl);
+
+    withTempFixture((fixtureRoot) => {
+      for (const file of REQUIRED_BOOTH_FILES) {
+        writeHtmlFixture(fixtureRoot, file, htmlWithBoothAttr());
+      }
+
+      const result = runSetBoothUrl(fixtureRoot, ['--url', quotedUrl]);
+      assert.equal(result.status, 0);
+
+      for (const file of REQUIRED_BOOTH_FILES) {
+        const html = readFixtureHtml(fixtureRoot, file);
+        assert.match(html, /data-booth-url="[^"]*"/);
+        assert.doesNotMatch(html, /data-booth-url="[^"]*"[^"]*"/);
+        assert.equal(
+          html,
+          `<!DOCTYPE html><html><body><a data-booth-url="${escapedUrl}">BOOTH</a></body></html>`,
+        );
+        assert.equal(readFirstBoothUrl(html), escapedUrl);
+      }
+
+      const { configured } = scanBoothLinks(fixtureRoot);
+      assert.equal(configured.length, 3);
+      for (const file of REQUIRED_BOOTH_FILES) {
+        assert.deepEqual(
+          configured.find((entry) => entry.file === file),
+          { file, url: escapedUrl, required: true },
+        );
+      }
+      assert.deepEqual(boothUrlPending(fixtureRoot), []);
     });
   });
 });
