@@ -3,14 +3,39 @@
  * 収益化フェーズ1の運営者ブロッカー状況を一覧表示する。
  * HTTPサーバー不要。
  */
-import { readFileSync, readdirSync } from 'fs';
-import { dirname, join } from 'path';
+import { readFileSync, readdirSync, statSync } from 'fs';
+import { dirname, join, relative } from 'path';
 import { fileURLToPath } from 'url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 
 function has(file, pattern) {
   return readFileSync(join(root, file), 'utf8').includes(pattern);
+}
+
+function collectHtmlFiles(dir, acc = []) {
+  for (const name of readdirSync(dir)) {
+    if (name === 'node_modules' || name === '.git') continue;
+    const path = join(dir, name);
+    if (statSync(path).isDirectory()) {
+      collectHtmlFiles(path, acc);
+      continue;
+    }
+    if (path.endsWith('.html')) acc.push(path);
+  }
+  return acc;
+}
+
+function boothUrlPending() {
+  const pending = [];
+  for (const file of collectHtmlFiles(root)) {
+    const html = readFileSync(file, 'utf8');
+    const matches = [...html.matchAll(/data-booth-url="([^"]*)"/g)];
+    if (matches.some((m) => !m[1].trim())) {
+      pending.push(relative(root, file));
+    }
+  }
+  return pending;
 }
 
 function affPending() {
@@ -22,6 +47,8 @@ function affPending() {
   }
   return n;
 }
+
+const boothPending = boothUrlPending();
 
 const checks = [
   {
@@ -50,6 +77,15 @@ const checks = [
     action: 'github.io 運用中（AdSense審査は不利）',
     block: 'ドメイン取得後 replace-site-url.mjs で一括置換',
   },
+  {
+    label: 'BOOTH 商品URL（data-booth-url）',
+    done: boothPending.length === 0,
+    action: '全導線にURL設定済み',
+    block:
+      boothPending.length > 0
+        ? `未設定 ${boothPending.length} ファイル: ${boothPending.join(', ')} — set-booth-url.mjs --url <商品URL>`
+        : 'BOOTH出品後 node scripts/set-booth-url.mjs --url <商品URL>',
+  },
 ];
 
 console.log('収益化フェーズ1 — 運営者ブロッカー状況\n');
@@ -73,6 +109,9 @@ if (pending > 0) {
   console.log('\n次に貼り付けてほしいもの（どちらか先に）:');
   console.log('  1. Search Console: google-site-verification: googlexxx.html');
   console.log('  2. A8.net: 承認済み案件の広告HTML');
+  if (boothPending.length > 0) {
+    console.log('  3. BOOTH: 出品後 set-booth-url.mjs --url <商品URL>');
+  }
   process.exit(0);
 }
 
