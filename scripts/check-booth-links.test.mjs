@@ -14,6 +14,7 @@ import {
   readFirstBoothUrl,
   scanBoothLinks,
 } from './booth-config.mjs';
+import { boothCliChildEnv } from './booth-cli-test-helpers.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -59,6 +60,39 @@ function htmlWithMultipleBoothAttrs(url, count = 2) {
 function htmlWithLeadingEmptyThenBoothUrl(url) {
   return `<!DOCTYPE html><html><body><a data-booth-url="">BOOTH</a><a data-booth-url="${url}">BOOTH</a></body></html>`;
 }
+
+describe('boothCliChildEnv', () => {
+  it('デフォルトで BOOTH_URL_STRICT を子プロセス env から除外する', () => {
+    const previous = process.env.BOOTH_URL_STRICT;
+    process.env.BOOTH_URL_STRICT = '1';
+    try {
+      const env = boothCliChildEnv();
+      assert.equal(env.BOOTH_URL_STRICT, undefined);
+      assert.ok('PATH' in env);
+    } finally {
+      if (previous === undefined) {
+        delete process.env.BOOTH_URL_STRICT;
+      } else {
+        process.env.BOOTH_URL_STRICT = previous;
+      }
+    }
+  });
+
+  it('keepStrictEnv: true のとき BOOTH_URL_STRICT を維持する', () => {
+    const previous = process.env.BOOTH_URL_STRICT;
+    process.env.BOOTH_URL_STRICT = '1';
+    try {
+      const env = boothCliChildEnv({ keepStrictEnv: true });
+      assert.equal(env.BOOTH_URL_STRICT, '1');
+    } finally {
+      if (previous === undefined) {
+        delete process.env.BOOTH_URL_STRICT;
+      } else {
+        process.env.BOOTH_URL_STRICT = previous;
+      }
+    }
+  });
+});
 
 describe('escapeBoothUrlAttr', () => {
   it('URL 内の " を &quot; にエスケープする', () => {
