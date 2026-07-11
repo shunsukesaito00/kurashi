@@ -109,4 +109,30 @@ describe('check-booth-links.mjs CLI', () => {
       }
     });
   });
+
+  it('必須3ファイルは URL 設定済み・必須外に空属性があるとき exit code 0 で必須外 WARN を出す', () => {
+    const boothUrl = 'https://example.booth.pm/items/123456';
+
+    withTempFixture((fixtureRoot) => {
+      for (const file of REQUIRED_BOOTH_FILES) {
+        writeHtmlFixture(fixtureRoot, file, htmlWithBoothAttr(boothUrl));
+      }
+      writeHtmlFixture(fixtureRoot, 'privacy.html', htmlWithBoothAttr());
+
+      const result = runCheckBoothLinks(fixtureRoot);
+      assert.equal(result.status, 0);
+      assert.match(
+        result.stdout,
+        /OK: BOOTH 導線 — 必須ファイルの data-booth-url はすべて設定済みです。/,
+      );
+      assert.match(
+        result.stdout,
+        /WARN  privacy\.html  \(必須外・data-booth-url="" — 更新対象外\)/,
+      );
+      assert.match(
+        result.stdout,
+        /WARN: 必須外の空 data-booth-url 1 ファイル: privacy\.html/,
+      );
+    });
+  });
 });
