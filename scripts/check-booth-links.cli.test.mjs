@@ -20,6 +20,10 @@ function htmlWithoutBoothAttr() {
   return '<!DOCTYPE html><html><body><a href="#">BOOTH</a></body></html>';
 }
 
+function htmlWithBoothAttr(url = '') {
+  return `<!DOCTYPE html><html><body><a data-booth-url="${url}">BOOTH</a></body></html>`;
+}
+
 function withTempFixture(fn) {
   const fixtureRoot = mkdtempSync(join(tmpdir(), 'booth-links-cli-test-'));
   try {
@@ -47,6 +51,22 @@ describe('check-booth-links.mjs CLI', () => {
       const result = runCheckBoothLinks(fixtureRoot);
       assert.equal(result.status, 1);
       assert.match(result.stderr, /FAIL: BOOTH 導線の必須ファイルに data-booth-url がありません/);
+      for (const file of REQUIRED_BOOTH_FILES) {
+        assert.match(result.stderr, new RegExp(file.replace('.', '\\.')));
+      }
+    });
+  });
+
+  it('必須3ファイルの URL 未設定かつ --strict 指定時は exit code 1 を返す', () => {
+    withTempFixture((fixtureRoot) => {
+      for (const file of REQUIRED_BOOTH_FILES) {
+        writeHtmlFixture(fixtureRoot, file, htmlWithBoothAttr());
+      }
+
+      const result = runCheckBoothLinks(fixtureRoot, ['--strict']);
+      assert.equal(result.status, 1);
+      assert.match(result.stderr, /FAIL: BOOTH 商品URL 未設定（必須）/);
+      assert.match(result.stdout, /OK: BOOTH 導線構造/);
       for (const file of REQUIRED_BOOTH_FILES) {
         assert.match(result.stderr, new RegExp(file.replace('.', '\\.')));
       }
